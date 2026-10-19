@@ -3,41 +3,34 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<title>The Pack of Lupa — 17th Century Chronicles</title>
+<title>The Pack of Lupa</title>
 <style>
   :root {
     --bg-dark: #0e0e12;
     --card-bg: #181920;
     --card-border: #282a36;
     --accent-red: #c0392b;
-    --accent-red-bright: #e74c3c;
     --accent-gold: #d4af37;
     --accent-gold-bright: #f1c40f;
     --accent-purple: #8e44ad;
-    --accent-purple-bright: #9b59b6;
     --text-primary: #f5f6fa;
     --text-secondary: #95a5a6;
-    --text-dim: #636e72;
-    --font-stack: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   }
-  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: rgba(255,255,255,0.2); }
   body {
     margin: 0; padding: 12px; padding-bottom: 70px;
     background: var(--bg-dark); color: var(--text-primary);
-    font-family: var(--font-stack); font-size: 15px;
-    line-height: 1.4;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    font-size: 15px; line-height: 1.4;
   }
   .card {
     background: var(--card-bg); border: 1px solid var(--card-border);
     border-radius: 12px; padding: 14px; margin-bottom: 12px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
   }
   .roller-container { text-align: center; }
   .dice-display {
     font-size: 3.4rem; font-weight: 800; color: var(--accent-gold-bright);
-    line-height: 1.1; margin: 4px 0 2px 0; text-shadow: 0 2px 10px rgba(241, 196, 15, 0.3);
+    line-height: 1.1; margin: 4px 0 2px 0;
   }
   .dice-subtext {
     font-size: 0.85rem; color: var(--text-secondary); min-height: 20px;
@@ -46,14 +39,15 @@
   .btn-row { display: flex; gap: 8px; margin-bottom: 8px; }
   button, .btn {
     background: #23272e; color: #fff; border: 1px solid #3e4451;
-    border-radius: 8px; padding: 10px; font-weight: 700; font-size: 0.95rem;
-    flex: 1; cursor: pointer; text-align: center; transition: all 0.1s ease;
+    border-radius: 8px; padding: 12px 10px; font-weight: 700; font-size: 0.95rem;
+    flex: 1; cursor: pointer; text-align: center;
     touch-action: manipulation;
   }
   button:active, .btn:active { transform: scale(0.96); filter: brightness(1.2); }
-  .btn-primary { background: var(--accent-red); border-color: var(--accent-red-bright); }
+  .btn-primary { background: var(--accent-red); border-color: #e74c3c; }
   .btn-gold { background: #5c470b; border-color: var(--accent-gold); color: #fff; }
-  .btn-purple { background: #4a235a; border-color: var(--accent-purple-bright); color: #fff; }
+  .btn-purple { background: #4a235a; border-color: #9b59b6; color: #fff; }
+  
   .mod-strip {
     display: flex; gap: 6px; background: #121318; padding: 6px;
     border-radius: 8px; margin-top: 8px; border: 1px solid #22242d;
@@ -77,21 +71,21 @@
   }
   .tab-btn.active {
     background: var(--card-bg); color: var(--accent-gold-bright);
-    box-shadow: 0 2px 6px rgba(0,0,0,0.5);
   }
   .tab-content { display: none; }
   .tab-content.active { display: block; }
+  
   .char-header {
     display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;
   }
   .char-select {
     background: #252834; color: #fff; border: 1px solid #3e4451;
-    font-size: 1rem; font-weight: 700; padding: 6px 10px; border-radius: 8px;
+    font-size: 1rem; font-weight: 700; padding: 8px 10px; border-radius: 8px;
   }
   .level-badge {
     background: #2a2208; border: 1px solid var(--accent-gold);
-    color: var(--accent-gold-bright); font-size: 0.78rem; font-weight: 700;
-    padding: 6px 10px; border-radius: 6px; cursor: pointer;
+    color: var(--accent-gold-bright); font-size: 0.8rem; font-weight: 700;
+    padding: 8px 12px; border-radius: 6px; cursor: pointer;
   }
   .stats-grid {
     display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px;
@@ -100,40 +94,33 @@
   .stat-col { text-align: center; }
   .stat-val { font-size: 1.25rem; font-weight: 800; color: var(--accent-gold); }
   .stat-lbl { font-size: 0.72rem; color: var(--text-secondary); text-transform: uppercase; }
+  
   .tracker-row {
     display: flex; justify-content: space-between; align-items: center;
-    padding: 8px 0; border-bottom: 1px solid #22242d;
+    padding: 10px 0; border-bottom: 1px solid #22242d;
   }
-  .tracker-row:last-child { border-bottom: none; }
-  .token-group { display: flex; gap: 6px; flex-wrap: wrap; }
-  .heart-token {
-    width: 42px; height: 42px; border-radius: 8px; background: #281515;
-    border: 1px solid var(--accent-red); display: flex; align-items: center;
-    justify-content: center; font-size: 1.35rem; cursor: pointer; padding: 0;
+  .token-group { display: flex; gap: 8px; flex-wrap: wrap; }
+  .heart-token, .beast-token {
+    width: 44px; height: 44px; border-radius: 8px; display: flex;
+    align-items: center; justify-content: center; font-size: 1.4rem; cursor: pointer;
+    border: 1px solid #444; background: #222;
   }
-  .heart-token.lost {
-    background: #1a1a1f; border-color: #3e4451; opacity: 0.35; filter: grayscale(1);
+  .heart-token.lost, .beast-token.spent {
+    opacity: 0.25; filter: grayscale(1);
   }
-  .beast-token {
-    width: 42px; height: 42px; border-radius: 8px; background: #261730;
-    border: 1px solid var(--accent-purple-bright); display: flex;
-    align-items: center; justify-content: center; font-size: 1.35rem; cursor: pointer; padding: 0;
-  }
-  .beast-token.spent {
-    background: #1a1a1f; border-color: #3e4451; opacity: 0.35; filter: grayscale(1);
-  }
+  
   .power-item {
     background: #14151b; border: 1px solid #282a36; border-radius: 8px;
     padding: 10px; margin-bottom: 8px; font-size: 0.88rem;
   }
   .power-title {
     font-weight: 700; color: var(--accent-gold); display: flex;
-    justify-content: space-between; align-items: center; margin-bottom: 3px;
+    justify-content: space-between; align-items: center; margin-bottom: 4px;
   }
   .inventory-input-wrap { display: flex; gap: 6px; margin: 10px 0; }
   .text-input {
     flex: 1; background: #121318; border: 1px solid #333644;
-    color: #fff; padding: 8px 10px; border-radius: 6px; font-size: 0.9rem;
+    color: #fff; padding: 10px; border-radius: 6px; font-size: 0.95rem;
   }
   .item-tags { display: flex; flex-wrap: wrap; gap: 6px; }
   .item-tag {
@@ -141,60 +128,63 @@
     font-size: 0.85rem; display: flex; align-items: center; gap: 8px;
     border: 1px solid #3a3f50;
   }
-  .delete-tag {
-    color: var(--accent-red-bright); font-weight: bold; cursor: pointer;
-    padding: 2px 4px; font-size: 1rem; line-height: 1;
-  }
+  
+  /* CRITICAL FIX: pointer-events none when hidden */
   .modal-backdrop {
-    display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.75);
-    z-index: 100; align-items: center; justify-content: center; padding: 16px;
+    display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0, 0, 0, 0.8); z-index: 999;
+    align-items: center; justify-content: center; padding: 16px;
+    pointer-events: none;
   }
-  .modal-backdrop.open { display: flex; }
+  .modal-backdrop.open {
+    display: flex !important;
+    pointer-events: auto !important;
+  }
   .modal-dialog {
     background: var(--card-bg); border: 1px solid var(--card-border);
     border-radius: 12px; max-width: 440px; width: 100%; max-height: 90vh;
-    overflow-y: auto; padding: 16px; box-shadow: 0 8px 24px rgba(0,0,0,0.8);
+    overflow-y: auto; padding: 16px;
   }
 </style>
 </head>
-<body>
+<body ontouchstart="">
 
   <!-- ROLLER SECTION -->
   <div class="card roller-container">
     <div class="dice-display" id="dice-result">20</div>
     <div class="dice-subtext" id="dice-summary">Tap below to roll for an action</div>
     <div class="btn-row">
-      <button type="button" class="btn btn-primary" id="btn-roll-std">Roll d20</button>
-      <button type="button" class="btn btn-gold" id="btn-roll-adv">Advantage</button>
-      <button type="button" class="btn btn-purple" id="btn-roll-dis">Disadv</button>
+      <button type="button" class="btn btn-primary" onclick="app.roll('standard')">Roll d20</button>
+      <button type="button" class="btn btn-gold" onclick="app.roll('adv')">Advantage</button>
+      <button type="button" class="btn btn-purple" onclick="app.roll('dis')">Disadv</button>
     </div>
     <div class="mod-strip">
-      <button type="button" class="mod-btn selected" id="mod-zero">+0 Flat</button>
-      <button type="button" class="mod-btn" id="mod-force">Force</button>
-      <button type="button" class="mod-btn" id="mod-finesse">Finesse</button>
-      <button type="button" class="mod-btn" id="mod-focus">Focus</button>
+      <button type="button" class="mod-btn selected" id="mod-zero" onclick="app.setMod(0, 'Flat', this)">+0 Flat</button>
+      <button type="button" class="mod-btn" id="mod-force" onclick="app.setMod('force', 'Force', this)">Force</button>
+      <button type="button" class="mod-btn" id="mod-finesse" onclick="app.setMod('finesse', 'Finesse', this)">Finesse</button>
+      <button type="button" class="mod-btn" id="mod-focus" onclick="app.setMod('focus', 'Focus', this)">Focus</button>
     </div>
   </div>
 
   <!-- NAVIGATION TABS -->
   <div class="nav-tabs">
-    <button type="button" class="tab-btn active" id="tab-btn-play">Play Sheet</button>
-    <button type="button" class="tab-btn" id="tab-btn-dossier">Dossier</button>
-    <button type="button" class="tab-btn" id="tab-btn-journey">Waypoints</button>
-    <button type="button" class="tab-btn" id="tab-btn-rules">Quick Rules</button>
+    <button type="button" class="tab-btn active" onclick="app.switchTab('play', this)">Play Sheet</button>
+    <button type="button" class="tab-btn" onclick="app.switchTab('dossier', this)">Dossier</button>
+    <button type="button" class="tab-btn" onclick="app.switchTab('journey', this)">Waypoints</button>
+    <button type="button" class="tab-btn" onclick="app.switchTab('rules', this)">Quick Rules</button>
   </div>
 
   <!-- TAB 1: PLAY SHEET -->
   <div id="tab-play" class="tab-content active">
     <div class="card">
       <div class="char-header">
-        <select class="char-select" id="char-picker">
+        <select class="char-select" id="char-picker" onchange="app.changeChar(this.value)">
           <option value="archie">Archie (Akshat)</option>
           <option value="roman">Roman (Rutuj)</option>
           <option value="selena">Selena (Sukhada)</option>
           <option value="penny">Penny (Pari)</option>
         </select>
-        <button type="button" class="level-badge" id="btn-open-levelup">⚡ Level Up</button>
+        <button type="button" class="level-badge" onclick="app.openLevelModal()">⚡ Level Up</button>
       </div>
       <div style="font-size:0.8rem; color:var(--text-secondary); margin-bottom:6px;" id="char-tagline">Polymath & Slacker</div>
       
@@ -207,7 +197,7 @@
       <div class="tracker-row">
         <div>
           <div style="font-weight:700;">Hearts (Vitality)</div>
-          <div style="font-size:0.75rem; color:var(--text-secondary);">0 = Blood-Mad Frenzy</div>
+          <div style="font-size:0.75rem; color:var(--text-secondary);">0 = Blood Frenzy</div>
         </div>
         <div class="token-group" id="hearts-container"></div>
       </div>
@@ -221,7 +211,7 @@
       </div>
 
       <div class="btn-row" style="margin-top:10px;">
-        <button type="button" class="btn" id="btn-recover-all">Rest & Recover (Reset Tokens)</button>
+        <button type="button" class="btn" onclick="app.recoverAll()">Rest & Recover (Reset Tokens)</button>
       </div>
     </div>
 
@@ -235,8 +225,8 @@
     <div class="card">
       <div style="font-weight:700; color:var(--accent-gold);">Carried Satchel & Gear</div>
       <div class="inventory-input-wrap">
-        <input type="text" id="new-item-input" class="text-input" placeholder="Add item (e.g. Silver Dagger, Chalk)...">
-        <button type="button" class="btn btn-primary" id="btn-add-item" style="flex:0 0 75px;">+ Add</button>
+        <input type="text" id="new-item-input" class="text-input" placeholder="Add item...">
+        <button type="button" class="btn btn-primary" onclick="app.addItem()" style="flex:0 0 75px;">+ Add</button>
       </div>
       <div class="item-tags" id="inventory-list"></div>
     </div>
@@ -256,14 +246,14 @@
     <div class="card">
       <div style="font-weight:700; color:var(--accent-gold); margin-bottom:6px;">Journey Waypoints</div>
       <div class="inventory-input-wrap">
-        <input type="text" id="new-waypoint-input" class="text-input" placeholder="Add new location/encounter...">
-        <button type="button" class="btn btn-gold" id="btn-add-waypoint" style="flex:0 0 75px;">+ Add</button>
+        <input type="text" id="new-waypoint-input" class="text-input" placeholder="Add new encounter/port...">
+        <button type="button" class="btn btn-gold" onclick="app.addWaypoint()" style="flex:0 0 75px;">+ Add</button>
       </div>
       <div id="waypoint-list"></div>
     </div>
     <div class="card">
       <div style="font-weight:700; color:var(--accent-gold); margin-bottom:6px;">Scent Trail & Campaign Clues</div>
-      <textarea id="clues-text" class="text-input" style="width:100%; height:120px; resize:none;" placeholder="Log notes on Mother Lupa, Lycan, vials..."></textarea>
+      <textarea id="clues-text" class="text-input" style="width:100%; height:120px; resize:none;" placeholder="Notes on Mother Lupa, Lycan, fountain vials..." oninput="app.saveNotes(this.value)"></textarea>
     </div>
   </div>
 
@@ -271,9 +261,9 @@
   <div id="tab-rules" class="tab-content">
     <div class="card">
       <div style="font-weight:700; color:var(--accent-gold); margin-bottom:6px;">Highway Resolution</div>
-      <p style="font-size:0.85rem; margin:4px 0;"><strong>1–9: Complication / Damage.</strong> Action fails or enemy retaliates for 1 Heart.</p>
-      <p style="font-size:0.85rem; margin:4px 0;"><strong>10–14: Success at a Cost.</strong> You achieve the intent, but take a hit, make noise, or lose gear.</p>
-      <p style="font-size:0.85rem; margin:4px 0;"><strong>15+: Clean Triumph.</strong> Full clean success, zero complications.</p>
+      <p style="font-size:0.85rem; margin:4px 0;"><strong>1–9: Complication.</strong> Action fails or take 1 Heart damage.</p>
+      <p style="font-size:0.85rem; margin:4px 0;"><strong>10–14: Success at Cost.</strong> Success with a drawback or wound.</p>
+      <p style="font-size:0.85rem; margin:4px 0;"><strong>15+: Clean Triumph.</strong> Full clean success.</p>
     </div>
   </div>
 
@@ -282,138 +272,178 @@
     <div class="modal-dialog">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
         <div style="font-weight:800; font-size:1.1rem; color:var(--accent-gold);">Milestone Advancement</div>
-        <div id="btn-close-levelup" style="font-size:1.4rem; cursor:pointer; color:#888; padding:4px 8px;">✕</div>
+        <div onclick="app.closeLevelModal()" style="font-size:1.4rem; cursor:pointer; color:#888; padding:4px 8px;">✕</div>
       </div>
       
       <div style="margin:10px 0;">
         <label style="font-size:0.82rem; color:var(--text-secondary);">Character Rank:</label>
         <div style="display:flex; gap:8px; margin-top:4px;">
-          <button type="button" class="btn" id="btn-lvl-dec">- Level</button>
+          <button type="button" class="btn" onclick="app.adjLevel(-1)">- Level</button>
           <div style="flex:1; text-align:center; font-size:1.2rem; font-weight:800; line-height:36px;" id="milestone-lvl-display">Level 1</div>
-          <button type="button" class="btn btn-gold" id="btn-lvl-inc">+ Level</button>
+          <button type="button" class="btn btn-gold" onclick="app.adjLevel(1)">+ Level</button>
         </div>
       </div>
 
       <div style="margin:10px 0;">
-        <label style="font-size:0.82rem; color:var(--text-secondary);">Adjust Attributes:</label>
+        <label style="font-size:0.82rem; color:var(--text-secondary);">Adjust Stats:</label>
         <div class="btn-row" style="margin-top:4px;">
-          <button type="button" class="btn" id="btn-stat-force">+1 Force</button>
-          <button type="button" class="btn" id="btn-stat-finesse">+1 Finesse</button>
-          <button type="button" class="btn" id="btn-stat-focus">+1 Focus</button>
+          <button type="button" class="btn" onclick="app.adjStat('force', 1)">+1 Force</button>
+          <button type="button" class="btn" onclick="app.adjStat('finesse', 1)">+1 Finesse</button>
+          <button type="button" class="btn" onclick="app.adjStat('focus', 1)">+1 Focus</button>
         </div>
       </div>
 
       <div style="margin:10px 0;">
         <label style="font-size:0.82rem; color:var(--text-secondary);">Max Capacities:</label>
         <div class="btn-row" style="margin-top:4px;">
-          <button type="button" class="btn" id="btn-cap-hearts">+1 Max Heart</button>
-          <button type="button" class="btn" id="btn-cap-beast">+1 Max Beast Mark</button>
+          <button type="button" class="btn" onclick="app.adjCap('hearts', 1)">+1 Max Heart</button>
+          <button type="button" class="btn" onclick="app.adjCap('beast', 1)">+1 Max Mark</button>
         </div>
       </div>
 
       <div style="margin-top:14px; border-top:1px solid #333; padding-top:10px;">
-        <button type="button" class="btn" style="background:#4a1515; border-color:#c0392b; width:100%;" id="btn-reset-char">Reset to Level 1 Defaults</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- CUSTOM CONFIRMATION MODAL -->
-  <div class="modal-backdrop" id="app-dialog-modal">
-    <div class="modal-dialog" style="max-width:320px; text-align:center;">
-      <div id="dialog-msg" style="font-size:0.95rem; margin-bottom:14px; font-weight:600;">Are you sure?</div>
-      <div style="display:flex; gap:8px;">
-        <button type="button" class="btn" id="dialog-cancel-btn" style="background:#333;">Cancel</button>
-        <button type="button" class="btn btn-primary" id="dialog-ok-btn">Confirm</button>
+        <button type="button" class="btn" style="background:#4a1515; border-color:#c0392b; width:100%;" onclick="app.resetChar()">Reset to Level 1 Defaults</button>
       </div>
     </div>
   </div>
 
 <script>
-(function() {
-  const charPresets = {
-    archie: {
-      name: "Archie (Akshat)", tagline: "The Reluctant Polymath",
-      force: 0, finesse: 1, focus: 2, level: 1,
-      maxHearts: 3, hearts: 3, maxBeast: 3, beast: 3,
-      inventory: ["Half-finished clockwork grapple", "Telescope lens", "Pouch of copper grease"],
-      powers: [
-        { name: "Path of Least Resistance (Passive)", desc: "Auto-detect the least physically taxing way around an obstacle.", cost: 0 },
-        { name: "Kinetic Deflection", desc: "Spend 1 Mark: Negate an incoming melee hit; attacker stumbles prone.", cost: 1 },
-        { name: "Alchemical Jammer", desc: "Spend 1 Mark: Instantly jam any mechanical lock, clockwork gear, or gun.", cost: 1 }
-      ],
-      dossier: "Eldest cub. Apprenticeship under a famous polymath gave him encyclopedic technical knowledge, but he abandoned it due to sheer apathy. Avoids effort at all costs."
-    },
-    roman: {
-      name: "Roman (Rutuj)", tagline: "The Burdened Heir",
-      force: 2, finesse: 1, focus: 0, level: 1,
-      maxHearts: 3, hearts: 3, maxBeast: 3, beast: 3,
-      inventory: ["Family signet rapier", "Purse of gilded sovereigns", "Sealed death writ"],
-      powers: [
-        { name: "Commanding Stare (Passive)", desc: "Human rabble will not attack Roman unless commanded by an Elite.", cost: 0 },
-        { name: "Alpha Strike", desc: "Spend 1 Mark: Instantly dispatch 2 minions or inflict 2 Hearts on an Elite.", cost: 1 },
-        { name: "Iron Will", desc: "Spend 1 Mark: Ignore 1 point of non-silver damage entirely.", cost: 1 }
-      ],
-      dossier: "Second brother. High drive, disciplined, natural leader. Carries crushing guilt: an early transformation at age 16 killed his foster brother, leaving him the sole heir to wealth he hates spending."
-    },
-    selena: {
-      name: "Selena (Sukhada)", tagline: "The Guarded Empath",
-      force: 0, finesse: 2, focus: 1, level: 1,
-      maxHearts: 3, hearts: 3, maxBeast: 3, beast: 3,
-      inventory: ["Concealed silver-edged stiletto", "Vial of belladonna drops", "Forged salon letters"],
-      powers: [
-        { name: "Heartbeat Truth (Passive)", desc: "Instantly detect when a mortal is lying or afraid via acoustic hearing.", cost: 0 },
-        { name: "Silver Tongue", desc: "Spend 1 Mark: De-escalate hostile guards or deflect questions without a roll.", cost: 1 },
-        { name: "Shadow Slip", desc: "Spend 1 Mark: Evade notice in darkness or crowd; next attack has surprise.", cost: 1 }
-      ],
-      dossier: "Second eldest. Highly perceptive, talks frequently to deflect from her deep fear of being outed as a monster. Abandoned by her ex-lover who discovered her secret."
-    },
-    penny: {
-      name: "Penny (Pari)", tagline: "The Wildling Island Rover",
-      force: 1, finesse: 2, focus: 0, level: 1,
-      maxHearts: 3, hearts: 3, maxBeast: 3, beast: 3,
-      inventory: ["Caribbean navigation charm", "Pouch of tropical soothing leaves", "Bone hunting knife"],
-      powers: [
-        { name: "Ancient Instinct (Passive)", desc: "Senses other shapeshifters and understands natural beast vocalizations.", cost: 0 },
-        { name: "Tropical Vigor", desc: "Spend 1 Mark: Restore 1 Heart to herself or any adjacent sibling.", cost: 1 },
-        { name: "Predator Surge", desc: "Spend 1 Mark: Leap across roofs, sprint down carriages, or break restraints.", cost: 1 }
-      ],
-      dossier: "Youngest sibling. Raised in Haiti by a werewolf nanny; understands authentic pack customs better than anyone, but is timid and quiet around her older siblings."
-    }
-  };
+const PRESETS = {
+  archie: {
+    name: "Archie (Akshat)", tagline: "The Reluctant Polymath",
+    force: 0, finesse: 1, focus: 2, level: 1,
+    maxHearts: 3, hearts: 3, maxBeast: 3, beast: 3,
+    inventory: ["Clockwork grapple", "Telescope lens", "Pouch of grease"],
+    powers: [
+      { name: "Path of Least Resistance (Passive)", desc: "Auto-detect the easiest physical path.", cost: 0 },
+      { name: "Kinetic Deflection", desc: "Spend 1: Negate melee hit; enemy stumbles prone.", cost: 1 },
+      { name: "Alchemical Jammer", desc: "Spend 1: Instantly jam any lock or firearm.", cost: 1 }
+    ],
+    dossier: "Eldest cub. Encyclopedic polymath knowledge, but avoids effort at all costs."
+  },
+  roman: {
+    name: "Roman (Rutuj)", tagline: "The Burdened Heir",
+    force: 2, finesse: 1, focus: 0, level: 1,
+    maxHearts: 3, hearts: 3, maxBeast: 3, beast: 3,
+    inventory: ["Signet rapier", "Gilded sovereigns", "Death writ"],
+    powers: [
+      { name: "Commanding Stare (Passive)", desc: "Minions will not attack Roman unless commanded.", cost: 0 },
+      { name: "Alpha Strike", desc: "Spend 1: Kill 2 minions or deal 2 Hearts to Elite.", cost: 1 },
+      { name: "Iron Will", desc: "Spend 1: Absorb 1 non-silver wound completely.", cost: 1 }
+    ],
+    dossier: "Second brother. High drive, leader. Transformation at 16 killed his foster brother; guilt-ridden over inherited fortune."
+  },
+  selena: {
+    name: "Selena (Sukhada)", tagline: "The Guarded Empath",
+    force: 0, finesse: 2, focus: 1, level: 1,
+    maxHearts: 3, hearts: 3, maxBeast: 3, beast: 3,
+    inventory: ["Silver stiletto", "Belladonna vial", "Salon letters"],
+    powers: [
+      { name: "Heartbeat Truth (Passive)", desc: "Hear lies/fear via acoustic heartbeat spikes.", cost: 0 },
+      { name: "Silver Tongue", desc: "Spend 1: De-escalate guards or deflect suspicion without roll.", cost: 1 },
+      { name: "Shadow Slip", desc: "Spend 1: Vanish in shadows; next hit has surprise.", cost: 1 }
+    ],
+    dossier: "Second eldest. Highly perceptive; talks to shield herself from deep fear of werewolf exposure."
+  },
+  penny: {
+    name: "Penny (Pari)", tagline: "The Wildling Island Rover",
+    force: 1, finesse: 2, focus: 0, level: 1,
+    maxHearts: 3, hearts: 3, maxBeast: 3, beast: 3,
+    inventory: ["Haitian navigation charm", "Tropical healing herbs", "Bone knife"],
+    powers: [
+      { name: "Ancient Instinct (Passive)", desc: "Senses other beasts and supernatural scents.", cost: 0 },
+      { name: "Tropical Vigor", desc: "Spend 1: Heal 1 Heart on self or nearby sibling.", cost: 1 },
+      { name: "Predator Surge", desc: "Spend 1: Sprint, leap, or break physical bounds.", cost: 1 }
+    ],
+    dossier: "Youngest sibling. Raised in Haiti by a werewolf nanny; possesses true pack lore, but naturally shy."
+  }
+};
 
-  let activeCharKey = "archie";
-  let activeModType = 0;
-  let activeModName = "Flat";
-  let state = {};
+const app = {
+  key: "archie",
+  mod: 0,
+  modName: "Flat",
+  data: JSON.parse(JSON.stringify(PRESETS)),
 
-  function init() {
+  init: function() {
     try {
-      const saved = localStorage.getItem("lupa_pack_v4");
-      if (saved) {
-        state = JSON.parse(saved);
-      } else {
-        state = JSON.parse(JSON.stringify(charPresets));
-      }
-    } catch(e) {
-      state = JSON.parse(JSON.stringify(charPresets));
+      const saved = localStorage.getItem("pack_lupa_save_v5");
+      if (saved) this.data = JSON.parse(saved);
+    } catch(e) {}
+    this.render();
+    this.loadWaypoints();
+    const notes = document.getElementById("clues-text");
+    if (notes) notes.value = localStorage.getItem("pack_notes_v5") || "";
+  },
+
+  save: function() {
+    try { localStorage.setItem("pack_lupa_save_v5", JSON.stringify(this.data)); } catch(e) {}
+  },
+
+  saveNotes: function(txt) {
+    try { localStorage.setItem("pack_notes_v5", txt); } catch(e) {}
+  },
+
+  switchTab: function(id, btn) {
+    document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
+    document.querySelectorAll(".tab-content").forEach(c => c.classList.remove("active"));
+    if (btn) btn.classList.add("active");
+    const target = document.getElementById("tab-" + id);
+    if (target) target.classList.add("active");
+  },
+
+  changeChar: function(k) {
+    this.key = k;
+    this.render();
+  },
+
+  render: function() {
+    const c = this.data[this.key];
+    document.getElementById("char-picker").value = this.key;
+    document.getElementById("char-tagline").innerText = c.tagline;
+    document.getElementById("stat-force-val").innerText = (c.force >= 0 ? "+" : "") + c.force;
+    document.getElementById("stat-finesse-val").innerText = (c.finesse >= 0 ? "+" : "") + c.finesse;
+    document.getElementById("stat-focus-val").innerText = (c.focus >= 0 ? "+" : "") + c.focus;
+
+    // Hearts
+    const hBox = document.getElementById("hearts-container");
+    hBox.innerHTML = "";
+    for (let i = 0; i < c.maxHearts; i++) {
+      const b = document.createElement("button");
+      b.type = "button";
+      b.className = "heart-token" + (i >= c.hearts ? " lost" : "");
+      b.innerText = "❤️";
+      b.onclick = () => { c.hearts = (i < c.hearts) ? i : i + 1; app.save(); app.render(); };
+      hBox.appendChild(b);
     }
 
-    // Always enforce latest display names
-    if (state.selena) state.selena.name = "Selena (Sukhada)";
-    if (state.archie) state.archie.name = "Archie (Akshat)";
-    if (state.roman) state.roman.name = "Roman (Rutuj)";
-    if (state.penny) state.penny.name = "Penny (Pari)";
+    // Beast Marks
+    const bBox = document.getElementById("beast-container");
+    bBox.innerHTML = "";
+    for (let i = 0; i < c.maxBeast; i++) {
+      const b = document.createElement("button");
+      b.type = "button";
+      b.className = "beast-token" + (i >= c.beast ? " spent" : "");
+      b.innerText = "🐺";
+      b.onclick = () => { c.beast = (i < c.beast) ? i : i + 1; app.save(); app.render(); };
+      bBox.appendChild(b);
+    }
 
-    // Bind Rollers
-    bind("btn-roll-std", () => executeRoll('standard'));
-    bind("btn-roll-adv", () => executeRoll('adv'));
-    bind("btn-roll-dis", () => executeRoll('dis'));
+    // Powers
+    const pBox = document.getElementById("powers-list");
+    pBox.innerHTML = "";
+    c.powers.forEach((p, idx) => {
+      const d = document.createElement("div");
+      d.className = "power-item";
+      d.innerHTML = `
+        <div class="power-title">
+          <span>${p.name}</span>
+          ${p.cost > 0 ? `<button type="button" class="btn btn-purple" style="padding:4px 8px; font-size:0.75rem; flex:none;" onclick="app.spendPower()">Use (1 Mark)</button>` : ""}
+        </div>
+        <div style="font-size:0.8rem; color:#bbb;">${p.desc}</div>
+      `;
+      pBox.appendChild(d);
+    });
 
-    // Bind Modifiers
-    bind("mod-zero", () => setRollMod(0, 'Flat', 'mod-zero'));
-    bind("mod-force", () => setRollMod('force', 'Force', 'mod-force'));
-    bind("mod-finesse", () => setRollMod('finesse', 'Finesse', 'mod-finesse'));
-    bind("mod-focus", () => setRollMod('focus', 'Focus', 'mod-focus'));
-
-    // Bind Tabs
-    bind("tab-btn-play", (e) => switchNav
+    // Inventory
+    const iBox = document.getElementById("
