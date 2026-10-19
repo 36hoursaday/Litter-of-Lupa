@@ -1,0 +1,11 @@
+{
+  "lupa": { "revealed": false, "target": "all" },
+  "lycan": { "revealed": false, "target": "all" },
+  "whispers": [],
+  "bestiary": {
+    "brass_hound": "none",
+    "clockwork_myrmidon": "none",
+    "athanor_behemoth": "none",
+    "witchfinder_officer": "none"
+  }
+}
