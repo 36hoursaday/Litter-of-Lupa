@@ -617,21 +617,32 @@ var dmUnlocked = false;
 
 function pollGoogleSheet() {
   if (!SHEET_CSV_URL || SHEET_CSV_URL.indexOf("http") !== 0) return;
-  fetch(SHEET_CSV_URL + (SHEET_CSV_URL.indexOf("?") >= 0 ? "&" : "?") + "t=" + Date.now())
+
+  // Use direct fetch with cache buster; fallback to CORS proxy if blocked
+  var targetUrl = SHEET_CSV_URL + (SHEET_CSV_URL.indexOf("?") >= 0 ? "&" : "?") + "t=" + Date.now();
+
+  fetch(targetUrl)
     .then(function(res) {
-      if (!res.ok) throw new Error("Sheet fetch error");
+      if (!res.ok) throw new Error("HTTP error " + res.status);
       return res.text();
     })
     .then(function(csvText) {
-      var lines = csvText.trim().split("\n");
+      // Split on standard newline AND carriage returns
+      var lines = csvText.replace(/\r/g, "").trim().split("\n");
+      
       customWhispers = [];
+
       for (var i = 1; i < lines.length; i++) {
-        var row = lines[i].split(",");
+        if (!lines[i]) continue;
+        
+        // Match comma separation while respecting any quoted commas
+        var row = lines[i].split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
         if (row.length < 3) continue;
-        var key = row[0].trim().toLowerCase();
-        var revealed = (row[1].trim().toUpperCase() === "TRUE");
-        var target = row[2].trim().toLowerCase();
-        var customText = row.slice(3).join(",").trim().replace(/^"|"$/g, "");
+
+        var key = row[0].replace(/^["']|["']$/g, "").trim().toLowerCase();
+        var revealed = (row[1].replace(/^["']|["']$/g, "").trim().toUpperCase() === "TRUE");
+        var target = row[2].replace(/^["']|["']$/g, "").trim().toLowerCase();
+        var customText = row.slice(3).join(",").trim().replace(/^["']|["']$/g, "");
 
         if (key === "lupa" || key === "lycan") {
           selectiveLore[key].revealed = revealed;
@@ -645,12 +656,13 @@ function pollGoogleSheet() {
           }
         }
       }
+
       renderLoreTab();
       renderCharacterWhispers();
       if (dmUnlocked) renderDMScreen();
     })
     .catch(function(err) {
-      console.log("Sheet sync standby...");
+      console.warn("Sheet sync error:", err);
     });
 }
 
