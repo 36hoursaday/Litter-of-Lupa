@@ -129,62 +129,63 @@
     border: 1px solid #3a3f50;
   }
   
-  /* CRITICAL FIX: pointer-events none when hidden */
   .modal-backdrop {
     display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-    background: rgba(0, 0, 0, 0.8); z-index: 999;
+    background: rgba(0, 0, 0, 0.85); z-index: 999;
     align-items: center; justify-content: center; padding: 16px;
-    pointer-events: none;
   }
-  .modal-backdrop.open {
-    display: flex !important;
-    pointer-events: auto !important;
-  }
+  .modal-backdrop.open { display: flex !important; }
   .modal-dialog {
     background: var(--card-bg); border: 1px solid var(--card-border);
     border-radius: 12px; max-width: 440px; width: 100%; max-height: 90vh;
     overflow-y: auto; padding: 16px;
   }
+  #debug-bar {
+    display: none; background: #96281b; color: #fff; font-size: 0.75rem;
+    padding: 6px; border-radius: 6px; margin-bottom: 10px; word-break: break-all;
+  }
 </style>
 </head>
 <body ontouchstart="">
+
+  <div id="debug-bar"></div>
 
   <!-- ROLLER SECTION -->
   <div class="card roller-container">
     <div class="dice-display" id="dice-result">20</div>
     <div class="dice-subtext" id="dice-summary">Tap below to roll for an action</div>
     <div class="btn-row">
-      <button type="button" class="btn btn-primary" onclick="app.roll('standard')">Roll d20</button>
-      <button type="button" class="btn btn-gold" onclick="app.roll('adv')">Advantage</button>
-      <button type="button" class="btn btn-purple" onclick="app.roll('dis')">Disadv</button>
+      <button type="button" class="btn btn-primary" onclick="doRoll('standard')">Roll d20</button>
+      <button type="button" class="btn btn-gold" onclick="doRoll('adv')">Advantage</button>
+      <button type="button" class="btn btn-purple" onclick="doRoll('dis')">Disadv</button>
     </div>
     <div class="mod-strip">
-      <button type="button" class="mod-btn selected" id="mod-zero" onclick="app.setMod(0, 'Flat', this)">+0 Flat</button>
-      <button type="button" class="mod-btn" id="mod-force" onclick="app.setMod('force', 'Force', this)">Force</button>
-      <button type="button" class="mod-btn" id="mod-finesse" onclick="app.setMod('finesse', 'Finesse', this)">Finesse</button>
-      <button type="button" class="mod-btn" id="mod-focus" onclick="app.setMod('focus', 'Focus', this)">Focus</button>
+      <button type="button" class="mod-btn selected" id="mod-zero" onclick="setRollMod(0, 'Flat', this)">+0 Flat</button>
+      <button type="button" class="mod-btn" id="mod-force" onclick="setRollMod('force', 'Force', this)">Force</button>
+      <button type="button" class="mod-btn" id="mod-finesse" onclick="setRollMod('finesse', 'Finesse', this)">Finesse</button>
+      <button type="button" class="mod-btn" id="mod-focus" onclick="setRollMod('focus', 'Focus', this)">Focus</button>
     </div>
   </div>
 
   <!-- NAVIGATION TABS -->
   <div class="nav-tabs">
-    <button type="button" class="tab-btn active" onclick="app.switchTab('play', this)">Play Sheet</button>
-    <button type="button" class="tab-btn" onclick="app.switchTab('dossier', this)">Dossier</button>
-    <button type="button" class="tab-btn" onclick="app.switchTab('journey', this)">Waypoints</button>
-    <button type="button" class="tab-btn" onclick="app.switchTab('rules', this)">Quick Rules</button>
+    <button type="button" class="tab-btn active" onclick="switchNavTab('play', this)">Play Sheet</button>
+    <button type="button" class="tab-btn" onclick="switchNavTab('dossier', this)">Dossier</button>
+    <button type="button" class="tab-btn" onclick="switchNavTab('journey', this)">Waypoints</button>
+    <button type="button" class="tab-btn" onclick="switchNavTab('rules', this)">Quick Rules</button>
   </div>
 
   <!-- TAB 1: PLAY SHEET -->
   <div id="tab-play" class="tab-content active">
     <div class="card">
       <div class="char-header">
-        <select class="char-select" id="char-picker" onchange="app.changeChar(this.value)">
+        <select class="char-select" id="char-picker" onchange="selectCharacter(this.value)">
           <option value="archie">Archie (Akshat)</option>
           <option value="roman">Roman (Rutuj)</option>
           <option value="selena">Selena (Sukhada)</option>
           <option value="penny">Penny (Pari)</option>
         </select>
-        <button type="button" class="level-badge" onclick="app.openLevelModal()">⚡ Level Up</button>
+        <button type="button" class="level-badge" onclick="openLevelModal()">⚡ Level Up</button>
       </div>
       <div style="font-size:0.8rem; color:var(--text-secondary); margin-bottom:6px;" id="char-tagline">Polymath & Slacker</div>
       
@@ -211,7 +212,7 @@
       </div>
 
       <div class="btn-row" style="margin-top:10px;">
-        <button type="button" class="btn" onclick="app.recoverAll()">Rest & Recover (Reset Tokens)</button>
+        <button type="button" class="btn" onclick="recoverAll()">Rest & Recover (Reset Tokens)</button>
       </div>
     </div>
 
@@ -226,7 +227,7 @@
       <div style="font-weight:700; color:var(--accent-gold);">Carried Satchel & Gear</div>
       <div class="inventory-input-wrap">
         <input type="text" id="new-item-input" class="text-input" placeholder="Add item...">
-        <button type="button" class="btn btn-primary" onclick="app.addItem()" style="flex:0 0 75px;">+ Add</button>
+        <button type="button" class="btn btn-primary" onclick="addInventoryItem()" style="flex:0 0 75px;">+ Add</button>
       </div>
       <div class="item-tags" id="inventory-list"></div>
     </div>
@@ -247,13 +248,13 @@
       <div style="font-weight:700; color:var(--accent-gold); margin-bottom:6px;">Journey Waypoints</div>
       <div class="inventory-input-wrap">
         <input type="text" id="new-waypoint-input" class="text-input" placeholder="Add new encounter/port...">
-        <button type="button" class="btn btn-gold" onclick="app.addWaypoint()" style="flex:0 0 75px;">+ Add</button>
+        <button type="button" class="btn btn-gold" onclick="addCustomWaypoint()" style="flex:0 0 75px;">+ Add</button>
       </div>
       <div id="waypoint-list"></div>
     </div>
     <div class="card">
       <div style="font-weight:700; color:var(--accent-gold); margin-bottom:6px;">Scent Trail & Campaign Clues</div>
-      <textarea id="clues-text" class="text-input" style="width:100%; height:120px; resize:none;" placeholder="Notes on Mother Lupa, Lycan, fountain vials..." oninput="app.saveNotes(this.value)"></textarea>
+      <textarea id="clues-text" class="text-input" style="width:100%; height:120px; resize:none;" placeholder="Notes on Mother Lupa, Lycan, fountain vials..." oninput="saveNotes(this.value)"></textarea>
     </div>
   </div>
 
@@ -272,43 +273,48 @@
     <div class="modal-dialog">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
         <div style="font-weight:800; font-size:1.1rem; color:var(--accent-gold);">Milestone Advancement</div>
-        <div onclick="app.closeLevelModal()" style="font-size:1.4rem; cursor:pointer; color:#888; padding:4px 8px;">✕</div>
+        <div onclick="closeLevelModal()" style="font-size:1.4rem; cursor:pointer; color:#888; padding:4px 8px;">✕</div>
       </div>
       
       <div style="margin:10px 0;">
         <label style="font-size:0.82rem; color:var(--text-secondary);">Character Rank:</label>
         <div style="display:flex; gap:8px; margin-top:4px;">
-          <button type="button" class="btn" onclick="app.adjLevel(-1)">- Level</button>
+          <button type="button" class="btn" onclick="adjLevel(-1)">- Level</button>
           <div style="flex:1; text-align:center; font-size:1.2rem; font-weight:800; line-height:36px;" id="milestone-lvl-display">Level 1</div>
-          <button type="button" class="btn btn-gold" onclick="app.adjLevel(1)">+ Level</button>
+          <button type="button" class="btn btn-gold" onclick="adjLevel(1)">+ Level</button>
         </div>
       </div>
 
       <div style="margin:10px 0;">
         <label style="font-size:0.82rem; color:var(--text-secondary);">Adjust Stats:</label>
         <div class="btn-row" style="margin-top:4px;">
-          <button type="button" class="btn" onclick="app.adjStat('force', 1)">+1 Force</button>
-          <button type="button" class="btn" onclick="app.adjStat('finesse', 1)">+1 Finesse</button>
-          <button type="button" class="btn" onclick="app.adjStat('focus', 1)">+1 Focus</button>
+          <button type="button" class="btn" onclick="adjStat('force', 1)">+1 Force</button>
+          <button type="button" class="btn" onclick="adjStat('finesse', 1)">+1 Finesse</button>
+          <button type="button" class="btn" onclick="adjStat('focus', 1)">+1 Focus</button>
         </div>
       </div>
 
       <div style="margin:10px 0;">
         <label style="font-size:0.82rem; color:var(--text-secondary);">Max Capacities:</label>
         <div class="btn-row" style="margin-top:4px;">
-          <button type="button" class="btn" onclick="app.adjCap('hearts', 1)">+1 Max Heart</button>
-          <button type="button" class="btn" onclick="app.adjCap('beast', 1)">+1 Max Mark</button>
+          <button type="button" class="btn" onclick="adjCap('hearts', 1)">+1 Max Heart</button>
+          <button type="button" class="btn" onclick="adjCap('beast', 1)">+1 Max Mark</button>
         </div>
       </div>
 
       <div style="margin-top:14px; border-top:1px solid #333; padding-top:10px;">
-        <button type="button" class="btn" style="background:#4a1515; border-color:#c0392b; width:100%;" onclick="app.resetChar()">Reset to Level 1 Defaults</button>
+        <button type="button" class="btn" style="background:#4a1515; border-color:#c0392b; width:100%;" onclick="resetCharacter()">Reset to Level 1 Defaults</button>
       </div>
     </div>
   </div>
 
 <script>
-const PRESETS = {
+window.onerror = function(msg, url, line) {
+  var d = document.getElementById("debug-bar");
+  if (d) { d.style.display = "block"; d.innerText = "Error: " + msg + " (line " + line + ")"; }
+};
+
+var PRESETS = {
   archie: {
     name: "Archie (Akshat)", tagline: "The Reluctant Polymath",
     force: 0, finesse: 1, focus: 2, level: 1,
@@ -359,91 +365,98 @@ const PRESETS = {
   }
 };
 
-const app = {
-  key: "archie",
-  mod: 0,
-  modName: "Flat",
-  data: JSON.parse(JSON.stringify(PRESETS)),
+var currentKey = "archie";
+var currentMod = 0;
+var currentModName = "Flat";
+var charData = JSON.parse(JSON.stringify(PRESETS));
 
-  init: function() {
-    try {
-      const saved = localStorage.getItem("pack_lupa_save_v5");
-      if (saved) this.data = JSON.parse(saved);
-    } catch(e) {}
-    this.render();
-    this.loadWaypoints();
-    const notes = document.getElementById("clues-text");
-    if (notes) notes.value = localStorage.getItem("pack_notes_v5") || "";
-  },
+function initApp() {
+  try {
+    var saved = localStorage.getItem("lupa_save_v6");
+    if (saved) { charData = JSON.parse(saved); }
+  } catch(e) {}
+  
+  if (charData.selena) charData.selena.name = "Selena (Sukhada)";
+  renderSheet();
+  loadWaypoints();
+  
+  var clues = document.getElementById("clues-text");
+  if (clues) {
+    try { clues.value = localStorage.getItem("lupa_notes_v6") || ""; } catch(e) {}
+  }
+}
 
-  save: function() {
-    try { localStorage.setItem("pack_lupa_save_v5", JSON.stringify(this.data)); } catch(e) {}
-  },
+function saveAppData() {
+  try { localStorage.setItem("lupa_save_v6", JSON.stringify(charData)); } catch(e) {}
+}
 
-  saveNotes: function(txt) {
-    try { localStorage.setItem("pack_notes_v5", txt); } catch(e) {}
-  },
+function saveNotes(val) {
+  try { localStorage.setItem("lupa_notes_v6", val); } catch(e) {}
+}
 
-  switchTab: function(id, btn) {
-    document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
-    document.querySelectorAll(".tab-content").forEach(c => c.classList.remove("active"));
-    if (btn) btn.classList.add("active");
-    const target = document.getElementById("tab-" + id);
-    if (target) target.classList.add("active");
-  },
+function switchNavTab(tabId, btn) {
+  var tabs = document.querySelectorAll(".tab-btn");
+  for (var i = 0; i < tabs.length; i++) tabs[i].classList.remove("active");
+  var contents = document.querySelectorAll(".tab-content");
+  for (var j = 0; j < contents.length; j++) contents[j].classList.remove("active");
+  
+  if (btn) btn.classList.add("active");
+  var t = document.getElementById("tab-" + tabId);
+  if (t) t.classList.add("active");
+}
 
-  changeChar: function(k) {
-    this.key = k;
-    this.render();
-  },
+function selectCharacter(key) {
+  currentKey = key;
+  renderSheet();
+}
 
-  render: function() {
-    const c = this.data[this.key];
-    document.getElementById("char-picker").value = this.key;
-    document.getElementById("char-tagline").innerText = c.tagline;
-    document.getElementById("stat-force-val").innerText = (c.force >= 0 ? "+" : "") + c.force;
-    document.getElementById("stat-finesse-val").innerText = (c.finesse >= 0 ? "+" : "") + c.finesse;
-    document.getElementById("stat-focus-val").innerText = (c.focus >= 0 ? "+" : "") + c.focus;
+function renderSheet() {
+  var c = charData[currentKey];
+  if (!c) return;
+  document.getElementById("char-picker").value = currentKey;
+  document.getElementById("char-tagline").innerText = c.tagline;
+  document.getElementById("stat-force-val").innerText = (c.force >= 0 ? "+" : "") + c.force;
+  document.getElementById("stat-finesse-val").innerText = (c.finesse >= 0 ? "+" : "") + c.finesse;
+  document.getElementById("stat-focus-val").innerText = (c.focus >= 0 ? "+" : "") + c.focus;
 
-    // Hearts
-    const hBox = document.getElementById("hearts-container");
-    hBox.innerHTML = "";
-    for (let i = 0; i < c.maxHearts; i++) {
-      const b = document.createElement("button");
+  // Hearts
+  var hBox = document.getElementById("hearts-container");
+  hBox.innerHTML = "";
+  for (var i = 0; i < c.maxHearts; i++) {
+    (function(idx) {
+      var b = document.createElement("button");
       b.type = "button";
-      b.className = "heart-token" + (i >= c.hearts ? " lost" : "");
+      b.className = "heart-token" + (idx >= c.hearts ? " lost" : "");
       b.innerText = "❤️";
-      b.onclick = () => { c.hearts = (i < c.hearts) ? i : i + 1; app.save(); app.render(); };
+      b.onclick = function() {
+        c.hearts = (idx < c.hearts) ? idx : idx + 1;
+        saveAppData();
+        renderSheet();
+      };
       hBox.appendChild(b);
-    }
+    })(i);
+  }
 
-    // Beast Marks
-    const bBox = document.getElementById("beast-container");
-    bBox.innerHTML = "";
-    for (let i = 0; i < c.maxBeast; i++) {
-      const b = document.createElement("button");
+  // Beast Marks
+  var bBox = document.getElementById("beast-container");
+  bBox.innerHTML = "";
+  for (var j = 0; j < c.maxBeast; j++) {
+    (function(idx) {
+      var b = document.createElement("button");
       b.type = "button";
-      b.className = "beast-token" + (i >= c.beast ? " spent" : "");
+      b.className = "beast-token" + (idx >= c.beast ? " spent" : "");
       b.innerText = "🐺";
-      b.onclick = () => { c.beast = (i < c.beast) ? i : i + 1; app.save(); app.render(); };
+      b.onclick = function() {
+        c.beast = (idx < c.beast) ? idx : idx + 1;
+        saveAppData();
+        renderSheet();
+      };
       bBox.appendChild(b);
-    }
+    })(j);
+  }
 
-    // Powers
-    const pBox = document.getElementById("powers-list");
-    pBox.innerHTML = "";
-    c.powers.forEach((p, idx) => {
-      const d = document.createElement("div");
-      d.className = "power-item";
-      d.innerHTML = `
-        <div class="power-title">
-          <span>${p.name}</span>
-          ${p.cost > 0 ? `<button type="button" class="btn btn-purple" style="padding:4px 8px; font-size:0.75rem; flex:none;" onclick="app.spendPower()">Use (1 Mark)</button>` : ""}
-        </div>
-        <div style="font-size:0.8rem; color:#bbb;">${p.desc}</div>
-      `;
-      pBox.appendChild(d);
-    });
-
-    // Inventory
-    const iBox = document.getElementById("
+  // Powers
+  var pBox = document.getElementById("powers-list");
+  pBox.innerHTML = "";
+  for (var k = 0; k < c.powers.length; k++) {
+    (func
