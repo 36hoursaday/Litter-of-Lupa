@@ -1,1324 +1,659 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>The Pack of Lupa: 17th Century Werewolf Chronicles</title>
-  <!-- Tailwind CSS CDN -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Google Fonts for Gothic/Occult styling & clean mobile legibility -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;900&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <script>
-    tailwind.config = {
-      darkMode: 'class',
-      theme: {
-        extend: {
-          fontFamily: {
-            cinzel: ['Cinzel', 'serif'],
-            sans: ['Inter', 'sans-serif'],
-          },
-          colors: {
-            blood: {
-              400: '#ef4444',
-              500: '#dc2626',
-              600: '#b91c1c',
-              800: '#7f1d1d',
-              900: '#450a0a',
-            },
-            void: '#0c0d10',
-            cardbg: '#16181e',
-            cardborder: '#272a34'
-          }
-        }
-      }
-    }
-  </script>
-  <style>
-    body {
-      background-color: #0c0d10;
-      color: #e2e8f0;
-      -webkit-tap-highlight-color: transparent;
-      user-select: none;
-    }
-    .text-shadow-red {
-      text-shadow: 0 0 12px rgba(220, 38, 38, 0.7);
-    }
-    .no-scrollbar::-webkit-scrollbar {
-      display: none;
-    }
-    .no-scrollbar {
-      -ms-overflow-style: none;
-      scrollbar-width: none;
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>The Pack of Lupa</title>
+<style>
+  :root {
+    --bg-dark: #0e0e12;
+    --card-bg: #181920;
+    --card-border: #282a36;
+    --accent-red: #c0392b;
+    --accent-gold: #d4af37;
+    --accent-gold-bright: #f1c40f;
+    --accent-purple: #8e44ad;
+    --text-primary: #f5f6fa;
+    --text-secondary: #95a5a6;
+  }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: rgba(255,255,255,0.2); }
+  body {
+    margin: 0; padding: 12px; padding-bottom: 70px;
+    background: var(--bg-dark); color: var(--text-primary);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    font-size: 15px; line-height: 1.4;
+  }
+  .card {
+    background: var(--card-bg); border: 1px solid var(--card-border);
+    border-radius: 12px; padding: 14px; margin-bottom: 12px;
+  }
+  .roller-container { text-align: center; }
+  .dice-display {
+    font-size: 3.4rem; font-weight: 800; color: var(--accent-gold-bright);
+    line-height: 1.1; margin: 4px 0 2px 0;
+  }
+  .dice-subtext {
+    font-size: 0.85rem; color: var(--text-secondary); min-height: 20px;
+    margin-bottom: 10px; font-weight: 500;
+  }
+  .btn-row { display: flex; gap: 8px; margin-bottom: 8px; }
+  button, .btn {
+    background: #23272e; color: #fff; border: 1px solid #3e4451;
+    border-radius: 8px; padding: 12px 10px; font-weight: 700; font-size: 0.95rem;
+    flex: 1; cursor: pointer; text-align: center;
+    touch-action: manipulation;
+  }
+  button:active, .btn:active { transform: scale(0.96); filter: brightness(1.2); }
+  .btn-primary { background: var(--accent-red); border-color: #e74c3c; }
+  .btn-gold { background: #5c470b; border-color: var(--accent-gold); color: #fff; }
+  .btn-purple { background: #4a235a; border-color: #9b59b6; color: #fff; }
+  
+  .mod-strip {
+    display: flex; gap: 6px; background: #121318; padding: 6px;
+    border-radius: 8px; margin-top: 8px; border: 1px solid #22242d;
+  }
+  .mod-btn {
+    flex: 1; padding: 8px 2px; font-size: 0.78rem; font-weight: 600;
+    background: #1e2028; border: 1px solid #333644; border-radius: 6px;
+    color: var(--text-secondary); text-align: center; cursor: pointer;
+  }
+  .mod-btn.selected {
+    background: var(--accent-gold); color: #000; border-color: var(--accent-gold-bright);
+  }
+  .nav-tabs {
+    display: flex; background: #14151b; border-radius: 10px;
+    padding: 3px; margin-bottom: 12px; border: 1px solid #252834;
+  }
+  .tab-btn {
+    flex: 1; padding: 10px 4px; text-align: center; font-size: 0.82rem;
+    font-weight: 600; color: var(--text-secondary); border-radius: 8px;
+    cursor: pointer; border: none; background: transparent;
+  }
+  .tab-btn.active {
+    background: var(--card-bg); color: var(--accent-gold-bright);
+  }
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+  
+  .char-header {
+    display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;
+  }
+  .char-select {
+    background: #252834; color: #fff; border: 1px solid #3e4451;
+    font-size: 1rem; font-weight: 700; padding: 8px 10px; border-radius: 8px;
+  }
+  .level-badge {
+    background: #2a2208; border: 1px solid var(--accent-gold);
+    color: var(--accent-gold-bright); font-size: 0.8rem; font-weight: 700;
+    padding: 8px 12px; border-radius: 6px; cursor: pointer;
+  }
+  .stats-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px;
+    margin: 10px 0; background: #111217; padding: 8px; border-radius: 8px;
+  }
+  .stat-col { text-align: center; }
+  .stat-val { font-size: 1.25rem; font-weight: 800; color: var(--accent-gold); }
+  .stat-lbl { font-size: 0.72rem; color: var(--text-secondary); text-transform: uppercase; }
+  
+  .tracker-row {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 10px 0; border-bottom: 1px solid #22242d;
+  }
+  .token-group { display: flex; gap: 8px; flex-wrap: wrap; }
+  .heart-token, .beast-token {
+    width: 44px; height: 44px; border-radius: 8px; display: flex;
+    align-items: center; justify-content: center; font-size: 1.4rem; cursor: pointer;
+    border: 1px solid #444; background: #222;
+  }
+  .heart-token.lost, .beast-token.spent {
+    opacity: 0.25; filter: grayscale(1);
+  }
+  
+  .power-item {
+    background: #14151b; border: 1px solid #282a36; border-radius: 8px;
+    padding: 10px; margin-bottom: 8px; font-size: 0.88rem;
+  }
+  .power-title {
+    font-weight: 700; color: var(--accent-gold); display: flex;
+    justify-content: space-between; align-items: center; margin-bottom: 4px;
+  }
+  .inventory-input-wrap { display: flex; gap: 6px; margin: 10px 0; }
+  .text-input {
+    flex: 1; background: #121318; border: 1px solid #333644;
+    color: #fff; padding: 10px; border-radius: 6px; font-size: 0.95rem;
+  }
+  .item-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+  .item-tag {
+    background: #252834; padding: 6px 10px; border-radius: 6px;
+    font-size: 0.85rem; display: flex; align-items: center; gap: 8px;
+    border: 1px solid #3a3f50;
+  }
+  
+  .modal-backdrop {
+    display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0, 0, 0, 0.85); z-index: 999;
+    align-items: center; justify-content: center; padding: 16px;
+  }
+  .modal-backdrop.open { display: flex !important; }
+  .modal-dialog {
+    background: var(--card-bg); border: 1px solid var(--card-border);
+    border-radius: 12px; max-width: 440px; width: 100%; max-height: 90vh;
+    overflow-y: auto; padding: 16px;
+  }
+  #debug-bar {
+    display: none; background: #96281b; color: #fff; font-size: 0.75rem;
+    padding: 6px; border-radius: 6px; margin-bottom: 10px; word-break: break-all;
+  }
+</style>
 </head>
-<body class="font-sans antialiased pb-28 selection:bg-blood-900 selection:text-white">
+<body ontouchstart="">
 
-  <!-- TOP HEADER -->
-  <header class="sticky top-0 z-30 bg-void/95 backdrop-blur-md border-b border-cardborder px-4 py-3 shadow-2xl">
-    <div class="max-w-md mx-auto flex items-center justify-between">
-      <div class="flex items-center space-x-2">
-        <span class="text-xl">🐺</span>
-        <div>
-          <h1 class="font-cinzel text-xs font-bold text-blood-400 tracking-widest uppercase">The Pack of Lupa</h1>
-          <p class="text-[10px] text-zinc-400 uppercase tracking-wider font-semibold">17th Century Road Trip RPG</p>
-        </div>
-      </div>
-      
-      <!-- Character Switch Dropdown -->
-      <div>
-        <select id="character-selector" onchange="switchCharacter(this.value)" class="bg-cardbg text-amber-300 border border-cardborder rounded-lg text-xs font-bold px-2.5 py-1.5 focus:outline-none focus:ring-1 focus:ring-blood-500 shadow-inner">
+  <div id="debug-bar"></div>
+
+  <!-- ROLLER SECTION -->
+  <div class="card roller-container">
+    <div class="dice-display" id="dice-result">20</div>
+    <div class="dice-subtext" id="dice-summary">Tap below to roll for an action</div>
+    <div class="btn-row">
+      <button type="button" class="btn btn-primary" onclick="doRoll('standard')">Roll d20</button>
+      <button type="button" class="btn btn-gold" onclick="doRoll('adv')">Advantage</button>
+      <button type="button" class="btn btn-purple" onclick="doRoll('dis')">Disadv</button>
+    </div>
+    <div class="mod-strip">
+      <button type="button" class="mod-btn selected" id="mod-zero" onclick="setRollMod(0, 'Flat', this)">+0 Flat</button>
+      <button type="button" class="mod-btn" id="mod-force" onclick="setRollMod('force', 'Force', this)">Force</button>
+      <button type="button" class="mod-btn" id="mod-finesse" onclick="setRollMod('finesse', 'Finesse', this)">Finesse</button>
+      <button type="button" class="mod-btn" id="mod-focus" onclick="setRollMod('focus', 'Focus', this)">Focus</button>
+    </div>
+  </div>
+
+  <!-- NAVIGATION TABS -->
+  <div class="nav-tabs">
+    <button type="button" class="tab-btn active" onclick="switchNavTab('play', this)">Play Sheet</button>
+    <button type="button" class="tab-btn" onclick="switchNavTab('dossier', this)">Dossier</button>
+    <button type="button" class="tab-btn" onclick="switchNavTab('journey', this)">Waypoints</button>
+    <button type="button" class="tab-btn" onclick="switchNavTab('rules', this)">Quick Rules</button>
+  </div>
+
+  <!-- TAB 1: PLAY SHEET -->
+  <div id="tab-play" class="tab-content active">
+    <div class="card">
+      <div class="char-header">
+        <select class="char-select" id="char-picker" onchange="selectCharacter(this.value)">
           <option value="archie">Archie (Akshat)</option>
           <option value="roman">Roman (Rutuj)</option>
-          <option value="selena">Selena</option>
+          <option value="selena">Selena (Sukhada)</option>
           <option value="penny">Penny (Pari)</option>
         </select>
+        <button type="button" class="level-badge" onclick="openLevelModal()">⚡ Level Up</button>
+      </div>
+      <div style="font-size:0.8rem; color:var(--text-secondary); margin-bottom:6px;" id="char-tagline">Polymath & Slacker</div>
+      
+      <div class="stats-grid">
+        <div class="stat-col"><div class="stat-val" id="stat-force-val">+0</div><div class="stat-lbl">Force</div></div>
+        <div class="stat-col"><div class="stat-val" id="stat-finesse-val">+1</div><div class="stat-lbl">Finesse</div></div>
+        <div class="stat-col"><div class="stat-val" id="stat-focus-val">+2</div><div class="stat-lbl">Focus</div></div>
+      </div>
+
+      <div class="tracker-row">
+        <div>
+          <div style="font-weight:700;">Hearts (Vitality)</div>
+          <div style="font-size:0.75rem; color:var(--text-secondary);">0 = Blood Frenzy</div>
+        </div>
+        <div class="token-group" id="hearts-container"></div>
+      </div>
+
+      <div class="tracker-row">
+        <div>
+          <div style="font-weight:700;">Beast Marks</div>
+          <div style="font-size:0.75rem; color:var(--text-secondary);">Spend for Powers</div>
+        </div>
+        <div class="token-group" id="beast-container"></div>
+      </div>
+
+      <div class="btn-row" style="margin-top:10px;">
+        <button type="button" class="btn" onclick="recoverAll()">Rest & Recover (Reset Tokens)</button>
       </div>
     </div>
-  </header>
 
-  <!-- MAIN CONTAINER -->
-  <main class="max-w-md mx-auto px-3.5 pt-3 space-y-4">
+    <!-- POWERS -->
+    <div class="card">
+      <div style="font-weight:700; color:var(--accent-gold); margin-bottom:8px;">Active Bloodline Powers</div>
+      <div id="powers-list"></div>
+    </div>
 
-    <!-- FLOATING HIGHWAY DICE ROLLER -->
-    <section class="bg-cardbg border border-cardborder rounded-2xl p-3.5 shadow-xl">
-      <div class="flex items-center justify-between mb-2">
-        <div class="flex items-center space-x-2">
-          <span class="text-xs uppercase font-cinzel font-bold text-zinc-300">Highway Roller</span>
-          <button onclick="toggleAudio()" id="audio-toggle-btn" class="text-[11px] text-zinc-400 hover:text-zinc-200 transition px-1 font-semibold">
-            🔊 Sound
-          </button>
-        </div>
-        <div id="roll-status-pill" class="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-zinc-800 text-zinc-300 border border-zinc-700">
-          Ready
-        </div>
+    <!-- INVENTORY -->
+    <div class="card">
+      <div style="font-weight:700; color:var(--accent-gold);">Carried Satchel & Gear</div>
+      <div class="inventory-input-wrap">
+        <input type="text" id="new-item-input" class="text-input" placeholder="Add item...">
+        <button type="button" class="btn btn-primary" onclick="addInventoryItem()" style="flex:0 0 75px;">+ Add</button>
       </div>
+      <div class="item-tags" id="inventory-list"></div>
+    </div>
+  </div>
 
-      <!-- Result Screen -->
-      <div class="flex items-center justify-between bg-zinc-950/80 rounded-xl px-4 py-2.5 border border-zinc-800/80 mb-3 min-h-[66px]">
-        <div>
-          <div id="dice-big-num" class="text-3xl font-black font-cinzel text-amber-300 leading-none">20</div>
-          <div id="dice-formula" class="text-[11px] text-zinc-400 mt-1 font-mono">d20 (20) + 0</div>
-        </div>
-        <div class="text-right">
-          <div id="dice-verdict" class="text-xs font-extrabold uppercase tracking-wide text-emerald-400">Clean Success!</div>
-          <div id="dice-subnote" class="text-[10px] text-zinc-500">Target 15+</div>
-        </div>
+  <!-- TAB 2: DOSSIER -->
+  <div id="tab-dossier" class="tab-content">
+    <div class="card">
+      <div style="font-size:1.2rem; font-weight:800; color:var(--accent-gold);" id="dossier-name">Archie</div>
+      <div style="font-size:0.85rem; color:var(--text-secondary); margin-bottom:10px;" id="dossier-role">The Reluctant Polymath</div>
+      <div style="font-size:0.88rem; line-height:1.5; color:#ddd;" id="dossier-text"></div>
+    </div>
+  </div>
+
+  <!-- TAB 3: WAYPOINTS & CLUES -->
+  <div id="tab-journey" class="tab-content">
+    <div class="card">
+      <div style="font-weight:700; color:var(--accent-gold); margin-bottom:6px;">Journey Waypoints</div>
+      <div class="inventory-input-wrap">
+        <input type="text" id="new-waypoint-input" class="text-input" placeholder="Add new encounter/port...">
+        <button type="button" class="btn btn-gold" onclick="addCustomWaypoint()" style="flex:0 0 75px;">+ Add</button>
       </div>
+      <div id="waypoint-list"></div>
+    </div>
+    <div class="card">
+      <div style="font-weight:700; color:var(--accent-gold); margin-bottom:6px;">Scent Trail & Campaign Clues</div>
+      <textarea id="clues-text" class="text-input" style="width:100%; height:120px; resize:none;" placeholder="Notes on Mother Lupa, Lycan, fountain vials..." oninput="saveNotes(this.value)"></textarea>
+    </div>
+  </div>
 
-      <!-- Stat Mod Selectors -->
-      <div class="flex items-center justify-between text-xs mb-2.5 px-0.5">
-        <span class="text-[11px] font-semibold text-zinc-400">Add Stat:</span>
-        <div class="flex space-x-1.5" id="stat-mod-buttons">
-          <button onclick="setActiveMod(0, this)" class="mod-btn px-2 py-1 rounded bg-zinc-800 border border-zinc-700 text-xs font-bold text-zinc-300 focus:outline-none transition active:scale-95">None (+0)</button>
-          <button onclick="setActiveMod('force', this)" id="mod-btn-force" class="mod-btn px-2 py-1 rounded bg-zinc-800 border border-zinc-700 text-xs font-bold text-zinc-300 focus:outline-none transition active:scale-95">Force +0</button>
-          <button onclick="setActiveMod('finesse', this)" id="mod-btn-finesse" class="mod-btn px-2 py-1 rounded bg-zinc-800 border border-zinc-700 text-xs font-bold text-zinc-300 focus:outline-none transition active:scale-95">Fin +1</button>
-          <button onclick="setActiveMod('focus', this)" id="mod-btn-focus" class="mod-btn px-2 py-1 rounded bg-zinc-800 border border-zinc-700 text-xs font-bold text-zinc-300 focus:outline-none transition active:scale-95">Foc +2</button>
-        </div>
+  <!-- TAB 4: RULES -->
+  <div id="tab-rules" class="tab-content">
+    <div class="card">
+      <div style="font-weight:700; color:var(--accent-gold); margin-bottom:6px;">Highway Resolution</div>
+      <p style="font-size:0.85rem; margin:4px 0;"><strong>1–9: Complication.</strong> Action fails or take 1 Heart damage.</p>
+      <p style="font-size:0.85rem; margin:4px 0;"><strong>10–14: Success at Cost.</strong> Success with a drawback or wound.</p>
+      <p style="font-size:0.85rem; margin:4px 0;"><strong>15+: Clean Triumph.</strong> Full clean success.</p>
+    </div>
+  </div>
+
+  <!-- LEVEL UP MODAL -->
+  <div class="modal-backdrop" id="levelup-modal">
+    <div class="modal-dialog">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+        <div style="font-weight:800; font-size:1.1rem; color:var(--accent-gold);">Milestone Advancement</div>
+        <div onclick="closeLevelModal()" style="font-size:1.4rem; cursor:pointer; color:#888; padding:4px 8px;">✕</div>
       </div>
-
-      <!-- Action Buttons -->
-      <div class="grid grid-cols-3 gap-2">
-        <button onclick="roll(0)" class="py-2.5 px-2 bg-gradient-to-b from-red-600 to-red-800 hover:from-red-500 hover:to-red-700 text-white font-black text-xs uppercase tracking-wider rounded-xl shadow-lg border border-red-500/40 active:scale-95 transition flex flex-col items-center justify-center">
-          <span>Roll d20</span>
-          <span class="text-[9px] font-normal text-red-200">Standard</span>
-        </button>
-        <button onclick="roll(1)" class="py-2.5 px-2 bg-gradient-to-b from-emerald-600 to-emerald-800 hover:from-emerald-500 hover:to-emerald-700 text-white font-black text-xs uppercase tracking-wider rounded-xl shadow-lg border border-emerald-500/40 active:scale-95 transition flex flex-col items-center justify-center">
-          <span>Advantage</span>
-          <span class="text-[9px] font-normal text-emerald-200">Best of 2</span>
-        </button>
-        <button onclick="roll(-1)" class="py-2.5 px-2 bg-gradient-to-b from-purple-800 to-zinc-900 hover:from-purple-700 hover:to-zinc-800 text-zinc-200 font-black text-xs uppercase tracking-wider rounded-xl shadow-lg border border-purple-500/40 active:scale-95 transition flex flex-col items-center justify-center">
-          <span>Disadvantage</span>
-          <span class="text-[9px] font-normal text-zinc-400">Worst of 2</span>
-        </button>
-      </div>
-    </section>
-
-    <!-- NAVIGATION TABS -->
-    <nav class="flex rounded-xl bg-cardbg p-1 border border-cardborder shadow-inner">
-      <button onclick="switchTab('playsheet')" id="tab-btn-playsheet" class="tab-btn flex-1 py-1.5 text-center text-xs font-bold rounded-lg bg-zinc-800 text-amber-300 transition">
-        Sheet
-      </button>
-      <button onclick="switchTab('dossier')" id="tab-btn-dossier" class="tab-btn flex-1 py-1.5 text-center text-xs font-bold rounded-lg text-zinc-400 hover:text-zinc-200 transition">
-        Dossier
-      </button>
-      <button onclick="switchTab('journey')" id="tab-btn-journey" class="tab-btn flex-1 py-1.5 text-center text-xs font-bold rounded-lg text-zinc-400 hover:text-zinc-200 transition">
-        Journey Log
-      </button>
-      <button onclick="switchTab('rules')" id="tab-btn-rules" class="tab-btn flex-1 py-1.5 text-center text-xs font-bold rounded-lg text-zinc-400 hover:text-zinc-200 transition">
-        Rules
-      </button>
-    </nav>
-
-    <!-- ==================== TAB 1: LIVE SHEET ==================== -->
-    <section id="tab-playsheet" class="tab-content space-y-4">
       
-      <!-- Character Summary Card & Level Status -->
-      <div class="bg-cardbg border border-cardborder rounded-2xl p-4 shadow-md relative overflow-hidden">
-        <div class="flex justify-between items-start">
-          <div>
-            <div class="flex items-center space-x-2">
-              <h2 id="sheet-char-name" class="font-cinzel text-xl font-bold text-zinc-100">Archie</h2>
-              <span id="sheet-player-tag" class="text-[10px] bg-red-950/80 text-red-300 border border-red-800/60 px-2 py-0.5 rounded-full font-semibold">Akshat</span>
-              <span id="sheet-level-badge" class="text-[10px] bg-amber-950/80 text-amber-300 border border-amber-800/60 px-2 py-0.5 rounded-full font-bold">Lvl 1</span>
-            </div>
-            <p id="sheet-char-title" class="text-xs text-amber-400/90 font-medium mt-0.5">The Reluctant Polymath</p>
-          </div>
-          
-          <div class="flex items-center space-x-1.5">
-            <button onclick="openLevelUpModal()" class="text-[11px] font-bold text-amber-300 border border-amber-600/70 bg-amber-950/60 hover:bg-amber-900 px-2.5 py-1 rounded-lg transition active:scale-95 shadow">
-              ⚡ Level Up
-            </button>
-            <button onclick="resetStats()" title="Restore Hearts and Focus" class="text-[11px] text-zinc-300 border border-zinc-700 bg-zinc-800 hover:bg-zinc-700 px-2.5 py-1 rounded-lg font-semibold transition active:scale-95">
-              Rest 🏕️
-            </button>
-          </div>
-        </div>
-
-        <!-- 3 Primary Stats Display -->
-        <div class="grid grid-cols-3 gap-2 mt-3.5">
-          <div class="bg-zinc-950/70 border border-zinc-800 rounded-xl p-2 text-center">
-            <span class="text-[10px] uppercase font-bold text-zinc-400 tracking-wider block">Force</span>
-            <span id="stat-val-force" class="font-cinzel text-base font-extrabold text-red-400">+0</span>
-            <span class="text-[9px] text-zinc-500 block leading-tight">Muscle & Melee</span>
-          </div>
-          <div class="bg-zinc-950/70 border border-zinc-800 rounded-xl p-2 text-center">
-            <span class="text-[10px] uppercase font-bold text-zinc-400 tracking-wider block">Finesse</span>
-            <span id="stat-val-finesse" class="font-cinzel text-base font-extrabold text-amber-300">+1</span>
-            <span class="text-[9px] text-zinc-500 block leading-tight">Agility & Speed</span>
-          </div>
-          <div class="bg-zinc-950/70 border border-zinc-800 rounded-xl p-2 text-center">
-            <span class="text-[10px] uppercase font-bold text-zinc-400 tracking-wider block">Focus</span>
-            <span id="stat-val-focus" class="font-cinzel text-base font-extrabold text-purple-400">+2</span>
-            <span class="text-[9px] text-zinc-500 block leading-tight">Wits & Instinct</span>
-          </div>
+      <div style="margin:10px 0;">
+        <label style="font-size:0.82rem; color:var(--text-secondary);">Character Rank:</label>
+        <div style="display:flex; gap:8px; margin-top:4px;">
+          <button type="button" class="btn" onclick="adjLevel(-1)">- Level</button>
+          <div style="flex:1; text-align:center; font-size:1.2rem; font-weight:800; line-height:36px;" id="milestone-lvl-display">Level 1</div>
+          <button type="button" class="btn btn-gold" onclick="adjLevel(1)">+ Level</button>
         </div>
       </div>
 
-      <!-- LIVE TOKENS: HEARTS & BLOOD FOCUS -->
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-        <!-- Hearts (HP) -->
-        <div class="bg-cardbg border border-cardborder rounded-2xl p-3.5 shadow-md">
-          <div class="flex justify-between items-center mb-2">
-            <div>
-              <span class="text-xs uppercase font-cinzel font-bold text-blood-400">Vitality (Hearts)</span>
-              <p class="text-[10px] text-zinc-400">At 0 = Wild Wolf Frenzy!</p>
-            </div>
-            <span id="heart-count-label" class="text-xs font-bold font-mono text-zinc-300">3/3</span>
-          </div>
-          <div class="flex justify-start space-x-2 pt-1" id="hearts-container"></div>
-        </div>
-
-        <!-- Blood Focus (Beast Marks) -->
-        <div class="bg-cardbg border border-cardborder rounded-2xl p-3.5 shadow-md">
-          <div class="flex justify-between items-center mb-2">
-            <div>
-              <span class="text-xs uppercase font-cinzel font-bold text-purple-400">Beast Marks (Focus)</span>
-              <p class="text-[10px] text-zinc-400">Tap to spend on powers</p>
-            </div>
-            <span id="focus-count-label" class="text-xs font-bold font-mono text-zinc-300">3/3</span>
-          </div>
-          <div class="flex justify-start space-x-2 pt-1" id="focus-container"></div>
+      <div style="margin:10px 0;">
+        <label style="font-size:0.82rem; color:var(--text-secondary);">Adjust Stats:</label>
+        <div class="btn-row" style="margin-top:4px;">
+          <button type="button" class="btn" onclick="adjStat('force', 1)">+1 Force</button>
+          <button type="button" class="btn" onclick="adjStat('finesse', 1)">+1 Finesse</button>
+          <button type="button" class="btn" onclick="adjStat('focus', 1)">+1 Focus</button>
         </div>
       </div>
 
-      <!-- BLOODLINE POWERS -->
-      <div class="bg-cardbg border border-cardborder rounded-2xl p-4 shadow-md space-y-3">
-        <div class="flex items-center justify-between border-b border-zinc-800 pb-2">
-          <h3 class="font-cinzel text-xs font-bold uppercase tracking-wider text-amber-300 flex items-center">
-            <span class="mr-1.5">⚡</span> Bloodline Powers
-          </h3>
-          <span class="text-[10px] text-zinc-500">Tap power to spend Focus</span>
-        </div>
-
-        <!-- Passive Card -->
-        <div class="bg-zinc-950/70 border border-zinc-800 rounded-xl p-3">
-          <div class="flex items-center space-x-1.5 text-xs font-bold text-amber-200">
-            <span>👁️ Passive Instinct:</span>
-            <span id="passive-title" class="font-semibold text-zinc-200"></span>
-          </div>
-          <p id="passive-desc" class="text-xs text-zinc-400 mt-1 leading-relaxed"></p>
-        </div>
-
-        <!-- Dynamic List of Powers (Includes Level-Up Powers) -->
-        <div id="powers-list-container" class="space-y-2.5"></div>
-      </div>
-
-      <!-- INVENTORY / SATCHEL (FIXED WITH DIRECT INPUT & ROBUST HANDLERS) -->
-      <div class="bg-cardbg border border-cardborder rounded-2xl p-4 shadow-md">
-        <div class="flex justify-between items-center mb-2.5 border-b border-zinc-800 pb-2">
-          <div class="flex items-center space-x-1.5">
-            <span class="text-xs uppercase font-cinzel font-bold text-zinc-300">🎒 Personal Satchel</span>
-            <span class="text-[10px] text-zinc-500 font-mono" id="inv-count">(0 items)</span>
-          </div>
-          <button onclick="clearInventory()" class="text-[10px] text-zinc-500 hover:text-red-400">Clear All</button>
-        </div>
-
-        <!-- Direct inline Input field for touch/mobile reliability -->
-        <div class="flex space-x-2 mb-3">
-          <input 
-            type="text" 
-            id="new-item-input" 
-            placeholder="Add new gear, vial, or weapon..." 
-            class="flex-1 bg-zinc-950 border border-zinc-800 rounded-xl px-3 py-2 text-xs text-zinc-200 placeholder-zinc-600 focus:outline-none focus:ring-1 focus:ring-blood-500"
-            onkeydown="if(event.key === 'Enter') handleAddItem();"
-          />
-          <button 
-            type="button"
-            onclick="handleAddItem()" 
-            class="bg-blood-900/80 hover:bg-blood-800 border border-blood-600 text-white font-bold text-xs px-3.5 py-2 rounded-xl active:scale-95 transition"
-          >
-            + Add
-          </button>
-        </div>
-
-        <!-- Inventory List Container -->
-        <div id="inventory-list" class="space-y-1.5 text-xs">
-          <!-- Populated by JS -->
+      <div style="margin:10px 0;">
+        <label style="font-size:0.82rem; color:var(--text-secondary);">Max Capacities:</label>
+        <div class="btn-row" style="margin-top:4px;">
+          <button type="button" class="btn" onclick="adjCap('hearts', 1)">+1 Max Heart</button>
+          <button type="button" class="btn" onclick="adjCap('beast', 1)">+1 Max Mark</button>
         </div>
       </div>
 
-    </section>
-
-    <!-- ==================== TAB 2: DOSSIER ==================== -->
-    <section id="tab-dossier" class="tab-content hidden space-y-4">
-      <div class="bg-cardbg border border-cardborder rounded-2xl p-4 shadow-md">
-        <div class="border-b border-zinc-800 pb-2 mb-3 flex items-center justify-between">
-          <h2 class="font-cinzel text-base font-bold text-amber-300 tracking-wide">CONFIDENTIAL DOSSIER</h2>
-          <span class="text-[10px] text-blood-400 font-mono uppercase bg-blood-950 px-2 py-0.5 rounded border border-blood-800">Eyes Only</span>
-        </div>
-
-        <div class="space-y-3.5 text-xs">
-          <div>
-            <h3 class="text-zinc-200 font-bold uppercase tracking-wider text-[11px] text-amber-400">Background & Identity</h3>
-            <p id="dossier-origin" class="text-zinc-400 mt-1 leading-relaxed"></p>
-          </div>
-
-          <div class="bg-blood-950/30 border border-blood-900/40 rounded-xl p-3">
-            <h3 class="text-blood-300 font-bold uppercase tracking-wider text-[11px] flex items-center">
-              <span class="mr-1">⚠️</span> Hidden Secret & Vulnerability
-            </h3>
-            <p id="dossier-burden" class="text-zinc-300 mt-1 leading-relaxed italic"></p>
-          </div>
-
-          <div>
-            <h3 class="text-zinc-200 font-bold uppercase tracking-wider text-[11px] text-amber-400">Pack Dynamics with Siblings</h3>
-            <ul id="dossier-dynamics" class="mt-1 space-y-1.5 text-zinc-400"></ul>
-          </div>
-
-          <div class="bg-zinc-950 border border-zinc-800 rounded-xl p-3">
-            <h3 class="text-zinc-200 font-bold uppercase tracking-wider text-[11px] text-purple-300">In-Car Roleplay Anchor</h3>
-            <p id="dossier-keys" class="text-zinc-400 mt-1 leading-relaxed"></p>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- ==================== TAB 3: FLEXIBLE JOURNEY LOG ==================== -->
-    <section id="tab-journey" class="tab-content hidden space-y-4">
-      
-      <!-- Custom Waypoints Tracker -->
-      <div class="bg-cardbg border border-cardborder rounded-2xl p-4 shadow-md">
-        <div class="flex justify-between items-center mb-2.5 border-b border-zinc-800 pb-2">
-          <div>
-            <h2 class="font-cinzel text-sm font-bold text-amber-300 uppercase">Waypoints & Landmarks</h2>
-            <p class="text-[10px] text-zinc-400">Record custom stops, locations, or destinations</p>
-          </div>
-          <span class="text-[10px] text-zinc-500 font-mono" id="waypoint-count">0 recorded</span>
-        </div>
-
-        <!-- Add Waypoint Input -->
-        <div class="flex space-x-2 mb-3">
-          <input 
-            type="text" 
-            id="new-waypoint-input" 
-            placeholder="e.g. Tavern of the Blind Hound, Old Smuggler Cove..." 
-            class="flex-1 bg-zinc-950 border border-zinc-800 rounded-xl px-3 py-2 text-xs text-zinc-200 placeholder-zinc-600 focus:outline-none focus:ring-1 focus:ring-amber-500"
-            onkeydown="if(event.key === 'Enter') handleAddWaypoint();"
-          />
-          <button 
-            type="button" 
-            onclick="handleAddWaypoint()" 
-            class="bg-amber-900/70 hover:bg-amber-800 border border-amber-600 text-amber-100 font-bold text-xs px-3.5 py-2 rounded-xl active:scale-95 transition"
-          >
-            + Add
-          </button>
-        </div>
-
-        <!-- Waypoints List -->
-        <div id="waypoints-list" class="space-y-2">
-          <!-- Populated by JS -->
-        </div>
-      </div>
-
-      <!-- Shared Campaign Clues & Field Notepad -->
-      <div class="bg-cardbg border border-cardborder rounded-2xl p-4 shadow-md space-y-2">
-        <div class="flex justify-between items-center border-b border-zinc-800 pb-2">
-          <h3 class="font-cinzel text-xs font-bold text-zinc-200 uppercase tracking-wider">Campaign Clues & Scent Notes</h3>
-          <span class="text-[9px] text-zinc-500 font-mono">Auto-saved to phone</span>
-        </div>
-        <textarea 
-          id="shared-campaign-notes" 
-          oninput="saveCampaignNotes()" 
-          rows="6" 
-          placeholder="Jot down NPC names, lies caught by Selena, Lycan suspicions, or secrets learned along the road..." 
-          class="w-full bg-zinc-950 border border-zinc-800 rounded-xl p-3 text-xs text-zinc-200 placeholder-zinc-600 focus:outline-none focus:ring-1 focus:ring-blood-500 font-sans leading-relaxed"
-        ></textarea>
-      </div>
-
-    </section>
-
-    <!-- ==================== TAB 4: RULES & SETTING ==================== -->
-    <section id="tab-rules" class="tab-content hidden space-y-4">
-      
-      <!-- Core 3-Stat Lite Engine -->
-      <div class="bg-cardbg border border-cardborder rounded-2xl p-4 shadow-md space-y-2.5">
-        <h2 class="font-cinzel text-sm font-bold text-amber-300 uppercase">Highway RPG Rules (3-Stat Lite)</h2>
-        <p class="text-xs text-zinc-400 leading-relaxed">
-          Zero math. When an action has danger, tap the <b>d20 button</b> and apply your Stat bonus (+0, +1, +2, or higher with Level Up).
-        </p>
-
-        <div class="grid grid-cols-1 gap-2 pt-1 text-xs">
-          <div class="bg-red-950/30 border border-red-900/40 p-2.5 rounded-xl">
-            <span class="font-bold text-red-400 font-cinzel">1 – 9: HARD COMPLICATION</span>
-            <p class="text-zinc-400 text-[11px] mt-0.5">Failure. Suffer 1 Heart of damage, trigger an alarm, or lose tactical ground.</p>
-          </div>
-          <div class="bg-amber-950/30 border border-amber-900/40 p-2.5 rounded-xl">
-            <span class="font-bold text-amber-300 font-cinzel">10 – 14: SUCCESS AT A COST</span>
-            <p class="text-zinc-400 text-[11px] mt-0.5">Action succeeds, but suffer a twist: 1 Heart taken, broken gear, or loud noise alerted nearby enemies.</p>
-          </div>
-          <div class="bg-emerald-950/30 border border-emerald-900/40 p-2.5 rounded-xl">
-            <span class="font-bold text-emerald-400 font-cinzel">15+: CLEAN SUCCESS</span>
-            <p class="text-zinc-400 text-[11px] mt-0.5">Total success. You overcome the obstacle without suffering counter-damage.</p>
-          </div>
-        </div>
-      </div>
-
-      <!-- Werewolf Curse Mechanics -->
-      <div class="bg-cardbg border border-cardborder rounded-2xl p-4 shadow-md space-y-3">
-        <h3 class="font-cinzel text-xs font-bold text-purple-300 uppercase">The Werewolf Curse</h3>
-        <ul class="text-xs space-y-2 text-zinc-400 leading-relaxed">
-          <li class="flex items-start">
-            <span class="text-purple-400 mr-2 font-bold">•</span>
-            <span><b>Beast Marks (Focus):</b> Spend 1 mark to activate wolf blood powers. They regenerate during camp rests.</span>
-          </li>
-          <li class="flex items-start">
-            <span class="text-red-400 mr-2 font-bold">•</span>
-            <span><b>0 Hearts = Wild Wolf Frenzy:</b> If reduced to 0 Hearts, you do not perish—you shift into an uncontrollable feral predator. Sibling players must physically grapple or soothe you.</span>
-          </li>
-          <li class="flex items-start">
-            <span class="text-zinc-300 mr-2 font-bold">•</span>
-            <span><b>Silver Vulnerability:</b> Silver bullets or blades deal <b>double damage (2 Hearts)</b> and the wound cannot be rested away until treated with alchemical salve.</span>
-          </li>
-        </ul>
-      </div>
-
-      <!-- 17th Century Adversary Reference -->
-      <div class="bg-cardbg border border-cardborder rounded-2xl p-4 shadow-md space-y-2.5">
-        <h3 class="font-cinzel text-xs font-bold text-zinc-200 uppercase">Adversary Quick Reference</h3>
-        <div class="space-y-1.5 text-xs text-zinc-400">
-          <div class="bg-zinc-950 p-2 rounded-lg border border-zinc-800">
-            <b class="text-zinc-200">Common Minion (1 Heart):</b> Watchmen, sailors, thugs. Defeated in 1 successful strike.
-          </div>
-          <div class="bg-zinc-950 p-2 rounded-lg border border-zinc-800">
-            <b class="text-amber-300">Inquisitor / Elite (2 Hearts):</b> Carries silver rapier or blessed ammunition. Has 1 unique trick (flash powder, wolfsbane).
-          </div>
-          <div class="bg-zinc-950 p-2 rounded-lg border border-zinc-800">
-            <b class="text-red-400">Behemoth / Automaton (4–5 Hearts):</b> Lycan’s experimental clockwork creations or feral monsters. Takes 2 actions per round.
-          </div>
-        </div>
-      </div>
-
-      <!-- Lore Background -->
-      <div class="bg-cardbg border border-cardborder rounded-2xl p-4 shadow-md space-y-2">
-        <h3 class="font-cinzel text-xs font-bold text-amber-300 uppercase">Core Lore</h3>
-        <p class="text-xs text-zinc-400 leading-relaxed">
-          <b>Professor Lycan:</b> Frail, ancient human scholar kept alive by an imperfect Philosopher's Stone. He seeks Lupa to claim the Fountain of Youth water to restore his youth.
-        </p>
-        <p class="text-xs text-zinc-400 leading-relaxed">
-          <b>Lupa (Mother):</b> The legendary ancient she-wolf who suckled Romulus & Remus. She drank half a vial centuries ago, keeping her physically 40 years old despite being 2,500 years old. She separated her children across Europe and the colonies to protect them from Lycan's greed.
-        </p>
-      </div>
-
-    </section>
-
-  </main>
-
-  <!-- ==================== MODAL: LEVEL UP ==================== -->
-  <div id="level-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
-    <div class="bg-cardbg border border-amber-600/60 rounded-2xl max-w-sm w-full p-4.5 shadow-2xl max-h-[90vh] overflow-y-auto no-scrollbar space-y-4">
-      <div class="flex justify-between items-center border-b border-zinc-800 pb-2">
-        <div>
-          <h3 class="font-cinzel text-sm font-bold text-amber-300 uppercase">Milestone Level Up</h3>
-          <p id="lvl-modal-char-name" class="text-[11px] text-zinc-400">Advance character progression</p>
-        </div>
-        <button onclick="closeLevelUpModal()" class="text-zinc-500 hover:text-zinc-300 text-lg font-bold p-1">✕</button>
-      </div>
-
-      <!-- Current Level Display -->
-      <div class="flex justify-between items-center bg-zinc-950 p-3 rounded-xl border border-zinc-800">
-        <span class="text-xs font-bold text-zinc-300">Current Milestone:</span>
-        <div class="flex items-center space-x-2">
-          <button onclick="changeMilestoneLevel(-1)" class="w-7 h-7 rounded-lg bg-zinc-800 text-zinc-300 font-bold hover:bg-zinc-700">-</button>
-          <span id="modal-level-val" class="font-cinzel text-sm font-bold text-amber-300 font-mono">Level 1</span>
-          <button onclick="changeMilestoneLevel(1)" class="w-7 h-7 rounded-lg bg-zinc-800 text-zinc-300 font-bold hover:bg-zinc-700">+</button>
-        </div>
-      </div>
-
-      <!-- Stat Boosts -->
-      <div class="space-y-2">
-        <label class="text-xs font-bold text-zinc-300 uppercase tracking-wide block">Stat Bonus Customization:</label>
-        <div class="grid grid-cols-3 gap-2">
-          <div class="bg-zinc-950 p-2 rounded-xl border border-zinc-800 text-center">
-            <span class="text-[10px] text-zinc-400 block font-bold">FORCE</span>
-            <div class="flex justify-center items-center space-x-1.5 mt-1">
-              <button onclick="adjustStat('force', -1)" class="w-5 h-5 bg-zinc-800 text-zinc-300 text-xs rounded">-</button>
-              <span id="lvl-stat-force" class="font-mono text-xs font-bold text-red-400">+0</span>
-              <button onclick="adjustStat('force', 1)" class="w-5 h-5 bg-zinc-800 text-zinc-300 text-xs rounded">+</button>
-            </div>
-          </div>
-          <div class="bg-zinc-950 p-2 rounded-xl border border-zinc-800 text-center">
-            <span class="text-[10px] text-zinc-400 block font-bold">FINESSE</span>
-            <div class="flex justify-center items-center space-x-1.5 mt-1">
-              <button onclick="adjustStat('finesse', -1)" class="w-5 h-5 bg-zinc-800 text-zinc-300 text-xs rounded">-</button>
-              <span id="lvl-stat-finesse" class="font-mono text-xs font-bold text-amber-300">+1</span>
-              <button onclick="adjustStat('finesse', 1)" class="w-5 h-5 bg-zinc-800 text-zinc-300 text-xs rounded">+</button>
-            </div>
-          </div>
-          <div class="bg-zinc-950 p-2 rounded-xl border border-zinc-800 text-center">
-            <span class="text-[10px] text-zinc-400 block font-bold">FOCUS</span>
-            <div class="flex justify-center items-center space-x-1.5 mt-1">
-              <button onclick="adjustStat('focus', -1)" class="w-5 h-5 bg-zinc-800 text-zinc-300 text-xs rounded">-</button>
-              <span id="lvl-stat-focus" class="font-mono text-xs font-bold text-purple-400">+2</span>
-              <button onclick="adjustStat('focus', 1)" class="w-5 h-5 bg-zinc-800 text-zinc-300 text-xs rounded">+</button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Capacity Adjustments (Max Hearts & Max Focus) -->
-      <div class="space-y-2">
-        <label class="text-xs font-bold text-zinc-300 uppercase tracking-wide block">Capacity Upgrades:</label>
-        <div class="grid grid-cols-2 gap-2 text-xs">
-          <div class="bg-zinc-950 p-2.5 rounded-xl border border-zinc-800 flex justify-between items-center">
-            <span>Max Hearts:</span>
-            <div class="flex items-center space-x-1.5">
-              <button onclick="adjustMaxCap('maxHearts', -1)" class="w-5 h-5 bg-zinc-800 text-zinc-300 rounded font-bold">-</button>
-              <span id="lvl-max-hearts" class="font-mono font-bold text-blood-400">3</span>
-              <button onclick="adjustMaxCap('maxHearts', 1)" class="w-5 h-5 bg-zinc-800 text-zinc-300 rounded font-bold">+</button>
-            </div>
-          </div>
-          <div class="bg-zinc-950 p-2.5 rounded-xl border border-zinc-800 flex justify-between items-center">
-            <span>Max Focus:</span>
-            <div class="flex items-center space-x-1.5">
-              <button onclick="adjustMaxCap('maxFocus', -1)" class="w-5 h-5 bg-zinc-800 text-zinc-300 rounded font-bold">-</button>
-              <span id="lvl-max-focus" class="font-mono font-bold text-purple-400">3</span>
-              <button onclick="adjustMaxCap('maxFocus', 1)" class="w-5 h-5 bg-zinc-800 text-zinc-300 rounded font-bold">+</button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Add New Custom Awakened Blood Power -->
-      <div class="space-y-2 pt-1 border-t border-zinc-800">
-        <label class="text-xs font-bold text-purple-300 uppercase tracking-wide block">Unlock Awakened Power:</label>
-        <input 
-          type="text" 
-          id="new-power-name" 
-          placeholder="Power Name (e.g. Dire Form, Pack Telepathy)..." 
-          class="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-3 py-1.5 text-xs text-zinc-200 placeholder-zinc-600 focus:outline-none"
-        />
-        <input 
-          type="text" 
-          id="new-power-desc" 
-          placeholder="Effect (costs 1 Focus)..." 
-          class="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-3 py-1.5 text-xs text-zinc-200 placeholder-zinc-600 focus:outline-none"
-        />
-        <button 
-          type="button"
-          onclick="addUnlockedPower()" 
-          class="w-full py-2 bg-purple-950 hover:bg-purple-900 border border-purple-600 text-purple-200 font-bold text-xs rounded-xl active:scale-95 transition"
-        >
-          + Add Power to Sheet
-        </button>
-      </div>
-
-      <!-- Reset Character to Default -->
-      <div class="pt-2 text-center">
-        <button 
-          type="button" 
-          id="btn-trigger-reset"
-          onclick="requestCharacterReset(event)" 
-          class="text-xs text-red-400/80 hover:text-red-300 font-semibold py-1.5 px-3 rounded-lg border border-red-900/40 bg-red-950/20 active:scale-95 transition"
-        >
-          ↺ Reset Character to Level 1 Defaults
-        </button>
+      <div style="margin-top:14px; border-top:1px solid #333; padding-top:10px;">
+        <button type="button" class="btn" style="background:#4a1515; border-color:#c0392b; width:100%;" onclick="resetCharacter()">Reset to Level 1 Defaults</button>
       </div>
     </div>
   </div>
 
-  <!-- CUSTOM CONFIRMATION / ALERT MODAL (Replaces browser confirm() and alert()) -->
-  <div id="app-dialog-modal" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-sm hidden flex items-center justify-center p-4">
-    <div class="bg-cardbg border border-zinc-700 rounded-2xl max-w-xs w-full p-4 shadow-2xl space-y-3.5">
-      <div class="flex items-center space-x-2">
-        <span id="app-dialog-icon" class="text-lg">⚠️</span>
-        <h3 id="app-dialog-title" class="font-cinzel text-xs font-bold uppercase tracking-wider text-zinc-200">Confirmation</h3>
-      </div>
-      <p id="app-dialog-message" class="text-xs text-zinc-300 leading-relaxed"></p>
-      <div id="app-dialog-actions" class="flex space-x-2 pt-1 justify-end">
-        <!-- Injected dynamically -->
-      </div>
-    </div>
-  </div>
+<script>
+window.onerror = function(msg, url, line) {
+  var d = document.getElementById("debug-bar");
+  if (d) { d.style.display = "block"; d.innerText = "Error: " + msg + " (line " + line + ")"; }
+};
 
-  <!-- JAVASCRIPT STATE ENGINE -->
-  <script>
-    /* ================= CORE ARCHETYPES ================= */
-    const baseCharacters = {
-      archie: {
-        name: "Archie",
-        player: "Akshat",
-        title: "The Reluctant Polymath",
-        stats: { force: 0, finesse: 1, focus: 2 },
-        passive: {
-          title: "Path of Least Resistance",
-          desc: "Once per scene, identify the easiest or safest route through any mechanical trap, locked entryway, or social conflict without rolling."
-        },
-        powers: [
-          { name: "Kinetic Redirect", desc: "Twist enemy momentum. Negate an incoming melee hit and knock the attacker prone into an obstacle or guard." },
-          { name: "Alchemical Shortcut", desc: "Instantly jam, unlock, or disable any 17th-century mechanical lock, musket, or steam valve with scrap metal." }
-        ],
-        defaultInventory: [
-          "Leather satchel with brass lockpicks",
-          "Half-assembled pocket chronometer",
-          "Flask of rectified spirit (90% alcohol)",
-          "Smoked-glass magnifying loupe"
-        ],
-        dossier: {
-          origin: "Archie is the eldest sibling. Highly intelligent but has a sacred devotion to doing the bare minimum. He spent years apprenticing under a renowned Bohemian polymath and inventor, but abandoned his master halfway through because working 14 hours a day was unappealing. He prefers drinking spiced tea and letting others take charge.",
-          burden: "This transatlantic expedition is the first endeavor in Archie's life that he intends to finish. His greatest unspoken fear is finding out that even when he actually tries his best, he might still fail his family.",
-          dynamics: [
-            "<b>Roman:</b> Roman's relentless drive and need to command irritates Archie, who deliberately slows down just to needle his brother.",
-            "<b>Selena:</b> Archie's favorite sibling. They exchange subtle glances during tense negotiations; she understands his humor and he provides a safe, low-maintenance listening ear.",
-            "<b>Penny:</b> Finds her fascinating. He admires how she survives without making a loud spectacle of herself."
-          ],
-          keys: "Roleplay rule: Never stand when you can lean; never lean when you can sit. Offer solutions that bypass combat entirely through simple mechanics or blatant bribery."
-        }
-      },
-      roman: {
-        name: "Roman",
-        player: "Rutuj",
-        title: "The Driven Frontline Heir",
-        stats: { force: 2, finesse: 1, focus: 0 },
-        passive: {
-          title: "Commanding Presence",
-          desc: "Common city watchmen, pirates, and rabble hesitate to strike Roman first in combat unless ordered directly by an Elite captain or Boss."
-        },
-        powers: [
-          { name: "Alpha Strike", desc: "Charge forward with savage fury. Instantly eliminate 2 human minions in one lethal dash, or inflict 2 Hearts damage on an Elite." },
-          { name: "Iron Jaw", desc: "Absorb a devastating non-silver physical blow through pure stubborn pride; take 0 damage." }
-        ],
-        defaultInventory: [
-          "Gilded rapier with wolf-head pommel",
-          "Signet ring of the late Lord Ravenshire",
-          "Heavy travel coat with concealed chainmail",
-          "Pouch of 25 Spanish silver Reales"
-        ],
-        dossier: {
-          origin: "Second son, competitive, natural commander. Raised inside a wealthy aristocratic estate, Roman expects peers to naturally defer to his judgment. He has organized merchant militias and survived high-stakes duels across Europe.",
-          burden: "At age 16, Roman endured a violent, premature wolf transformation during a full eclipse. In a blind rage, he tore apart his foster brother and an estate servant. Because his brother died, Roman inherited the vast Ravenshire fortune—blood money he feels sickened to spend on his own luxury.",
-          dynamics: [
-            "<b>Archie:</b> Drives Roman mad with his laziness. Roman feels Archie disrespects the privilege of being the eldest born.",
-            "<b>Selena:</b> Expects Selena to back his practical tactical leadership, and gets personally wounded when she takes Archie's nonchalant side.",
-            "<b>Penny:</b> Feels an aggressive, protective instinct toward his youngest sister, occasionally bordering on suffocating."
-          ],
-          keys: "Roleplay rule: Always position yourself between danger and your siblings. Insist on taking the lead, but grimace whenever someone asks you to spend your inherited wealth."
-        }
-      },
-      selena: {
-        name: "Selena",
-        player: "Player (Selena)",
-        title: "The Silver-Tongued Confidante",
-        stats: { force: 0, finesse: 2, focus: 1 },
-        passive: {
-          title: "Heartbeat Lie Detector",
-          desc: "Selena's heightened wolf hearing can isolate rapid human heartbeats; she knows instantly if a non-supernatural NPC is lying or concealing fear."
-        },
-        powers: [
-          { name: "Silver Tongue", desc: "Completely de-escalate suspicious city inquisitors or corrupt guards through charm and misdirection without rolling." },
-          { name: "Shadow Dance", desc: "Vanish mid-conversation or into ambient darkness. Her next attack or sleight-of-hand action strikes with guaranteed surprise." }
-        ],
-        defaultInventory: [
-          "Pair of ivory-handled stiletto daggers",
-          "Silk traveling dress with hidden pocket linings",
-          "Vial of belladonna antidote & lavender perfume",
-          "Forged aristocratic transit permits"
-        ],
-        dossier: {
-          origin: "Second eldest sibling. Elegant, emotionally sharp, and a master of high-society conversation. She speaks multiple European dialects and can disarm a room with polite laughter.",
-          burden: "Behind her witty exterior lies acute trauma: two years ago, she trusted her mortal lover with the truth of her wolf nature. Horrified, he fled into the night and threatened to inform the Church Inquisition. Selena lives in terror that her former lover will publish her identity and destroy her world.",
-          dynamics: [
-            "<b>Archie:</b> Shares an easy kinship with Archie. When Roman gets pompous, Selena subtly eggs Archie on.",
-            "<b>Roman:</b> Loves him dearly, but refuses to let him believe he is the sole master of the pack.",
-            "<b>Penny:</b> Tries to coax Penny out of her shell, recognizing that Penny's quietness hides tremendous ancient knowledge."
-          ],
-          keys: "Roleplay rule: You talk to fill the silence whenever emotions get too raw. Use flattery and observation before drawing steel."
-        }
-      },
-      penny: {
-        name: "Penny",
-        player: "Pari",
-        title: "The Island Rover",
-        stats: { force: 1, finesse: 2, focus: 0 },
-        passive: {
-          title: "Ancient Wolf Blood",
-          desc: "Penny can speak with wild canines and track supernatural scents across ocean winds. She recognizes werewolf blood signatures instinctively."
-        },
-        powers: [
-          { name: "Tropical Vigor", desc: "Channel primal stamina and herbal knowledge to restore 1 Heart to herself or any adjacent sibling." },
-          { name: "Primal Surge", desc: "Gain incredible burst velocity: leap across rooftops, outpace a charging horse, or slip out of heavy iron manacles." }
-        ],
-        defaultInventory: [
-          "Dried Haitian medicinal leaf pouch",
-          "Bone hunting knife carved from a sea turtle",
-          "Braided Caribbean nautical charm",
-          "Small wooden flute that mimics night birds"
-        ],
-        dossier: {
-          origin: "The youngest sibling. While the others grew up in cold European estates, Penny was raised on the tropical shores of Haiti by an elder werewolf nanny. She lived alongside the island's secretive dark-furred wolves, learning authentic pack rituals and nature lore.",
-          burden: "Despite being the only sibling who truly understands what being a werewolf means, she was raised feeling small and quiet. In the presence of her older, loud European siblings, her confidence shrinks, leaving her hesitant to speak up even when she knows they are walking into a trap.",
-          dynamics: [
-            "<b>Roman:</b> Finds his aggressive posturing loud and overwhelming, though she knows his heart isn't wicked.",
-            "<b>Archie:</b> Likes his gentle calm; feels least judged when sitting next to him in quiet silence.",
-            "<b>Selena:</b> Appreciates Selena's kindness, but can smell the deep fear and anxiety masked behind Selena's perfume."
-          ],
-          keys: "Roleplay rule: Speak softly. Point out scents and natural warnings. When battle breaks out, surprise everyone by being the fiercest, fastest fighter."
-        }
-      }
-    };
+var PRESETS = {
+  archie: {
+    name: "Archie (Akshat)", tagline: "The Reluctant Polymath",
+    force: 0, finesse: 1, focus: 2, level: 1,
+    maxHearts: 3, hearts: 3, maxBeast: 3, beast: 3,
+    inventory: ["Clockwork grapple", "Telescope lens", "Pouch of grease"],
+    powers: [
+      { name: "Path of Least Resistance (Passive)", desc: "Auto-detect the easiest physical path.", cost: 0 },
+      { name: "Kinetic Deflection", desc: "Spend 1: Negate melee hit; enemy stumbles prone.", cost: 1 },
+      { name: "Alchemical Jammer", desc: "Spend 1: Instantly jam any lock or firearm.", cost: 1 }
+    ],
+    dossier: "Eldest cub. Encyclopedic polymath knowledge, but avoids effort at all costs."
+  },
+  roman: {
+    name: "Roman (Rutuj)", tagline: "The Burdened Heir",
+    force: 2, finesse: 1, focus: 0, level: 1,
+    maxHearts: 3, hearts: 3, maxBeast: 3, beast: 3,
+    inventory: ["Signet rapier", "Gilded sovereigns", "Death writ"],
+    powers: [
+      { name: "Commanding Stare (Passive)", desc: "Minions will not attack Roman unless commanded.", cost: 0 },
+      { name: "Alpha Strike", desc: "Spend 1: Kill 2 minions or deal 2 Hearts to Elite.", cost: 1 },
+      { name: "Iron Will", desc: "Spend 1: Absorb 1 non-silver wound completely.", cost: 1 }
+    ],
+    dossier: "Second brother. High drive, leader. Transformation at 16 killed his foster brother; guilt-ridden over inherited fortune."
+  },
+  selena: {
+    name: "Selena (Sukhada)", tagline: "The Guarded Empath",
+    force: 0, finesse: 2, focus: 1, level: 1,
+    maxHearts: 3, hearts: 3, maxBeast: 3, beast: 3,
+    inventory: ["Silver stiletto", "Belladonna vial", "Salon letters"],
+    powers: [
+      { name: "Heartbeat Truth (Passive)", desc: "Hear lies/fear via acoustic heartbeat spikes.", cost: 0 },
+      { name: "Silver Tongue", desc: "Spend 1: De-escalate guards or deflect suspicion without roll.", cost: 1 },
+      { name: "Shadow Slip", desc: "Spend 1: Vanish in shadows; next hit has surprise.", cost: 1 }
+    ],
+    dossier: "Second eldest. Highly perceptive; talks to shield herself from deep fear of werewolf exposure."
+  },
+  penny: {
+    name: "Penny (Pari)", tagline: "The Wildling Island Rover",
+    force: 1, finesse: 2, focus: 0, level: 1,
+    maxHearts: 3, hearts: 3, maxBeast: 3, beast: 3,
+    inventory: ["Haitian navigation charm", "Tropical healing herbs", "Bone knife"],
+    powers: [
+      { name: "Ancient Instinct (Passive)", desc: "Senses other beasts and supernatural scents.", cost: 0 },
+      { name: "Tropical Vigor", desc: "Spend 1: Heal 1 Heart on self or nearby sibling.", cost: 1 },
+      { name: "Predator Surge", desc: "Spend 1: Sprint, leap, or break physical bounds.", cost: 1 }
+    ],
+    dossier: "Youngest sibling. Raised in Haiti by a werewolf nanny; possesses true pack lore, but naturally shy."
+  }
+};
 
-    /* ================= STATE & PERSISTENCE ================= */
-    const STORAGE_KEY = 'pack_of_lupa_save_v2';
-    let currentCharacter = 'archie';
-    let currentSelectedMod = 0;
-    let soundEnabled = true;
+var currentKey = "archie";
+var currentMod = 0;
+var currentModName = "Flat";
+var charData = JSON.parse(JSON.stringify(PRESETS));
 
-    function getInitialState() {
-      const state = {
-        meta: {
-          waypoints: [
-            { text: "Rendezvous at Professor Lycan's underground study", completed: false },
-            { text: "Acquire sea transit papers & board galleon", completed: false }
-          ],
-          campaignNotes: ""
-        },
-        characters: {}
+function initApp() {
+  try {
+    var saved = localStorage.getItem("lupa_save_v6");
+    if (saved) { charData = JSON.parse(saved); }
+  } catch(e) {}
+  
+  if (charData.selena) charData.selena.name = "Selena (Sukhada)";
+  renderSheet();
+  loadWaypoints();
+  
+  var clues = document.getElementById("clues-text");
+  if (clues) {
+    try { clues.value = localStorage.getItem("lupa_notes_v6") || ""; } catch(e) {}
+  }
+}
+
+function saveAppData() {
+  try { localStorage.setItem("lupa_save_v6", JSON.stringify(charData)); } catch(e) {}
+}
+
+function saveNotes(val) {
+  try { localStorage.setItem("lupa_notes_v6", val); } catch(e) {}
+}
+
+function switchNavTab(tabId, btn) {
+  var tabs = document.querySelectorAll(".tab-btn");
+  for (var i = 0; i < tabs.length; i++) tabs[i].classList.remove("active");
+  var contents = document.querySelectorAll(".tab-content");
+  for (var j = 0; j < contents.length; j++) contents[j].classList.remove("active");
+  
+  if (btn) btn.classList.add("active");
+  var t = document.getElementById("tab-" + tabId);
+  if (t) t.classList.add("active");
+}
+
+function selectCharacter(key) {
+  currentKey = key;
+  renderSheet();
+}
+
+function renderSheet() {
+  var c = charData[currentKey];
+  if (!c) return;
+  document.getElementById("char-picker").value = currentKey;
+  document.getElementById("char-tagline").innerText = c.tagline;
+  document.getElementById("stat-force-val").innerText = (c.force >= 0 ? "+" : "") + c.force;
+  document.getElementById("stat-finesse-val").innerText = (c.finesse >= 0 ? "+" : "") + c.finesse;
+  document.getElementById("stat-focus-val").innerText = (c.focus >= 0 ? "+" : "") + c.focus;
+
+  // Hearts
+  var hBox = document.getElementById("hearts-container");
+  hBox.innerHTML = "";
+  for (var i = 0; i < c.maxHearts; i++) {
+    (function(idx) {
+      var b = document.createElement("button");
+      b.type = "button";
+      b.className = "heart-token" + (idx >= c.hearts ? " lost" : "");
+      b.innerText = "❤️";
+      b.onclick = function() {
+        c.hearts = (idx < c.hearts) ? idx : idx + 1;
+        saveAppData();
+        renderSheet();
       };
+      hBox.appendChild(b);
+    })(i);
+  }
 
-      Object.keys(baseCharacters).forEach(k => {
-        const base = baseCharacters[k];
-        state.characters[k] = {
-          level: 1,
-          stats: { ...base.stats },
-          hearts: 3,
-          maxHearts: 3,
-          focus: 3,
-          maxFocus: 3,
-          inventory: [...base.defaultInventory],
-          powers: [...base.powers]
-        };
-      });
-      return state;
-    }
-
-    function loadState() {
-      const saved = localStorage.getItem(STORAGE_KEY);
-      if (saved) {
-        try {
-          return JSON.parse(saved);
-        } catch(e) {
-          console.error("Error reading save file, using fresh defaults.");
-        }
-      }
-      return getInitialState();
-    }
-
-    let appState = loadState();
-
-    function saveState() {
-      try {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(appState));
-      } catch(e) {
-        console.error("Could not save to localStorage", e);
-      }
-    }
-
-    /* ================= SYNTHESIZER AUDIO ================= */
-    let audioCtx = null;
-    function playBeep(freq = 440, type = 'sine', duration = 0.08) {
-      if (!soundEnabled) return;
-      try {
-        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        if (audioCtx.state === 'suspended') audioCtx.resume();
-        const osc = audioCtx.createOscillator();
-        const gain = audioCtx.createGain();
-        osc.type = type;
-        osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
-        gain.gain.setValueAtTime(0.12, audioCtx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
-        osc.connect(gain);
-        gain.connect(audioCtx.destination);
-        osc.start();
-        osc.stop(audioCtx.currentTime + duration);
-      } catch (err) {}
-    }
-
-    function toggleAudio() {
-      soundEnabled = !soundEnabled;
-      const btn = document.getElementById('audio-toggle-btn');
-      btn.innerText = soundEnabled ? '🔊 Sound' : '🔇 Muted';
-      btn.classList.toggle('text-red-400', !soundEnabled);
-    }
-
-    /* ================= CHARACTER SWITCH & RENDERING ================= */
-    window.onload = function() {
-      switchCharacter('archie');
-      renderWaypoints();
-      document.getElementById('shared-campaign-notes').value = appState.meta.campaignNotes || "";
-    };
-
-    function switchCharacter(charKey) {
-      currentCharacter = charKey;
-      document.getElementById('character-selector').value = charKey;
-      const base = baseCharacters[charKey];
-      const charState = appState.characters[charKey];
-
-      // Update Header info
-      document.getElementById('sheet-char-name').innerText = base.name;
-      document.getElementById('sheet-player-tag').innerText = base.player;
-      document.getElementById('sheet-char-title').innerText = base.title;
-      document.getElementById('sheet-level-badge').innerText = `Lvl ${charState.level}`;
-
-      // Update Stats
-      updateStatDisplays();
-
-      // Update Passive
-      document.getElementById('passive-title').innerText = base.passive.title;
-      document.getElementById('passive-desc').innerText = base.passive.desc;
-
-      // Render Dynamic Sections
-      renderTokens();
-      renderPowers();
-      renderInventory();
-
-      // Dossier
-      document.getElementById('dossier-origin').innerHTML = base.dossier.origin;
-      document.getElementById('dossier-burden').innerHTML = base.dossier.burden;
-      document.getElementById('dossier-dynamics').innerHTML = base.dossier.dynamics.map(d => `<li class="border-b border-zinc-800/60 pb-1">${d}</li>`).join('');
-      document.getElementById('dossier-keys').innerHTML = base.dossier.keys;
-    }
-
-    function updateStatDisplays() {
-      const stats = appState.characters[currentCharacter].stats;
-      document.getElementById('stat-val-force').innerText = (stats.force >= 0 ? '+' : '') + stats.force;
-      document.getElementById('stat-val-finesse').innerText = (stats.finesse >= 0 ? '+' : '') + stats.finesse;
-      document.getElementById('stat-val-focus').innerText = (stats.focus >= 0 ? '+' : '') + stats.focus;
-
-      // Update roller buttons
-      document.getElementById('mod-btn-force').innerText = `Force +${stats.force}`;
-      document.getElementById('mod-btn-finesse').innerText = `Fin +${stats.finesse}`;
-      document.getElementById('mod-btn-focus').innerText = `Foc +${stats.focus}`;
-    }
-
-    /* ================= TOKENS RENDERER ================= */
-    function renderTokens() {
-      const charState = appState.characters[currentCharacter];
-      
-      // Hearts
-      const heartsContainer = document.getElementById('hearts-container');
-      heartsContainer.innerHTML = '';
-      for (let i = 1; i <= charState.maxHearts; i++) {
-        const active = i <= charState.hearts;
-        const btn = document.createElement('button');
-        btn.type = 'button';
-        btn.onclick = () => toggleHeart(i);
-        btn.className = `w-11 h-11 rounded-xl flex items-center justify-center text-lg transition transform active:scale-90 border ${
-          active 
-            ? 'bg-blood-950/80 border-blood-500 text-blood-400 shadow-[0_0_12px_rgba(220,38,38,0.5)]' 
-            : 'bg-zinc-900 border-zinc-800 text-zinc-600 grayscale opacity-40'
-        }`;
-        btn.innerHTML = active ? '❤️' : '🖤';
-        heartsContainer.appendChild(btn);
-      }
-      document.getElementById('heart-count-label').innerText = `${charState.hearts}/${charState.maxHearts}`;
-
-      // Focus
-      const focusContainer = document.getElementById('focus-container');
-      focusContainer.innerHTML = '';
-      for (let i = 1; i <= charState.maxFocus; i++) {
-        const active = i <= charState.focus;
-        const btn = document.createElement('button');
-        btn.type = 'button';
-        btn.onclick = () => toggleFocus(i);
-        btn.className = `w-11 h-11 rounded-xl flex items-center justify-center text-lg transition transform active:scale-90 border ${
-          active 
-            ? 'bg-purple-950/80 border-purple-500 text-purple-300 shadow-[0_0_12px_rgba(168,85,247,0.5)]' 
-            : 'bg-zinc-900 border-zinc-800 text-zinc-600 grayscale opacity-40'
-        }`;
-        btn.innerHTML = active ? '🐺' : '🦴';
-        focusContainer.appendChild(btn);
-      }
-      document.getElementById('focus-count-label').innerText = `${charState.focus}/${charState.maxFocus}`;
-
-      saveState();
-    }
-
-    function toggleHeart(index) {
-      playBeep(260, 'triangle', 0.08);
-      const c = appState.characters[currentCharacter];
-      c.hearts = (c.hearts === index) ? index - 1 : index;
-      renderTokens();
-    }
-
-    function toggleFocus(index) {
-      playBeep(380, 'sine', 0.08);
-      const c = appState.characters[currentCharacter];
-      c.focus = (c.focus === index) ? index - 1 : index;
-      renderTokens();
-    }
-
-    function resetStats() {
-      playBeep(520, 'sine', 0.15);
-      const c = appState.characters[currentCharacter];
-      c.hearts = c.maxHearts;
-      c.focus = c.maxFocus;
-      renderTokens();
-      showDiceNotice("Full Rest: Restored all Hearts and Focus!");
-    }
-
-    /* ================= POWERS RENDERER ================= */
-    function renderPowers() {
-      const container = document.getElementById('powers-list-container');
-      container.innerHTML = '';
-      const powers = appState.characters[currentCharacter].powers;
-
-      powers.forEach((p, idx) => {
-        const item = document.createElement('button');
-        item.type = 'button';
-        item.onclick = () => usePower(idx);
-        item.className = "w-full text-left bg-gradient-to-r from-zinc-900 to-zinc-950 hover:from-purple-950/40 hover:to-zinc-900 border border-zinc-800 hover:border-purple-600/50 rounded-xl p-3 transition active:scale-[0.99] group";
-        item.innerHTML = `
-          <div class="flex justify-between items-start">
-            <div class="text-xs font-bold text-purple-300 group-hover:text-purple-200 flex items-center">
-              <span class="mr-1.5">🐺</span>
-              <span>${p.name}</span>
-            </div>
-            <span class="text-[9px] bg-purple-950/80 text-purple-300 border border-purple-800/80 px-2 py-0.5 rounded-full font-mono font-bold">1 Focus</span>
-          </div>
-          <p class="text-xs text-zinc-400 mt-1 leading-relaxed">${p.desc}</p>
-        `;
-        container.appendChild(item);
-      });
-    }
-
-    function usePower(index) {
-      const c = appState.characters[currentCharacter];
-      if (c.focus > 0) {
-        c.focus -= 1;
-        playBeep(640, 'square', 0.12);
-        renderTokens();
-        showDiceNotice(`Triggered: ${c.powers[index].name} (-1 Focus)`);
-      } else {
-        playBeep(180, 'sawtooth', 0.15);
-        showDiceNotice(`Exhausted! No Beast Marks remaining.`);
-      }
-    }
-
-    /* ================= INVENTORY LOGIC (FIXED) ================= */
-    function renderInventory() {
-      const list = document.getElementById('inventory-list');
-      const inv = appState.characters[currentCharacter].inventory;
-      list.innerHTML = '';
-      document.getElementById('inv-count').innerText = `(${inv.length} items)`;
-
-      if (inv.length === 0) {
-        list.innerHTML = `<div class="text-zinc-600 text-xs italic py-1">Satchel is currently empty.</div>`;
-        return;
-      }
-
-      inv.forEach((item, index) => {
-        const row = document.createElement('div');
-        row.className = "flex justify-between items-center bg-zinc-950/90 px-3 py-2 rounded-xl border border-zinc-800/80";
-        row.innerHTML = `
-          <span class="truncate pr-2 text-zinc-300 text-xs">• ${item}</span>
-          <button 
-            type="button" 
-            onclick="removeInventoryItem(${index})" 
-            class="text-zinc-500 hover:text-red-400 font-bold px-2 py-1 text-xs rounded transition active:scale-90"
-            title="Remove item"
-          >
-            ✕
-          </button>
-        `;
-        list.appendChild(row);
-      });
-    }
-
-    function handleAddItem() {
-      const input = document.getElementById('new-item-input');
-      const val = input.value.trim();
-      if (!val) return;
-
-      playBeep(420, 'sine', 0.05);
-      appState.characters[currentCharacter].inventory.push(val);
-      input.value = '';
-      saveState();
-      renderInventory();
-    }
-
-    function removeInventoryItem(index) {
-      playBeep(240, 'triangle', 0.05);
-      appState.characters[currentCharacter].inventory.splice(index, 1);
-      saveState();
-      renderInventory();
-    }
-
-    function clearInventory() {
-      showCustomConfirm("Clear all items in this character's satchel?", () => {
-        appState.characters[currentCharacter].inventory = [];
-        saveState();
-        renderInventory();
-        showDiceNotice("Satchel emptied.");
-      });
-    }
-
-    /* ================= WAYPOINTS & NOTES LOGIC ================= */
-    function renderWaypoints() {
-      const container = document.getElementById('waypoints-list');
-      const waypoints = appState.meta.waypoints;
-      container.innerHTML = '';
-      document.getElementById('waypoint-count').innerText = `${waypoints.length} recorded`;
-
-      if (waypoints.length === 0) {
-        container.innerHTML = `<div class="text-zinc-600 text-xs italic py-1">No custom waypoints added yet.</div>`;
-        return;
-      }
-
-      waypoints.forEach((wp, idx) => {
-        const div = document.createElement('div');
-        div.className = "flex items-center justify-between bg-zinc-950/80 p-2.5 rounded-xl border border-zinc-800 text-xs";
-        div.innerHTML = `
-          <div class="flex items-center space-x-2.5 truncate mr-2">
-            <button type="button" onclick="toggleWaypoint(${idx})" class="w-5 h-5 rounded flex items-center justify-center border ${
-              wp.completed ? 'bg-emerald-950 border-emerald-600 text-emerald-400' : 'bg-zinc-900 border-zinc-700 text-transparent'
-            }">✓</button>
-            <span class="${wp.completed ? 'line-through text-zinc-500' : 'text-zinc-200'}">${wp.text}</span>
-          </div>
-          <button type="button" onclick="removeWaypoint(${idx})" class="text-zinc-600 hover:text-red-400 px-2 py-1 font-bold">✕</button>
-        `;
-        container.appendChild(div);
-      });
-    }
-
-    function handleAddWaypoint() {
-      const input = document.getElementById('new-waypoint-input');
-      const text = input.value.trim();
-      if (!text) return;
-
-      playBeep(440, 'sine', 0.05);
-      appState.meta.waypoints.push({ text: text, completed: false });
-      input.value = '';
-      saveState();
-      renderWaypoints();
-    }
-
-    function toggleWaypoint(index) {
-      playBeep(330, 'sine', 0.05);
-      appState.meta.waypoints[index].completed = !appState.meta.waypoints[index].completed;
-      saveState();
-      renderWaypoints();
-    }
-
-    function removeWaypoint(index) {
-      playBeep(220, 'triangle', 0.05);
-      appState.meta.waypoints.splice(index, 1);
-      saveState();
-      renderWaypoints();
-    }
-
-    function saveCampaignNotes() {
-      appState.meta.campaignNotes = document.getElementById('shared-campaign-notes').value;
-      saveState();
-    }
-
-    /* ================= LEVEL UP MODAL SYSTEM ================= */
-    function openLevelUpModal() {
-      const c = appState.characters[currentCharacter];
-      document.getElementById('lvl-modal-char-name').innerText = `${baseCharacters[currentCharacter].name} (Played by ${baseCharacters[currentCharacter].player})`;
-      document.getElementById('modal-level-val').innerText = `Level ${c.level}`;
-      
-      document.getElementById('lvl-stat-force').innerText = (c.stats.force >= 0 ? '+' : '') + c.stats.force;
-      document.getElementById('lvl-stat-finesse').innerText = (c.stats.finesse >= 0 ? '+' : '') + c.stats.finesse;
-      document.getElementById('lvl-stat-focus').innerText = (c.stats.focus >= 0 ? '+' : '') + c.stats.focus;
-
-      document.getElementById('lvl-max-hearts').innerText = c.maxHearts;
-      document.getElementById('lvl-max-focus').innerText = c.maxFocus;
-
-      document.getElementById('level-modal').classList.remove('hidden');
-    }
-
-    function closeLevelUpModal() {
-      document.getElementById('level-modal').classList.add('hidden');
-      updateStatDisplays();
-      renderTokens();
-      renderPowers();
-      document.getElementById('sheet-level-badge').innerText = `Lvl ${appState.characters[currentCharacter].level}`;
-    }
-
-    function changeMilestoneLevel(delta) {
-      const c = appState.characters[currentCharacter];
-      c.level = Math.max(1, c.level + delta);
-      document.getElementById('modal-level-val').innerText = `Level ${c.level}`;
-      playBeep(480, 'sine', 0.05);
-      saveState();
-    }
-
-    function adjustStat(statName, delta) {
-      const c = appState.characters[currentCharacter];
-      c.stats[statName] = Math.max(-1, c.stats[statName] + delta);
-      document.getElementById(`lvl-stat-${statName}`).innerText = (c.stats[statName] >= 0 ? '+' : '') + c.stats[statName];
-      playBeep(520, 'triangle', 0.05);
-      saveState();
-      updateStatDisplays();
-    }
-
-    function adjustMaxCap(capName, delta) {
-      const c = appState.characters[currentCharacter];
-      if (capName === 'maxHearts') {
-        c.maxHearts = Math.max(1, Math.min(6, c.maxHearts + delta));
-        c.hearts = Math.min(c.hearts, c.maxHearts);
-        document.getElementById('lvl-max-hearts').innerText = c.maxHearts;
-      } else {
-        c.maxFocus = Math.max(1, Math.min(6, c.maxFocus + delta));
-        c.focus = Math.min(c.focus, c.maxFocus);
-        document.getElementById('lvl-max-focus').innerText = c.maxFocus;
-      }
-      playBeep(520, 'triangle', 0.05);
-      saveState();
-    }
-
-    function addUnlockedPower() {
-      const nameInput = document.getElementById('new-power-name');
-      const descInput = document.getElementById('new-power-desc');
-      const name = nameInput.value.trim();
-      const desc = descInput.value.trim();
-
-      if (!name || !desc) {
-        showCustomAlert("Missing Info", "Please enter both a power name and its effect description.");
-        return;
-      }
-
-      playBeep(700, 'square', 0.15);
-      appState.characters[currentCharacter].powers.push({ name, desc });
-      nameInput.value = '';
-      descInput.value = '';
-      saveState();
-      closeLevelUpModal();
-      showDiceNotice(`Unlocked Power: ${name}!`);
-    }
-
-    /* ================= IN-APP CONFIRMATION & ALERT SYSTEM ================= */
-    function showCustomAlert(title, message) {
-      const modal = document.getElementById('app-dialog-modal');
-      document.getElementById('app-dialog-title').innerText = title;
-      document.getElementById('app-dialog-icon').innerText = 'ℹ️';
-      document.getElementById('app-dialog-message').innerText = message;
-      
-      const actions = document.getElementById('app-dialog-actions');
-      actions.innerHTML = `
-        <button type="button" onclick="closeAppDialog()" class="px-4 py-1.5 bg-zinc-800 hover:bg-zinc-700 text-zinc-200 text-xs font-bold rounded-xl active:scale-95 transition">
-          OK
-        </button>
-      `;
-      modal.classList.remove('hidden');
-    }
-
-    function showCustomConfirm(message, onConfirm) {
-      const modal = document.getElementById('app-dialog-modal');
-      document.getElementById('app-dialog-title').innerText = "Confirm Action";
-      document.getElementById('app-dialog-icon').innerText = "⚠️";
-      document.getElementById('app-dialog-message').innerText = message;
-
-      const actions = document.getElementById('app-dialog-actions');
-      actions.innerHTML = `
-        <button type="button" onclick="closeAppDialog()" class="px-3 py-1.5 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 text-xs font-bold rounded-xl active:scale-95 transition">
-          Cancel
-        </button>
-        <button type="button" id="app-dialog-confirm-btn" class="px-3.5 py-1.5 bg-blood-800 hover:bg-blood-700 text-white text-xs font-bold rounded-xl active:scale-95 transition border border-blood-500">
-          Confirm
-        </button>
-      `;
-
-      document.getElementById('app-dialog-confirm-btn').onclick = function() {
-        closeAppDialog();
-        if (typeof onConfirm === 'function') onConfirm();
+  // Beast Marks
+  var bBox = document.getElementById("beast-container");
+  bBox.innerHTML = "";
+  for (var j = 0; j < c.maxBeast; j++) {
+    (function(idx) {
+      var b = document.createElement("button");
+      b.type = "button";
+      b.className = "beast-token" + (idx >= c.beast ? " spent" : "");
+      b.innerText = "🐺";
+      b.onclick = function() {
+        c.beast = (idx < c.beast) ? idx : idx + 1;
+        saveAppData();
+        renderSheet();
       };
+      bBox.appendChild(b);
+    })(j);
+  }
 
-      modal.classList.remove('hidden');
-    }
+  // Powers
+  var pBox = document.getElementById("powers-list");
+  pBox.innerHTML = "";
+  for (var k = 0; k < c.powers.length; k++) {
+    (function(p) {
+      var d = document.createElement("div");
+      d.className = "power-item";
+      var costBtn = p.cost > 0 ? '<button type="button" class="btn btn-purple" style="padding:4px 8px; font-size:0.75rem; flex:none;" onclick="useBeastPower()">Use (1 Mark)</button>' : '';
+      d.innerHTML = '<div class="power-title"><span>' + p.name + '</span>' + costBtn + '</div><div style="font-size:0.8rem; color:#bbb;">' + p.desc + '</div>';
+      pBox.appendChild(d);
+    })(c.powers[k]);
+  }
 
-    function closeAppDialog() {
-      document.getElementById('app-dialog-modal').classList.add('hidden');
-    }
+  // Inventory
+  var iBox = document.getElementById("inventory-list");
+  iBox.innerHTML = "";
+  for (var m = 0; m < c.inventory.length; m++) {
+    (function(idx, item) {
+      var tag = document.createElement("div");
+      tag.className = "item-tag";
+      tag.innerHTML = '<span>' + item + '</span><span style="color:#e74c3c; cursor:pointer; font-weight:bold; margin-left:4px;" onclick="delInventoryItem(' + idx + ')">✕</span>';
+      iBox.appendChild(tag);
+    })(m, c.inventory[m]);
+  }
 
-    /* ================= RESET CHARACTER SYSTEM ================= */
-    function requestCharacterReset(e) {
-      if (e) {
-        e.preventDefault();
-        e.stopPropagation();
-      }
-      
-      const charName = baseCharacters[currentCharacter].name;
-      showCustomConfirm(
-        `Reset ${charName} back to Level 1 defaults? All level-up stats, expanded heart/focus slots, and unlocked custom powers will be restored to their original starting values.`,
-        () => {
-          performCharacterReset(currentCharacter);
-        }
-      );
-    }
+  // Dossier
+  document.getElementById("dossier-name").innerText = c.name;
+  document.getElementById("dossier-role").innerText = c.tagline;
+  document.getElementById("dossier-text").innerText = c.dossier;
 
-    function performCharacterReset(charKey) {
-      const base = baseCharacters[charKey];
-      if (!base) return;
+  // Modifiers
+  document.getElementById("mod-force").innerText = "Force (" + (c.force >= 0 ? "+" : "") + c.force + ")";
+  document.getElementById("mod-finesse").innerText = "Finesse (" + (c.finesse >= 0 ? "+" : "") + c.finesse + ")";
+  document.getElementById("mod-focus").innerText = "Focus (" + (c.focus >= 0 ? "+" : "") + c.focus + ")";
+}
 
-      // Deep copy defaults to eliminate any mutant overrides
-      appState.characters[charKey] = {
-        level: 1,
-        stats: { ...base.stats },
-        hearts: 3,
-        maxHearts: 3,
-        focus: 3,
-        maxFocus: 3,
-        inventory: [...base.defaultInventory],
-        powers: JSON.parse(JSON.stringify(base.powers))
-      };
+function setRollMod(type, name, btn) {
+  currentMod = type;
+  currentModName = name;
+  var btns = document.querySelectorAll(".mod-btn");
+  for (var i = 0; i < btns.length; i++) btns[i].classList.remove("selected");
+  if (btn) btn.classList.add("selected");
+}
 
-      saveState();
-      playBeep(260, 'sawtooth', 0.2);
+function doRoll(type) {
+  var r1 = Math.floor(Math.random() * 20) + 1;
+  var r2 = Math.floor(Math.random() * 20) + 1;
+  var base = r1;
+  var desc = "d20 (" + r1 + ")";
 
-      // Close modal & reload current character view
-      closeLevelUpModal();
-      switchCharacter(charKey);
-      showDiceNotice(`${base.name} restored to Level 1 defaults!`);
-    }
+  if (type === 'adv') {
+    base = Math.max(r1, r2);
+    desc = "Adv [" + r1 + ", " + r2 + "] ➔ " + base;
+  } else if (type === 'dis') {
+    base = Math.min(r1, r2);
+    desc = "Dis [" + r1 + ", " + r2 + "] ➔ " + base;
+  }
 
-    function resetCharacterDefaults() {
-      requestCharacterReset();
-    }
+  var c = charData[currentKey];
+  var val = 0;
+  if (currentMod === 'force') val = c.force;
+  else if (currentMod === 'finesse') val = c.finesse;
+  else if (currentMod === 'focus') val = c.focus;
 
-    /* ================= DICE ROLLER ENGINE ================= */
-    function setActiveMod(type, btnElement) {
-      currentSelectedMod = type;
-      document.querySelectorAll('.mod-btn').forEach(b => {
-        b.className = "mod-btn px-2 py-1 rounded bg-zinc-800 border border-zinc-700 text-xs font-bold text-zinc-300 focus:outline-none transition active:scale-95";
-      });
-      btnElement.className = "mod-btn px-2 py-1 rounded bg-blood-900/70 border border-blood-500 text-xs font-bold text-amber-200 focus:outline-none transition active:scale-95";
-      playBeep(320, 'sine', 0.05);
-    }
+  var total = base + val;
+  document.getElementById("dice-result").innerText = total;
 
-    function roll(type) {
-      playBeep(480, 'triangle', 0.08);
-      const stats = appState.characters[currentCharacter].stats;
-      let mod = 0;
-      let modLabel = "None (+0)";
+  var res = "1–9: Complication";
+  if (total >= 15) res = "15+: Clean Triumph!";
+  else if (total >= 10) res = "10–14: Success at Cost";
 
-      if (currentSelectedMod === 'force') {
-        mod = stats.force;
-        modLabel = `Force (+${mod})`;
-      } else if (currentSelectedMod === 'finesse') {
-        mod = stats.finesse;
-        modLabel = `Fin (+${mod})`;
-      } else if (currentSelectedMod === 'focus') {
-        mod = stats.focus;
-        modLabel = `Foc (+${mod})`;
-      }
+  document.getElementById("dice-summary").innerText = desc + " + " + val + " [" + currentModName + "] = " + total + " (" + res + ")";
+}
 
-      let d1 = Math.floor(Math.random() * 20) + 1;
-      let d2 = Math.floor(Math.random() * 20) + 1;
-      let chosen = d1;
-      let formula = `d20 (${d1}) + ${mod} [${modLabel}]`;
+function useBeastPower() {
+  var c = charData[currentKey];
+  if (c.beast > 0) {
+    c.beast--;
+    saveAppData();
+    renderSheet();
+  }
+}
 
-      if (type === 1) { // Advantage
-        chosen = Math.max(d1, d2);
-        formula = `Adv: [${d1}, ${d2}] => ${chosen} + ${mod}`;
-      } else if (type === -1) { // Disadvantage
-        chosen = Math.min(d1, d2);
-        formula = `Disadv: [${d1}, ${d2}] => ${chosen} + ${mod}`;
-      }
+function recoverAll() {
+  var c = charData[currentKey];
+  c.hearts = c.maxHearts;
+  c.beast = c.maxBeast;
+  saveAppData();
+  renderSheet();
+}
 
-      const total = chosen + mod;
+function addInventoryItem() {
+  var inp = document.getElementById("new-item-input");
+  var val = inp.value.trim();
+  if (val) {
+    charData[currentKey].inventory.push(val);
+    inp.value = "";
+    saveAppData();
+    renderSheet();
+  }
+}
 
-      document.getElementById('dice-big-num').innerText = total;
-      document.getElementById('dice-formula').innerText = formula;
+function delInventoryItem(idx) {
+  charData[currentKey].inventory.splice(idx, 1);
+  saveAppData();
+  renderSheet();
+}
 
-      const verdictEl = document.getElementById('dice-verdict');
-      const subnoteEl = document.getElementById('dice-subnote');
-      const statusPill = document.getElementById('roll-status-pill');
+function openLevelModal() {
+  var c = charData[currentKey];
+  document.getElementById("milestone-lvl-display").innerText = "Level " + (c.level || 1);
+  document.getElementById("levelup-modal").classList.add("open");
+}
 
-      if (chosen === 20) {
-        verdictEl.innerText = "NATURAL 20!";
-        verdictEl.className = "text-xs font-extrabold uppercase tracking-wide text-amber-300 text-shadow-red";
-        subnoteEl.innerText = "Glorious Apex Triumph!";
-        statusPill.innerText = "CRIT";
-        statusPill.className = "text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-amber-950 text-amber-300 border border-amber-600";
-        playBeep(784, 'square', 0.2);
-      } else if (chosen === 1) {
-        verdictEl.innerText = "NATURAL 1!";
-        verdictEl.className = "text-xs font-extrabold uppercase tracking-wide text-red-500";
-        subnoteEl.innerText = "Catastrophic Disaster!";
-        statusPill.innerText = "FUMBLE";
-        statusPill.className = "text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-red-950 text-red-400 border border-red-700";
-        playBeep(150, 'sawtooth', 0.25);
-      } else if (total >= 15) {
-        verdictEl.innerText = "Clean Success";
-        verdictEl.className = "text-xs font-extrabold uppercase tracking-wide text-emerald-400";
-        subnoteEl.innerText = "Action succeeds with zero penalty";
-        statusPill.innerText = "15+ PASS";
-        statusPill.className = "text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-emerald-950 text-emerald-300 border border-emerald-700";
-      } else if (total >= 10) {
-        verdictEl.innerText = "Success at Cost";
-        verdictEl.className = "text-xs font-extrabold uppercase tracking-wide text-amber-400";
-        subnoteEl.innerText = "Pass, but suffer 1 Heart or complication";
-        statusPill.innerText = "10-14 MIXED";
-        statusPill.className = "text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-amber-950 text-amber-300 border border-amber-700";
-      } else {
-        verdictEl.innerText = "Failure";
-        verdictEl.className = "text-xs font-extrabold uppercase tracking-wide text-red-400";
-        subnoteEl.innerText = "Action fails; enemy retaliates";
-        statusPill.innerText = "1-9 FAIL";
-        statusPill.className = "text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-red-950 text-red-400 border border-red-800";
-      }
-    }
+function closeLevelModal() {
+  document.getElementById("levelup-modal").classList.remove("open");
+}
 
-    function showDiceNotice(msg) {
-      document.getElementById('dice-subnote').innerText = msg;
-    }
+function adjLevel(d) {
+  var c = charData[currentKey];
+  c.level = Math.max(1, (c.level || 1) + d);
+  document.getElementById("milestone-lvl-display").innerText = "Level " + c.level;
+  saveAppData();
+}
 
-    /* ================= TAB CONTROLLER ================= */
-    function switchTab(tabId) {
-      playBeep(400, 'sine', 0.04);
-      document.querySelectorAll('.tab-content').forEach(section => {
-        section.classList.add('hidden');
-      });
-      document.querySelectorAll('.tab-btn').forEach(btn => {
-        btn.className = "tab-btn flex-1 py-1.5 text-center text-xs font-bold rounded-lg text-zinc-400 hover:text-zinc-200 transition";
-      });
+function adjStat(st, d) {
+  charData[currentKey][st] += d;
+  saveAppData();
+  renderSheet();
+}
 
-      document.getElementById(`tab-${tabId}`).classList.remove('hidden');
-      document.getElementById(`tab-btn-${tabId}`).className = "tab-btn flex-1 py-1.5 text-center text-xs font-bold rounded-lg bg-zinc-800 text-amber-300 transition shadow-sm border border-zinc-700/60";
-    }
-  </script>
+function adjCap(tp, d) {
+  var c = charData[currentKey];
+  if (tp === 'hearts') {
+    c.maxHearts = Math.min(6, Math.max(3, c.maxHearts + d));
+    c.hearts = Math.min(c.hearts, c.maxHearts);
+  } else {
+    c.maxBeast = Math.min(6, Math.max(3, c.maxBeast + d));
+    c.beast = Math.min(c.beast, c.maxBeast);
+  }
+  saveAppData();
+  renderSheet();
+}
+
+function resetCharacter() {
+  charData[currentKey] = JSON.parse(JSON.stringify(PRESETS[currentKey]));
+  saveAppData();
+  renderSheet();
+  closeLevelModal();
+}
+
+function loadWaypoints() {
+  var list = document.getElementById("waypoint-list");
+  list.innerHTML = "";
+  var wp = [];
+  try { wp = JSON.parse(localStorage.getItem("lupa_wp_v6") || "[]"); } catch(e) {}
+  for (var i = 0; i < wp.length; i++) {
+    (function(idx, w) {
+      var d = document.createElement("div");
+      d.style.cssText = "display:flex; justify-content:space-between; align-items:center; padding:8px 0; border-bottom:1px solid #282a36;";
+      d.innerHTML = '<label style="display:flex; align-items:center; gap:8px;"><input type="checkbox" ' + (w.done ? "checked" : "") + ' onchange="toggleWp(' + idx + ')"><span style="' + (w.done ? 'text-decoration:line-through; color:#777;' : '') + '">' + w.text + '</span></label><span style="color:#e74c3c; cursor:pointer;" onclick="delWp(' + idx + ')">✕</span>';
+      list.appendChild(d);
+    })(i, wp[i]);
+  }
+}
+
+function addCustomWaypoint() {
+  var inp = document.getElementById("new-waypoint-input");
+  var val = inp.value.trim();
+  if (val) {
+    var wp = [];
+    try { wp = JSON.parse(localStorage.getItem("lupa_wp_v6") || "[]"); } catch(e) {}
+    wp.push({ text: val, done: false });
+    try { localStorage.setItem("lupa_wp_v6", JSON.stringify(wp)); } catch(e) {}
+    inp.value = "";
+    loadWaypoints();
+  }
+}
+
+function toggleWp(idx) {
+  var wp = [];
+  try { wp = JSON.parse(localStorage.getItem("lupa_wp_v6") || "[]"); } catch(e) {}
+  if (wp[idx]) {
+    wp[idx].done = !wp[idx].done;
+    try { localStorage.setItem("lupa_wp_v6", JSON.stringify(wp)); } catch(e) {}
+    loadWaypoints();
+  }
+}
+
+function delWp(idx) {
+  var wp = [];
+  try { wp = JSON.parse(localStorage.getItem("lupa_wp_v6") || "[]"); } catch(e) {}
+  wp.splice(idx, 1);
+  try { localStorage.setItem("lupa_wp_v6", JSON.stringify(wp)); } catch(e) {}
+  loadWaypoints();
+}
+
+// Immediate run
+initApp();
+</script>
 </body>
 </html>
