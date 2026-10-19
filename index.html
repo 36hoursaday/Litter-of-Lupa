@@ -370,7 +370,7 @@
         <div style="font-weight:800; font-size:1.2rem; color:#e74c3c;">DM Command Cockpit 🗝️</div>
         <button type="button" class="btn" style="flex:none; padding:4px 10px; font-size:0.75rem;" onclick="lockDMScreen()">Lock Screen</button>
       </div>
-      <div style="font-size:0.8rem; color:#aaa; margin-bottom:12px;">Control exactly who sees what piece of lore, secret, or stat block.</div>
+      <div style="font-size:0.8rem; color:#aaa; margin-bottom:12px;">Synced live via Google Sheets. Control who sees what.</div>
 
       <!-- SELECTIVE REVEAL: NARRATIVE LORE -->
       <div class="dm-card">
@@ -497,6 +497,10 @@
   </div>
 
 <script>
+// ==================== PASTE YOUR PUBLISHED GOOGLE SHEET CSV LINK HERE ====================
+var SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQAwmLuwWGka6UjtZXXo2N_74Ou4rFlTpZRMjkVdGQqTcYpUnhw-z-M_pfbDVHemLyxVIolPcpwzQ6p/pub?output=csv";
+// =========================================================================================
+
 var PRESETS = {
   archie: {
     name: "Archie (Akshat)", tagline: "The Reluctant Polymath & Eldest",
@@ -611,25 +615,51 @@ var customWhispers = [];
 var dmCombatTrackers = [];
 var dmUnlocked = false;
 
+function pollGoogleSheet() {
+  if (!SHEET_CSV_URL || SHEET_CSV_URL.indexOf("http") !== 0) return;
+  fetch(SHEET_CSV_URL + (SHEET_CSV_URL.indexOf("?") >= 0 ? "&" : "?") + "t=" + Date.now())
+    .then(function(res) {
+      if (!res.ok) throw new Error("Sheet fetch error");
+      return res.text();
+    })
+    .then(function(csvText) {
+      var lines = csvText.trim().split("\n");
+      customWhispers = [];
+      for (var i = 1; i < lines.length; i++) {
+        var row = lines[i].split(",");
+        if (row.length < 3) continue;
+        var key = row[0].trim().toLowerCase();
+        var revealed = (row[1].trim().toUpperCase() === "TRUE");
+        var target = row[2].trim().toLowerCase();
+        var customText = row.slice(3).join(",").trim().replace(/^"|"$/g, "");
+
+        if (key === "lupa" || key === "lycan") {
+          selectiveLore[key].revealed = revealed;
+          selectiveLore[key].target = target;
+        } else if (key === "whisper" && revealed && customText) {
+          customWhispers.push({ target: target, text: customText });
+        } else {
+          var monster = BESTIARY_DATA.find(function(b) { return b.id === key; });
+          if (monster) {
+            monster.revealedTo = revealed ? target : "none";
+          }
+        }
+      }
+      renderLoreTab();
+      renderCharacterWhispers();
+      if (dmUnlocked) renderDMScreen();
+    })
+    .catch(function(err) {
+      console.log("Sheet sync standby...");
+    });
+}
+
 function initApp() {
   try {
-    var saved = localStorage.getItem("lupa_save_v9");
+    var saved = localStorage.getItem("lupa_save_v10");
     if (saved) { charData = JSON.parse(saved); }
-    var savedLore = localStorage.getItem("lupa_lore_v9");
-    if (savedLore) { selectiveLore = JSON.parse(savedLore); }
-    var savedWhispers = localStorage.getItem("lupa_whispers_v9");
-    if (savedWhispers) { customWhispers = JSON.parse(savedWhispers); }
-    var savedBestiary = localStorage.getItem("lupa_bestiary_v9");
-    if (savedBestiary) {
-      var loaded = JSON.parse(savedBestiary);
-      loaded.forEach(function(item) {
-        var match = BESTIARY_DATA.find(function(b) { return b.id === item.id; });
-        if (match) match.revealedTo = item.revealedTo;
-      });
-    }
   } catch(e) {}
   
-  // Sync presets
   for (var k in PRESETS) {
     if (!charData[k]) charData[k] = JSON.parse(JSON.stringify(PRESETS[k]));
     charData[k].name = PRESETS[k].name;
@@ -646,21 +676,22 @@ function initApp() {
   
   var clues = document.getElementById("clues-text");
   if (clues) {
-    try { clues.value = localStorage.getItem("lupa_notes_v9") || ""; } catch(e) {}
+    try { clues.value = localStorage.getItem("lupa_notes_v10") || ""; } catch(e) {}
   }
+
+  // Poll Google Sheets every 6 seconds
+  pollGoogleSheet();
+  setInterval(pollGoogleSheet, 6000);
 }
 
 function saveAppData() {
   try {
-    localStorage.setItem("lupa_save_v9", JSON.stringify(charData));
-    localStorage.setItem("lupa_lore_v9", JSON.stringify(selectiveLore));
-    localStorage.setItem("lupa_whispers_v9", JSON.stringify(customWhispers));
-    localStorage.setItem("lupa_bestiary_v9", JSON.stringify(BESTIARY_DATA));
+    localStorage.setItem("lupa_save_v10", JSON.stringify(charData));
   } catch(e) {}
 }
 
 function saveNotes(val) {
-  try { localStorage.setItem("lupa_notes_v9", val); } catch(e) {}
+  try { localStorage.setItem("lupa_notes_v10", val); } catch(e) {}
 }
 
 function switchNavTab(tabId, btn) {
@@ -757,7 +788,6 @@ function renderSheet() {
   document.getElementById("dossier-secret").innerText = c.secret;
   document.getElementById("dossier-dynamics").innerText = c.dynamics;
 
-  // Render Targeted Whispers for this Character
   renderCharacterWhispers();
 
   // Modifiers
@@ -777,13 +807,7 @@ function renderCharacterWhispers() {
       var d = document.createElement("div");
       d.className = "dossier-section";
       d.style.borderColor = "#8e44ad";
-      d.innerHTML = `
-        <div class="dossier-heading" style="color:#bb86fc;">
-          <span>DM Secret Note</span>
-          <span class="target-tag">${w.target === "all" ? "Whole Pack" : "Direct To You"}</span>
-        </div>
-        <div style="font-size:0.88rem; color:#eee; font-style:italic;">"${w.text}"</div>
-      `;
+      d.innerHTML = '<div class="dossier-heading" style="color:#bb86fc;"><span>DM Secret Note</span><span class="target-tag">' + (w.target === "all" ? "Whole Pack" : "Direct To You") + '</span></div><div style="font-size:0.88rem; color:#eee; font-style:italic;">"' + w.text + '"</div>';
       box.appendChild(d);
     }
   });
@@ -912,7 +936,7 @@ function loadWaypoints() {
   var list = document.getElementById("waypoint-list");
   list.innerHTML = "";
   var wp = [];
-  try { wp = JSON.parse(localStorage.getItem("lupa_wp_v9") || "[]"); } catch(e) {}
+  try { wp = JSON.parse(localStorage.getItem("lupa_wp_v10") || "[]"); } catch(e) {}
   for (var i = 0; i < wp.length; i++) {
     (function(idx, w) {
       var d = document.createElement("div");
@@ -928,9 +952,9 @@ function addCustomWaypoint() {
   var val = inp.value.trim();
   if (val) {
     var wp = [];
-    try { wp = JSON.parse(localStorage.getItem("lupa_wp_v9") || "[]"); } catch(e) {}
+    try { wp = JSON.parse(localStorage.getItem("lupa_wp_v10") || "[]"); } catch(e) {}
     wp.push({ text: val, done: false });
-    try { localStorage.setItem("lupa_wp_v9", JSON.stringify(wp)); } catch(e) {}
+    try { localStorage.setItem("lupa_wp_v10", JSON.stringify(wp)); } catch(e) {}
     inp.value = "";
     loadWaypoints();
   }
@@ -938,23 +962,22 @@ function addCustomWaypoint() {
 
 function toggleWp(idx) {
   var wp = [];
-  try { wp = JSON.parse(localStorage.getItem("lupa_wp_v9") || "[]"); } catch(e) {}
+  try { wp = JSON.parse(localStorage.getItem("lupa_wp_v10") || "[]"); } catch(e) {}
   if (wp[idx]) {
     wp[idx].done = !wp[idx].done;
-    try { localStorage.setItem("lupa_wp_v9", JSON.stringify(wp)); } catch(e) {}
+    try { localStorage.setItem("lupa_wp_v10", JSON.stringify(wp)); } catch(e) {}
     loadWaypoints();
   }
 }
 
 function delWp(idx) {
   var wp = [];
-  try { wp = JSON.parse(localStorage.getItem("lupa_wp_v9") || "[]"); } catch(e) {}
+  try { wp = JSON.parse(localStorage.getItem("lupa_wp_v10") || "[]"); } catch(e) {}
   wp.splice(idx, 1);
-  try { localStorage.setItem("lupa_wp_v9", JSON.stringify(wp)); } catch(e) {}
+  try { localStorage.setItem("lupa_wp_v10", JSON.stringify(wp)); } catch(e) {}
   loadWaypoints();
 }
 
-/* ==================== SELECTIVE LORE RENDER (PLAYER VIEW) ==================== */
 function renderLoreTab() {
   // Lupa
   var lupaBadge = document.getElementById("badge-lupa");
@@ -986,7 +1009,7 @@ function renderLoreTab() {
     lycanBody.innerHTML = "<em>A frail, scholarly old gentleman who claims to have known your mother. He offered you the chance to meet her in exchange for helping him recover ancient transatlantic relics.</em>";
   }
 
-  // Bestiary (Player Side)
+  // Bestiary
   var pBestiary = document.getElementById("player-bestiary-list");
   pBestiary.innerHTML = "";
   var count = 0;
@@ -996,15 +1019,7 @@ function renderLoreTab() {
       count++;
       var d = document.createElement("div");
       d.className = "dossier-section";
-      d.innerHTML = `
-        <div class="dossier-heading">
-          <span>${b.name}</span>
-          <span class="revealed-badge">${b.revealedTo === "all" ? "Pack Observed" : "Observed by You"}</span>
-        </div>
-        <div style="font-size:0.84rem; color:var(--accent-gold); margin-bottom:4px;">${b.role} | Target Number: ${b.tn} | Health: ${b.hearts} Hearts</div>
-        <div style="font-size:0.85rem; color:#ccc; margin-bottom:6px;">${b.desc}</div>
-        <div style="font-size:0.8rem; color:#e67e22; background:#1b1512; padding:6px; border-radius:6px;"><strong>Tactics:</strong> ${b.combat}</div>
-      `;
+      d.innerHTML = '<div class="dossier-heading"><span>' + b.name + '</span><span class="revealed-badge">' + (b.revealedTo === "all" ? "Pack Observed" : "Observed by You") + '</span></div><div style="font-size:0.84rem; color:var(--accent-gold); margin-bottom:4px;">' + b.role + ' | TN: ' + b.tn + ' | HP: ' + b.hearts + ' Hearts</div><div style="font-size:0.85rem; color:#ccc; margin-bottom:6px;">' + b.desc + '</div><div style="font-size:0.8rem; color:#e67e22; background:#1b1512; padding:6px; border-radius:6px;"><strong>Tactics:</strong> ' + b.combat + '</div>';
       pBestiary.appendChild(d);
     }
   });
@@ -1014,7 +1029,6 @@ function renderLoreTab() {
   }
 }
 
-/* ==================== DM SCREEN & SELECTIVE CONTROL ==================== */
 function attemptDMScreenAccess(btn) {
   if (dmUnlocked) {
     switchNavTab('dm', btn);
@@ -1051,7 +1065,6 @@ function lockDMScreen() {
 }
 
 function renderDMScreen() {
-  // Lupa button
   var btnLupa = document.getElementById("dm-btn-lupa");
   if (btnLupa) {
     btnLupa.innerText = selectiveLore.lupa.revealed ? "Hide" : "Reveal";
@@ -1059,7 +1072,6 @@ function renderDMScreen() {
     document.getElementById("dm-select-lupa-target").value = selectiveLore.lupa.target;
   }
 
-  // Lycan button
   var btnLycan = document.getElementById("dm-btn-lycan");
   if (btnLycan) {
     btnLycan.innerText = selectiveLore.lycan.revealed ? "Hide" : "Reveal";
@@ -1067,27 +1079,13 @@ function renderDMScreen() {
     document.getElementById("dm-select-lycan-target").value = selectiveLore.lycan.target;
   }
 
-  // Bestiary selective controls
   var bBox = document.getElementById("dm-bestiary-controls");
   if (!bBox) return;
   bBox.innerHTML = "";
   BESTIARY_DATA.forEach(function(b, idx) {
     var row = document.createElement("div");
     row.className = "dm-toggle-row";
-    row.innerHTML = `
-      <div style="font-weight:700; font-size:0.88rem; color:var(--accent-gold);">${b.name}</div>
-      <div style="font-size:0.75rem; color:#aaa; margin-bottom:6px;">TN ${b.tn} | ${b.hearts} Hearts | ${b.combat}</div>
-      <div class="dm-controls-line">
-        <select id="bestiary-target-${idx}" class="char-select" style="font-size:0.82rem; padding:4px 8px; flex:1;" onchange="setBestiaryTarget(${idx}, this.value)">
-          <option value="none" ${b.revealedTo === 'none' ? 'selected' : ''}>Hidden from All</option>
-          <option value="all" ${b.revealedTo === 'all' ? 'selected' : ''}>Disclose to Whole Pack</option>
-          <option value="archie" ${b.revealedTo === 'archie' ? 'selected' : ''}>Archie Only</option>
-          <option value="roman" ${b.revealedTo === 'roman' ? 'selected' : ''}>Roman Only</option>
-          <option value="selena" ${b.revealedTo === 'selena' ? 'selected' : ''}>Selena Only</option>
-          <option value="penny" ${b.revealedTo === 'penny' ? 'selected' : ''}>Penny Only</option>
-        </select>
-      </div>
-    `;
+    row.innerHTML = '<div style="font-weight:700; font-size:0.88rem; color:var(--accent-gold);">' + b.name + '</div><div style="font-size:0.75rem; color:#aaa; margin-bottom:6px;">TN ' + b.tn + ' | ' + b.hearts + ' Hearts | ' + b.combat + '</div><div class="dm-controls-line"><select id="bestiary-target-' + idx + '" class="char-select" style="font-size:0.82rem; padding:4px 8px; flex:1;" onchange="setBestiaryTarget(' + idx + ', this.value)"><option value="none" ' + (b.revealedTo === 'none' ? 'selected' : '') + '>Hidden from All</option><option value="all" ' + (b.revealedTo === 'all' ? 'selected' : '') + '>Disclose to Whole Pack</option><option value="archie" ' + (b.revealedTo === 'archie' ? 'selected' : '') + '>Archie Only</option><option value="roman" ' + (b.revealedTo === 'roman' ? 'selected' : '') + '>Roman Only</option><option value="selena" ' + (b.revealedTo === 'selena' ? 'selected' : '') + '>Selena Only</option><option value="penny" ' + (b.revealedTo === 'penny' ? 'selected' : '') + '>Penny Only</option></select></div>';
     bBox.appendChild(row);
   });
 
@@ -1130,10 +1128,7 @@ function renderDMWhispersAudit() {
   customWhispers.forEach(function(w, idx) {
     var row = document.createElement("div");
     row.style.cssText = "display:flex; justify-content:space-between; align-items:center; background:#121018; padding:6px 10px; border-radius:6px; margin:4px 0; font-size:0.8rem;";
-    row.innerHTML = `
-      <div><span class="target-tag">${w.target.toUpperCase()}</span> ${w.text}</div>
-      <span style="color:#e74c3c; cursor:pointer; font-weight:bold; margin-left:8px;" onclick="delWhisper(${idx})">✕</span>
-    `;
+    row.innerHTML = '<div><span class="target-tag">' + w.target.toUpperCase() + '</span> ' + w.text + '</div><span style="color:#e74c3c; cursor:pointer; font-weight:bold; margin-left:8px;" onclick="delWhisper(' + idx + ')">✕</span>';
     box.appendChild(row);
   });
 }
@@ -1162,15 +1157,7 @@ function renderDMCombatList() {
   dmCombatTrackers.forEach(function(item, idx) {
     var row = document.createElement("div");
     row.style.cssText = "display:flex; justify-content:space-between; align-items:center; background:#1f1625; padding:8px; border-radius:6px; margin:4px 0;";
-    row.innerHTML = `
-      <div style="font-weight:700; font-size:0.9rem;">${item.name}</div>
-      <div style="display:flex; align-items:center; gap:6px;">
-        <button type="button" class="btn" style="padding:2px 8px; flex:none;" onclick="adjDMHp(${idx}, -1)">-1</button>
-        <span style="font-weight:800; color:var(--accent-red-bright); min-width:40px; text-align:center;">${item.hp} HP</span>
-        <button type="button" class="btn" style="padding:2px 8px; flex:none;" onclick="adjDMHp(${idx}, 1)">+1</button>
-        <span style="color:#e74c3c; cursor:pointer; font-weight:bold; margin-left:8px;" onclick="delDMTracker(${idx})">✕</span>
-      </div>
-    `;
+    row.innerHTML = '<div style="font-weight:700; font-size:0.9rem;">' + item.name + '</div><div style="display:flex; align-items:center; gap:6px;"><button type="button" class="btn" style="padding:2px 8px; flex:none;" onclick="adjDMHp(' + idx + ', -1)">-1</button><span style="font-weight:800; color:var(--accent-red-bright); min-width:40px; text-align:center;">' + item.hp + ' HP</span><button type="button" class="btn" style="padding:2px 8px; flex:none;" onclick="adjDMHp(' + idx + ', 1)">+1</button><span style="color:#e74c3c; cursor:pointer; font-weight:bold; margin-left:8px;" onclick="delDMTracker(' + idx + ')">✕</span></div>';
     list.appendChild(row);
   });
 }
@@ -1185,7 +1172,6 @@ function delDMTracker(idx) {
   renderDMCombatList();
 }
 
-// Immediate run
 initApp();
 </script>
 </body>
