@@ -165,9 +165,9 @@
     <div class="dice-display" id="dice-result">20</div>
     <div class="dice-subtext" id="dice-summary">Tap below to roll for an action</div>
     <div class="btn-row">
-      <button class="btn btn-primary" onclick="executeRoll('standard')">Roll d20</button>
-      <button class="btn btn-gold" onclick="executeRoll('adv')">Advantage</button>
-      <button class="btn btn-purple" onclick="executeRoll('dis')">Disadv</button>
+      <button class="btn btn-primary" id="btn-roll-std">Roll d20</button>
+      <button class="btn btn-gold" id="btn-roll-adv">Advantage</button>
+      <button class="btn btn-purple" id="btn-roll-dis">Disadv</button>
     </div>
     <div class="mod-strip">
       <div class="mod-btn selected" id="mod-zero" onclick="setRollMod(0, 'Flat')">+0 Flat</div>
@@ -179,10 +179,10 @@
 
   <!-- NAVIGATION TABS -->
   <div class="nav-tabs">
-    <button class="tab-btn active" onclick="switchNavTab('play')">Play Sheet</button>
-    <button class="tab-btn" onclick="switchNavTab('dossier')">Dossier</button>
-    <button class="tab-btn" onclick="switchNavTab('journey')">Waypoints</button>
-    <button class="tab-btn" onclick="switchNavTab('rules')">Quick Rules</button>
+    <button class="tab-btn active" onclick="switchNavTab('play', this)">Play Sheet</button>
+    <button class="tab-btn" onclick="switchNavTab('dossier', this)">Dossier</button>
+    <button class="tab-btn" onclick="switchNavTab('journey', this)">Waypoints</button>
+    <button class="tab-btn" onclick="switchNavTab('rules', this)">Quick Rules</button>
   </div>
 
   <!-- TAB 1: PLAY SHEET -->
@@ -192,7 +192,7 @@
         <select class="char-select" id="char-picker" onchange="onCharChange()">
           <option value="archie">Archie (Akshat)</option>
           <option value="roman">Roman (Rutuj)</option>
-          <option value="selena">Selena</option>
+          <option value="selena">Selena (Sukhada)</option>
           <option value="penny">Penny (Pari)</option>
         </select>
         <div class="level-badge" onclick="openLevelUpModal()">⚡ Level Up</div>
@@ -272,9 +272,9 @@
   <div id="tab-rules" class="tab-content">
     <div class="card">
       <div style="font-weight:700; color:var(--accent-gold); margin-bottom:6px;">Highway Resolution</div>
-      <p style="font-size:0.85rem; margin:4px 0;"><strong>1–9: Complication / Damage.</strong> Attack misses or enemy deals 1 Heart.</p>
-      <p style="font-size:0.85rem; margin:4px 0;"><strong>10–14: Success at a Cost.</strong> You achieve the intent, but take a hit or cause noise.</p>
-      <p style="font-size:0.85rem; margin:4px 0;"><strong>15+: Clean Triumph.</strong> Full success, zero retaliation.</p>
+      <p style="font-size:0.85rem; margin:4px 0;"><strong>1–9: Complication / Damage.</strong> Action fails or enemy retaliates for 1 Heart.</p>
+      <p style="font-size:0.85rem; margin:4px 0;"><strong>10–14: Success at a Cost.</strong> You achieve the intent, but take a hit, make noise, or lose gear.</p>
+      <p style="font-size:0.85rem; margin:4px 0;"><strong>15+: Clean Triumph.</strong> Full clean success, zero complications.</p>
     </div>
   </div>
 
@@ -283,7 +283,7 @@
     <div class="modal-dialog">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
         <div style="font-weight:800; font-size:1.1rem; color:var(--accent-gold);">Milestone Advancement</div>
-        <div onclick="closeLevelUpModal()" style="font-size:1.4rem; cursor:pointer; color:#888;">✕</div>
+        <div onclick="closeLevelUpModal()" style="font-size:1.4rem; cursor:pointer; color:#888; padding:4px 8px;">✕</div>
       </div>
       
       <div style="margin:10px 0;">
@@ -356,7 +356,7 @@
       dossier: "Second brother. High drive, disciplined, natural leader. Carries crushing guilt: an early transformation at age 16 killed his foster brother, leaving him the sole heir to wealth he hates spending."
     },
     selena: {
-      name: "Selena", tagline: "The Guarded Empath",
+      name: "Selena (Sukhada)", tagline: "The Guarded Empath",
       force: 0, finesse: 2, focus: 1, level: 1,
       maxHearts: 3, hearts: 3, maxBeast: 3, beast: 3,
       inventory: ["Concealed silver-edged stiletto", "Vial of belladonna drops", "Forged salon letters"],
@@ -387,34 +387,32 @@
   let state = {};
 
   function initApp() {
-    const saved = localStorage.getItem("lupa_pack_state_v2");
+    const saved = localStorage.getItem("lupa_pack_state_v3");
     if (saved) {
       try { state = JSON.parse(saved); } catch(e) { state = JSON.parse(JSON.stringify(charPresets)); }
     } else {
       state = JSON.parse(JSON.stringify(charPresets));
     }
+    
+    // Ensure Selena's display name updates even if previous state was cached
+    if (state.selena) {
+      state.selena.name = "Selena (Sukhada)";
+    }
+
     loadWaypoints();
-    document.getElementById("clues-text").value = localStorage.getItem("lupa_clues_notes") || "";
-    renderActiveCharacter();
-  }
+    const notesElem = document.getElementById("clues-text");
+    if (notesElem) {
+      notesElem.value = localStorage.getItem("lupa_clues_notes") || "";
+    }
 
-  function saveState() {
-    localStorage.setItem("lupa_pack_state_v2", JSON.stringify(state));
-  }
+    // Attach roll listeners safely
+    document.getElementById("btn-roll-std").onclick = () => executeRoll('standard');
+    document.getElementById("btn-roll-adv").onclick = () => executeRoll('adv');
+    document.getElementById("btn-roll-dis").onclick = () => executeRoll('dis');
 
-  function switchNavTab(tabId) {
-    document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
-    document.querySelectorAll(".tab-content").forEach(c => c.classList.remove("active"));
-    event.target.classList.add("active");
-    document.getElementById("tab-" + tabId).classList.add("active");
-  }
+    // Enter key listener for inventory
+    document.getElementById("new-item-input").addEventListener("keypress", (e) => {
+      if (e.key === "Enter") addInventoryItem();
+    });
 
-  function onCharChange() {
-    activeCharKey = document.getElementById("char-picker").value;
-    renderActiveCharacter();
-  }
-
-  function renderActiveCharacter() {
-    const c = state[activeCharKey];
-    document.getElementById("char-picker").value = activeCharKey;
-    document.getElementB
+    renderActi
