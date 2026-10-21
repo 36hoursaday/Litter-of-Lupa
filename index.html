@@ -268,21 +268,15 @@
   </div>
 
 <script>
-/**
- * CONFIGURATION:
- * 1. CSV_URL: Your "Published to the Web" Google Sheet CSV link (for read-only fallback).
- * 2. APPS_SCRIPT_URL: Your deployed Google Apps Script Web App URL (enables reading Sheet1 + reading/writing PlayerNotes tab).
- */
 const CSV_URL = "PASTE_YOUR_PUBLISHED_CSV_LINK_HERE";
 const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw9W-ik1IerVuBcwmqqOZ4DsUX-jENyukWsHspbUCWB7TDAGSBX4oita-4EkEvgDnzh/exec";
 
-// Built-in fallback descriptions if CustomText is left blank on original 7 keys
 const FALLBACK_LORE = {
   lupa: "Mother Lupa: Over 2,500 years old; foster mother of Romulus and Remus. Hid her cubs across Europe and the Caribbean.",
   lycan: "Professor Lycan: Diminutive human alchemist whose synthetic Philosopher's Stone is failing.",
   brass_hound: "Brass Wolfhound (Minion | TN 10 | 1 Heart): Mechanical quadruped forged from brass and coiled springs; sprays toxic mercury on destruction.",
   clockwork_myrmidon: "Clockwork Myrmidon (Elite | TN 12 | 2 Hearts): 6-foot iron automaton with dual scythe blades and glass ocular sensors.",
-  athanor_behemoth: "Athanor Behemoth (Boss | TN 14 | 4 Hearts): Heavy siege construct housing a roaring alchemical furnace.",
+  athanor_behemoth: "Athanor Behemoth (Boss | TN 14 | 4 Hearts): Heavy siege construct housing a roaring alchemical forge.",
   witchfinder_officer: "Witchfinder Inquisitor (Elite | TN 12 | 2 Hearts): Armed with silver-shot wheellocks and wolfsbane flash-powder.",
   whisper: "Private Whisper: A sensory clue noticed only by you."
 };
@@ -337,10 +331,9 @@ const CHARACTERS = {
 let currentChar = localStorage.getItem("lupa_char") || "archie";
 let currentMod = 0;
 let currentModLabel = "Flat (+0)";
-let cloudControlRows = []; // Dynamically holds all rows from Sheet1
-let cloudNotesMap = {};    // Holds { archie: "...", roman: "..." }
+let cloudControlRows = [];
+let cloudNotesMap = {};
 
-// State per character (Hearts, Marks, Drift)
 function getCharState(charKey) {
   const raw = localStorage.getItem("lupa_state_" + charKey);
   if (raw) return JSON.parse(raw);
@@ -433,12 +426,10 @@ function onCharChange() {
   document.getElementById("valFocus").textContent = "+" + c.stats.focus;
   document.getElementById("noteCharName").textContent = c.name;
 
-  // Render Powers
   document.getElementById("powersList").innerHTML = c.powers.map(p =>
     `<div class="item-pill"><strong>${p.name}</strong><div style="font-size:0.85rem; color:var(--text-secondary)">${p.desc}</div></div>`
   ).join("");
 
-  // Render Starting Gear
   document.getElementById("startingGearList").innerHTML = c.gear.map(g =>
     `<div class="item-pill">🎒 ${g}</div>`
   ).join("");
@@ -448,12 +439,6 @@ function onCharChange() {
   loadPlayerNotesLocal();
 }
 
-/**
- * Checks if a row from Sheet1 is visible to the currently selected character.
- * Supports:
- * - Standard 4-column layout: Key | Revealed (TRUE/FALSE) | Target (all/archie/etc.) | CustomText
- * - Shorthand 3-column layout: Key | all (or char name) | CustomText
- */
 function parseSheetRow(cols) {
   const key = (cols[0] || "").trim();
   if (!key || key.toLowerCase() === "key") return null;
@@ -474,7 +459,6 @@ function parseSheetRow(cols) {
     target = col2 || "all";
     text = (cols[3] || "").trim();
   } else if (["all", "archie", "roman", "selena", "penny"].some(t => col1.includes(t))) {
-    // Handles rows where column B was set directly to 'all' or a character name
     revealed = true;
     target = col1;
     text = (cols[2] || cols[3] || "").trim();
@@ -505,7 +489,6 @@ function formatCardHTML(entry, isItem) {
     title = entry.text.slice(0, colonIdx).replace(/\*\*/g, "").trim();
     body = entry.text.slice(colonIdx + 1).trim();
   }
-  // Strip any secret DM notes in parentheses if present
   body = body.replace(/\(Secret DM Note:.*?\)/gi, "").trim();
 
   const targetBadge = (entry.target && entry.target !== "all")
@@ -557,7 +540,6 @@ function renderDynamicSheetContent() {
     : `<div style="color:var(--text-dim); font-size:0.85rem;">No dossier entries unlocked for ${c.name} yet.</div>`;
 }
 
-// Minimal CSV parser that respects quoted commas
 function parseCSV(csvText) {
   const rows = [];
   let current = [], cell = "", inQuotes = false;
@@ -608,7 +590,6 @@ async function syncFromCloud(manual = false) {
   }
 }
 
-// NOTES STORAGE (Local + Google Sheet Tab Recovery)
 function loadPlayerNotesLocal() {
   const localText = localStorage.getItem("lupa_notes_" + currentChar) || cloudNotesMap[currentChar] || "";
   document.getElementById("playerNotes").value = localText;
@@ -655,7 +636,6 @@ async function loadPlayerNotesFromCloud() {
   }
 }
 
-// Initialize
 document.getElementById("charSelect").value = currentChar;
 onCharChange();
 syncFromCloud();
