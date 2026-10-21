@@ -80,8 +80,6 @@
     background: var(--card-bg); color: var(--accent-gold-bright);
     box-shadow: 0 2px 6px rgba(0,0,0,0.5);
   }
-  .tab-btn.dm-tab { color: #e74c3c; }
-  .tab-btn.dm-tab.active { color: #ff6b6b; border: 1px solid #e74c3c; }
   .tab-content { display: none; }
   .tab-content.active { display: block; }
 
@@ -129,12 +127,8 @@
     background: #121318; border: 1px solid #282a36; border-radius: 8px;
     padding: 10px; margin-bottom: 8px;
   }
-  .item-pill.sheet-granted {
-    border-left: 3px solid var(--accent-gold-bright);
-  }
-  .lore-card.whisper-card {
-    border-left: 3px solid var(--accent-purple-bright);
-  }
+  .item-pill.sheet-granted { border-left: 3px solid var(--accent-gold-bright); }
+  .lore-card.whisper-card { border-left: 3px solid var(--accent-purple-bright); }
   .badge-target {
     display: inline-block; font-size: 0.7rem; padding: 2px 6px;
     border-radius: 4px; background: #252834; color: var(--accent-gold-bright);
@@ -207,7 +201,6 @@
         </div>
       </div>
 
-      <!-- HEARTS & BEAST MARKS -->
       <div class="tracker-row">
         <span>❤️ Hearts <small style="color:var(--text-dim)">(0 = Frenzy)</small></span>
         <div class="token-group" id="heartsTrack"></div>
@@ -228,7 +221,7 @@
     </div>
   </div>
 
-  <!-- TAB 2: INVENTORY & GEAR (STARTING + SHEET GRANTED) -->
+  <!-- TAB 2: INVENTORY & GEAR -->
   <div id="invTab" class="tab-content">
     <div class="card">
       <div class="char-header">
@@ -236,13 +229,12 @@
         <button style="flex:0; padding:6px 10px; font-size:0.75rem;" onclick="syncFromCloud(true)">↻ Refresh</button>
       </div>
       <div id="sheetItemsList" style="margin-top:8px;"></div>
-
       <div class="section-title">Starting Personal Gear</div>
       <div id="startingGearList"></div>
     </div>
   </div>
 
-  <!-- TAB 3: DOSSIER / LORE REVEALS -->
+  <!-- TAB 3: DOSSIER -->
   <div id="loreTab" class="tab-content">
     <div class="card">
       <div class="char-header">
@@ -254,7 +246,7 @@
     </div>
   </div>
 
-  <!-- TAB 4: PLAYER NOTES (CLOUD + LOCAL STORAGE) -->
+  <!-- TAB 4: PLAYER NOTES -->
   <div id="notesTab" class="tab-content">
     <div class="card">
       <div class="section-title" style="margin-top:0">Field Journal — <span id="noteCharName">Archie</span></div>
@@ -268,23 +260,21 @@
   </div>
 
 <script>
-const CSV_URL = "PASTE_YOUR_PUBLISHED_CSV_LINK_HERE";
 const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw9W-ik1IerVuBcwmqqOZ4DsUX-jENyukWsHspbUCWB7TDAGSBX4oita-4EkEvgDnzh/exec";
 
 const FALLBACK_LORE = {
-  lupa: "Mother Lupa: Over 2,500 years old; foster mother of Romulus and Remus. Hid her cubs across Europe and the Caribbean.",
-  lycan: "Professor Lycan: Diminutive human alchemist whose synthetic Philosopher's Stone is failing.",
-  brass_hound: "Brass Wolfhound (Minion | TN 10 | 1 Heart): Mechanical quadruped forged from brass and coiled springs; sprays toxic mercury on destruction.",
-  clockwork_myrmidon: "Clockwork Myrmidon (Elite | TN 12 | 2 Hearts): 6-foot iron automaton with dual scythe blades and glass ocular sensors.",
-  athanor_behemoth: "Athanor Behemoth (Boss | TN 14 | 4 Hearts): Heavy siege construct housing a roaring alchemical forge.",
-  witchfinder_officer: "Witchfinder Inquisitor (Elite | TN 12 | 2 Hearts): Armed with silver-shot wheellocks and wolfsbane flash-powder.",
-  whisper: "Private Whisper: A sensory clue noticed only by you."
+  lupa: "Mother Lupa: Over 2,500 years old; foster mother of Romulus and Remus. Drank from the Fountain of Youth, keeping her vitality and youthful form. Hid her cubs across Europe and the Caribbean to protect them from Lycan's mortal desperation.",
+  lycan: "Professor Lycan: Diminutive human alchemist who extended his life using a flawed Philosopher's Stone. His synthetic life-extension is failing rapidly. He needs Lupa’s Fountain of Youth water before his body and mind liquefy.",
+  brass_hound: "Brass Wolfhound (Minion | TN 10 | 1 Heart): Mechanical quadruped forged from brass and coiled springs. Tracks scent trails; explodes upon direct destruction, spraying toxic alchemical mercury.",
+  clockwork_myrmidon: "Clockwork Myrmidon (Elite | TN 12 | 2 Hearts): 6-foot iron automaton with dual scythe blades (disarms on complication). Heavy armor plates; ocular glass sensors can be targeted to blind it.",
+  athanor_behemoth: "Athanor Behemoth (Boss | TN 14 | 4 Hearts): Lycan's heavy siege construct with an active alchemical forge in its ribcage. Hydraulic fists and superheated steam vents.",
+  witchfinder_officer: "Witchfinder Inquisitor (Elite | TN 12 | 2 Hearts): Holy Office hunter armed with silver-shot wheellocks (2 Hearts damage) and wolfsbane flash-powder grenades that suppress Beast Marks.",
+  whisper: "DM Whisper Relay: Private trait triggers and sensory disclosures channeled directly to individual sibling dossiers."
 };
 
 const CHARACTERS = {
   archie: {
-    name: "Archie",
-    archetype: "The Reluctant Polymath & Eldest Sibling",
+    name: "Archie", archetype: "The Reluctant Polymath & Eldest Sibling",
     stats: { force: 0, finesse: 1, focus: 2 },
     gear: ["Clockwork grapple", "Telescope optic lens", "Pouch of copper grease"],
     powers: [
@@ -294,8 +284,7 @@ const CHARACTERS = {
     ]
   },
   roman: {
-    name: "Roman",
-    archetype: "The Burdened Heir & Frontline Alpha",
+    name: "Roman", archetype: "The Burdened Heir & Frontline Alpha",
     stats: { force: 2, finesse: 1, focus: 0 },
     gear: ["Estate signet rapier", "Purse of gilded sovereigns", "Sealed death writ"],
     powers: [
@@ -305,8 +294,7 @@ const CHARACTERS = {
     ]
   },
   selena: {
-    name: "Selena",
-    archetype: "The Guarded Empath & Salon Confidante",
+    name: "Selena", archetype: "The Guarded Empath & Salon Confidante",
     stats: { force: 0, finesse: 2, focus: 1 },
     gear: ["Silver-edged stiletto", "Vial of belladonna drops", "Forged salon letters of transit"],
     powers: [
@@ -316,8 +304,7 @@ const CHARACTERS = {
     ]
   },
   penny: {
-    name: "Penny",
-    archetype: "The Wildling Island Rover & Pack Lorekeeper",
+    name: "Penny", archetype: "The Wildling Island Rover & Pack Lorekeeper",
     stats: { force: 1, finesse: 2, focus: 0 },
     gear: ["Haitian navigation charm", "Tropical healing herbs", "Carved bone hunting knife"],
     powers: [
@@ -370,13 +357,8 @@ function rollD20(mode) {
   const r2 = Math.floor(Math.random() * 20) + 1;
   let chosen = r1;
   let detail = `Natural ${r1}`;
-  if (mode === 'Adv') {
-    chosen = Math.max(r1, r2);
-    detail = `Adv (${r1}, ${r2} → ${chosen})`;
-  } else if (mode === 'Dis') {
-    chosen = Math.min(r1, r2);
-    detail = `Dis (${r1}, ${r2} → ${chosen})`;
-  }
+  if (mode === 'Adv') { chosen = Math.max(r1, r2); detail = `Adv (${r1}, ${r2} → ${chosen})`; }
+  else if (mode === 'Dis') { chosen = Math.min(r1, r2); detail = `Dis (${r1}, ${r2} → ${chosen})`; }
   const total = chosen + currentMod;
   let outcome = total >= 15 ? "🔥 CLEAN TRIUMPH!" : (total >= 10 ? "⚡ SUCCESS AT A COST" : "💀 COMPLICATION");
   document.getElementById("diceResult").textContent = total;
@@ -388,9 +370,7 @@ function renderTrackers() {
   const heartsEl = document.getElementById("heartsTrack");
   const marksEl = document.getElementById("marksTrack");
   const driftEl = document.getElementById("driftTrack");
-  heartsEl.innerHTML = "";
-  marksEl.innerHTML = "";
-  driftEl.innerHTML = "";
+  heartsEl.innerHTML = ""; marksEl.innerHTML = ""; driftEl.innerHTML = "";
 
   for (let i = 1; i <= st.maxHearts; i++) {
     const t = document.createElement("div");
@@ -451,22 +431,14 @@ function parseSheetRow(cols) {
   const col2 = (cols[2] || "").trim().toLowerCase();
 
   if (col1 === "true" || col1 === "yes" || col1 === "1") {
-    revealed = true;
-    target = col2 || "all";
-    text = (cols[3] || "").trim();
+    revealed = true; target = col2 || "all"; text = (cols[3] || "").trim();
   } else if (col1 === "false" || col1 === "no" || col1 === "0" || col1.startsWith("false")) {
-    revealed = false;
-    target = col2 || "all";
-    text = (cols[3] || "").trim();
+    revealed = false; target = col2 || "all"; text = (cols[3] || "").trim();
   } else if (["all", "archie", "roman", "selena", "penny"].some(t => col1.includes(t))) {
-    revealed = true;
-    target = col1;
-    text = (cols[2] || cols[3] || "").trim();
+    revealed = true; target = col1; text = (cols[2] || cols[3] || "").trim();
   }
 
-  if (!text && FALLBACK_LORE[key]) {
-    text = FALLBACK_LORE[key];
-  }
+  if (!text && FALLBACK_LORE[key]) { text = FALLBACK_LORE[key]; }
   return { key, revealed, target, text };
 }
 
@@ -512,78 +484,38 @@ function formatCardHTML(entry, isItem) {
 function renderDynamicSheetContent() {
   const itemsContainer = document.getElementById("sheetItemsList");
   const loreContainer = document.getElementById("loreList");
-  let itemHTML = [];
-  let loreHTML = [];
+  let itemHTML = [], loreHTML = [];
 
   cloudControlRows.forEach(cols => {
     const entry = parseSheetRow(cols);
     if (!entry || !entry.revealed) return;
     if (!isTargetMatch(entry.target, currentChar)) return;
 
-    if (isItemRow(entry.key)) {
-      itemHTML.push(formatCardHTML(entry, true));
-    } else {
-      loreHTML.push(formatCardHTML(entry, false));
-    }
+    if (isItemRow(entry.key)) { itemHTML.push(formatCardHTML(entry, true)); }
+    else { loreHTML.push(formatCardHTML(entry, false)); }
   });
 
   const c = CHARACTERS[currentChar];
   document.getElementById("gearCount").textContent = c.gear.length + itemHTML.length;
   document.getElementById("loreCount").textContent = loreHTML.length;
 
-  itemsContainer.innerHTML = itemHTML.length
-    ? itemHTML.join("")
-    : `<div style="color:var(--text-dim); font-size:0.85rem; margin-bottom:10px;">No special campaign items revealed for ${c.name} yet.</div>`;
-
-  loreContainer.innerHTML = loreHTML.length
-    ? loreHTML.join("")
-    : `<div style="color:var(--text-dim); font-size:0.85rem;">No dossier entries unlocked for ${c.name} yet.</div>`;
-}
-
-function parseCSV(csvText) {
-  const rows = [];
-  let current = [], cell = "", inQuotes = false;
-  for (let i = 0; i < csvText.length; i++) {
-    const ch = csvText[i], next = csvText[i + 1];
-    if (inQuotes) {
-      if (ch === '"' && next === '"') { cell += '"'; i++; }
-      else if (ch === '"') inQuotes = false;
-      else cell += ch;
-    } else {
-      if (ch === '"') inQuotes = true;
-      else if (ch === ',') { current.push(cell); cell = ""; }
-      else if (ch === '\n' || (ch === '\r' && next === '\n')) {
-        if (ch === '\r') i++;
-        current.push(cell); rows.push(current); current = []; cell = "";
-      } else cell += ch;
-    }
-  }
-  if (cell || current.length) { current.push(cell); rows.push(current); }
-  return rows;
+  itemsContainer.innerHTML = itemHTML.length ? itemHTML.join("") : `<div style="color:var(--text-dim); font-size:0.85rem; margin-bottom:10px;">No special campaign items revealed for ${c.name} yet.</div>`;
+  loreContainer.innerHTML = loreHTML.length ? loreHTML.join("") : `<div style="color:var(--text-dim); font-size:0.85rem;">No dossier entries unlocked for ${c.name} yet.</div>`;
 }
 
 async function syncFromCloud(manual = false) {
   const statusEl = document.getElementById("syncStatus");
   statusEl.textContent = "Syncing with Campaign Control Sheet...";
   try {
-    if (APPS_SCRIPT_URL && !APPS_SCRIPT_URL.startsWith("PASTE_")) {
-      const res = await fetch(APPS_SCRIPT_URL + "?t=" + Date.now());
-      const data = await res.json();
-      if (data.control) cloudControlRows = data.control;
-      if (data.notes) {
-        data.notes.slice(1).forEach(r => {
-          if (r[0]) cloudNotesMap[String(r[0]).toLowerCase()] = r[1] || "";
-        });
-      }
-      statusEl.textContent = "Synced via Cloud Script (" + new Date().toLocaleTimeString() + ")";
-    } else if (CSV_URL && !CSV_URL.startsWith("PASTE_")) {
-      const res = await fetch(CSV_URL + (CSV_URL.includes("?") ? "&" : "?") + "t=" + Date.now());
-      const text = await res.text();
-      cloudControlRows = parseCSV(text);
-      statusEl.textContent = "Synced via Published CSV (" + new Date().toLocaleTimeString() + ")";
-    } else {
-      statusEl.textContent = "Offline Mode (Configure APPS_SCRIPT_URL or CSV_URL)";
+    const res = await fetch(APPS_SCRIPT_URL + "?t=" + Date.now());
+    const data = await res.json();
+    if (data.control) cloudControlRows = data.control;
+    if (data.notes) {
+      data.notes.slice(1).forEach(r => {
+        if (r[0]) cloudNotesMap[String(r[0]).toLowerCase()] = r[1] || "";
+      });
     }
+    statusEl.textContent = "Synced via Cloud Script (" + new Date().toLocaleTimeString() + ")";
     renderDynamicSheetContent();
   } catch (err) {
     statusEl.textContent = "Sync error — check URL / connection.";
@@ -605,10 +537,6 @@ async function savePlayerNotes() {
   localStorage.setItem("lupa_notes_" + currentChar, notesText);
   const noteStatus = document.getElementById("notesStatus");
 
-  if (!APPS_SCRIPT_URL || APPS_SCRIPT_URL.startsWith("PASTE_")) {
-    noteStatus.textContent = "Saved on device! (Deploy Google Apps Script to sync to Google Sheet).";
-    return;
-  }
   noteStatus.textContent = "Saving to Google Sheet (PlayerNotes tab)...";
   try {
     await fetch(APPS_SCRIPT_URL, {
@@ -618,7 +546,7 @@ async function savePlayerNotes() {
       body: JSON.stringify({ character: currentChar, notes: notesText })
     });
     cloudNotesMap[currentChar] = notesText;
-    noteStatus.textContent = "✔ Saved to Google Sheet PlayerNotes tab (" + new Date().toLocaleTimeString() + ")";
+    noteStatus.textContent = "✔ Saved to Google Sheet (" + new Date().toLocaleTimeString() + ")";
   } catch (err) {
     noteStatus.textContent = "Saved locally; cloud push failed.";
   }
