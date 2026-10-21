@@ -260,7 +260,10 @@
   </div>
 
 <script>
+
+  const PUBLISHED_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQAwmLuwWGka6UjtZXXo2N_74Ou4rFlTpZRMjkVdGQqTcYpUnhw-z-M_pfbDVHemLyxVIolPcpwzQ6p/pub?output=csv";
 const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw9W-ik1IerVuBcwmqqOZ4DsUX-jENyukWsHspbUCWB7TDAGSBX4oita-4EkEvgDnzh/exec";
+  const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw9W-ik1IerVuBcwmqqOZ4DsUX-jENyukWsHspbUCWB7TDAGSBX4oita-4EkEvgDnzh/exec";
 
 const FALLBACK_LORE = {
   lupa: "Mother Lupa: Over 2,500 years old; foster mother of Romulus and Remus. Drank from the Fountain of Youth, keeping her vitality and youthful form. Hid her cubs across Europe and the Caribbean to protect them from Lycan's mortal desperation.",
@@ -505,20 +508,21 @@ function renderDynamicSheetContent() {
 
 async function syncFromCloud(manual = false) {
   const statusEl = document.getElementById("syncStatus");
-  statusEl.textContent = "Syncing with Campaign Control Sheet...";
+  statusEl.textContent = "Syncing with Campaign Sheet...";
   try {
-    const res = await fetch(APPS_SCRIPT_URL + "?t=" + Date.now());
-    const data = await res.json();
-    if (data.control) cloudControlRows = data.control;
-    if (data.notes) {
-      data.notes.slice(1).forEach(r => {
-        if (r[0]) cloudNotesMap[String(r[0]).toLowerCase()] = r[1] || "";
-      });
-    }
-    statusEl.textContent = "Synced via Cloud Script (" + new Date().toLocaleTimeString() + ")";
+    // Fetch directly from the published CSV (bypasses CORS entirely)
+    const res = await fetch(PUBLISHED_CSV_URL + "&t=" + Date.now());
+    const csvText = await res.text();
+    
+    // Parse the CSV rows into the array format your app expects
+    cloudControlRows = csvText.split("\n").map(row => {
+      return row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/).map(val => val.replace(/^"|"$/g, '').trim());
+    });
+
+    statusEl.textContent = "Synced via CSV (" + new Date().toLocaleTimeString() + ")";
     renderDynamicSheetContent();
   } catch (err) {
-    statusEl.textContent = "Sync error — check URL / connection.";
+    statusEl.textContent = "Sync error — check CSV link / connection.";
   }
 }
 
