@@ -53,7 +53,7 @@
   .btn-gold { background: #5c470b; border-color: var(--accent-gold); color: #fff; }
   .btn-purple { background: #4a235a; border-color: var(--accent-purple-bright); color: #fff; }
   .btn-green { background: #195b34; border-color: var(--accent-green); color: #fff; }
-
+  
   .mod-strip {
     display: flex; gap: 6px; background: #121318; padding: 6px;
     border-radius: 8px; margin-top: 8px; border: 1px solid #22242d;
@@ -72,7 +72,7 @@
     overflow-x: auto;
   }
   .tab-btn {
-    flex: 1; min-width: 68px; padding: 10px 4px; text-align: center; font-size: 0.8rem;
+    flex: 1; min-width: 68px; padding: 10px 4px; text-align: center; font-size: 0.78rem;
     font-weight: 600; color: var(--text-secondary); border-radius: 8px;
     cursor: pointer; border: none; background: transparent; white-space: nowrap;
   }
@@ -80,20 +80,22 @@
     background: var(--card-bg); color: var(--accent-gold-bright);
     box-shadow: 0 2px 6px rgba(0,0,0,0.5);
   }
+  .tab-btn.dm-tab { color: #e74c3c; }
+  .tab-btn.dm-tab.active { color: #ff6b6b; border: 1px solid #e74c3c; }
   .tab-content { display: none; }
   .tab-content.active { display: block; }
-
+  
   .char-header {
-    display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;
+    display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; gap: 6px;
   }
   .char-select {
     background: #252834; color: #fff; border: 1px solid #3e4451;
-    font-size: 1rem; font-weight: 700; padding: 8px 10px; border-radius: 8px;
+    font-size: 0.95rem; font-weight: 700; padding: 8px 10px; border-radius: 8px; flex: 1;
   }
   .level-badge {
     background: #2a2208; border: 1px solid var(--accent-gold);
-    color: var(--accent-gold-bright); font-size: 0.8rem; font-weight: 700;
-    padding: 8px 12px; border-radius: 6px; cursor: pointer;
+    color: var(--accent-gold-bright); font-size: 0.78rem; font-weight: 700;
+    padding: 8px 10px; border-radius: 6px; cursor: pointer; flex: none;
   }
   .stats-grid {
     display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px;
@@ -103,482 +105,1338 @@
   .stat-col:active { background: #1e2028; }
   .stat-val { font-size: 1.25rem; font-weight: 800; color: var(--accent-gold); }
   .stat-lbl { font-size: 0.72rem; color: var(--text-secondary); text-transform: uppercase; }
-
+  
   .tracker-row {
     display: flex; justify-content: space-between; align-items: center;
-    padding: 8px 0; border-bottom: 1px solid #22242d;
+    padding: 10px 0; border-bottom: 1px solid #22242d;
   }
   .tracker-row:last-child { border-bottom: none; }
-  .token-group { display: flex; gap: 6px; }
-  .token {
+  .token-group { display: flex; gap: 6px; flex-wrap: wrap; }
+  .heart-token, .beast-token {
+    width: 38px; height: 38px; border-radius: 8px; display: flex;
+    align-items: center; justify-content: center; font-size: 1.25rem; cursor: pointer;
+    border: 1px solid #444; background: #222; transition: all 0.12s ease;
+  }
+  .heart-token.lost, .beast-token.spent {
+    opacity: 0.25; filter: grayscale(1);
+  }
+  .drift-token {
     width: 28px; height: 28px; border-radius: 50%; display: flex;
-    align-items: center; justify-content: center; font-size: 0.9rem;
-    cursor: pointer; border: 1px solid #3e4451; background: #121318;
-    opacity: 0.3; transition: all 0.15s ease;
+    align-items: center; justify-content: center; font-size: 0.78rem; font-weight: 700;
+    cursor: pointer; border: 1px solid #3e4451; background: #121318; color: #777;
   }
-  .token.active-heart { opacity: 1; background: #4a1212; border-color: var(--accent-red-bright); }
-  .token.active-mark { opacity: 1; background: #3b1b47; border-color: var(--accent-purple-bright); }
-
-  .section-title {
-    font-size: 0.82rem; font-weight: 800; text-transform: uppercase;
-    letter-spacing: 0.06em; color: var(--accent-gold); margin: 12px 0 6px 0;
+  .drift-token.active {
+    background: #3b1b47; border-color: var(--accent-purple-bright); color: #fff;
   }
-  .item-pill, .lore-card {
-    background: #121318; border: 1px solid #282a36; border-radius: 8px;
-    padding: 10px; margin-bottom: 8px;
+  
+  .power-item {
+    background: #14151b; border: 1px solid #282a36; border-radius: 8px;
+    padding: 10px; margin-bottom: 8px; font-size: 0.88rem;
   }
-  .item-pill.sheet-granted { border-left: 3px solid var(--accent-gold-bright); }
-  .lore-card.whisper-card { border-left: 3px solid var(--accent-purple-bright); }
-  .badge-target {
-    display: inline-block; font-size: 0.7rem; padding: 2px 6px;
-    border-radius: 4px; background: #252834; color: var(--accent-gold-bright);
-    margin-left: 6px; text-transform: uppercase;
+  .power-title {
+    font-weight: 700; color: var(--accent-gold); display: flex;
+    justify-content: space-between; align-items: center; margin-bottom: 4px;
   }
-  textarea.notes-box {
-    width: 100%; min-height: 150px; background: #111217; color: var(--text-primary);
-    border: 1px solid #2d313f; border-radius: 8px; padding: 12px;
-    font-family: inherit; font-size: 0.92rem; resize: vertical; margin-bottom: 8px;
+  .inventory-input-wrap { display: flex; gap: 6px; margin: 10px 0; }
+  .text-input {
+    flex: 1; background: #121318; border: 1px solid #333644;
+    color: #fff; padding: 10px; border-radius: 6px; font-size: 0.95rem;
+  }
+  .item-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+  .item-tag {
+    background: #252834; padding: 6px 10px; border-radius: 6px;
+    font-size: 0.85rem; display: flex; align-items: center; gap: 8px;
+    border: 1px solid #3a3f50;
+  }
+  .sheet-item-card {
+    background: #121318; border: 1px solid #282a36; border-left: 3px solid var(--accent-gold-bright);
+    border-radius: 8px; padding: 10px; margin-bottom: 8px;
+  }
+  
+  .dossier-section {
+    background: #121318; border: 1px solid #22242d; border-radius: 8px;
+    padding: 12px; margin-bottom: 10px;
+  }
+  .dossier-heading {
+    font-size: 0.82rem; text-transform: uppercase; color: var(--accent-gold);
+    font-weight: 800; letter-spacing: 0.5px; margin-bottom: 6px;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .locked-badge {
+    background: #222; color: #777; border: 1px dashed #444;
+    padding: 2px 8px; border-radius: 4px; font-size: 0.72rem;
+  }
+  .revealed-badge {
+    background: #14351f; color: #2ecc71; border: 1px solid #27ae60;
+    padding: 2px 8px; border-radius: 4px; font-size: 0.72rem;
+  }
+  .target-tag {
+    background: #2c1b3d; color: #bb86fc; border: 1px solid #8e44ad;
+    padding: 2px 6px; border-radius: 4px; font-size: 0.72rem; font-weight: 700;
+  }
+  
+  .dm-card {
+    background: #151118; border: 1px solid #4a235a; border-radius: 10px;
+    padding: 12px; margin-bottom: 12px;
+  }
+  .dm-toggle-row {
+    background: #1e1526; padding: 10px; border-radius: 8px; margin: 8px 0;
+  }
+  .dm-controls-line {
+    display: flex; gap: 8px; align-items: center; margin-top: 8px;
   }
   .status-line {
-    font-size: 0.78rem; color: var(--text-secondary); display: flex;
-    justify-content: space-between; align-items: center; margin-top: 6px;
+    font-size: 0.75rem; color: var(--text-secondary); display: flex;
+    justify-content: space-between; align-items: center; margin-top: 4px;
+  }
+  
+  .modal-backdrop {
+    display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0, 0, 0, 0.85); z-index: 999;
+    align-items: center; justify-content: center; padding: 16px;
+  }
+  .modal-backdrop.open { display: flex !important; }
+  .modal-dialog {
+    background: var(--card-bg); border: 1px solid var(--card-border);
+    border-radius: 12px; max-width: 440px; width: 100%; max-height: 90vh;
+    overflow-y: auto; padding: 16px;
   }
 </style>
 </head>
-<body>
+<body ontouchstart="">
 
-  <!-- DICE ROLLER -->
+  <!-- ROLLER SECTION -->
   <div class="card roller-container">
-    <div id="diceResult" class="dice-display">—</div>
-    <div id="diceSub" class="dice-subtext">Tap a stat or roll button</div>
+    <div class="dice-display" id="dice-result">20</div>
+    <div class="dice-subtext" id="dice-summary">Tap below or tap a stat to roll</div>
     <div class="btn-row">
-      <button class="btn-primary" onclick="rollD20('Normal')">Roll d20</button>
-      <button class="btn-gold" onclick="rollD20('Adv')">Advantage</button>
-      <button class="btn-purple" onclick="rollD20('Dis')">Disadvantage</button>
+      <button type="button" class="btn btn-primary" onclick="doRoll('standard')">Roll d20</button>
+      <button type="button" class="btn btn-gold" onclick="doRoll('adv')">Advantage</button>
+      <button type="button" class="btn btn-purple" onclick="doRoll('dis')">Disadv</button>
     </div>
-    <div class="mod-strip" id="modStrip">
-      <div class="mod-btn selected" onclick="setMod(0, 'Flat (+0)')">+0</div>
-      <div class="mod-btn" id="modForce" onclick="selectStatMod('force')">Force</div>
-      <div class="mod-btn" id="modFinesse" onclick="selectStatMod('finesse')">Finesse</div>
-      <div class="mod-btn" id="modFocus" onclick="selectStatMod('focus')">Focus</div>
+    <div class="mod-strip">
+      <button type="button" class="mod-btn selected" id="mod-zero" onclick="setRollMod(0, 'Flat', this)">+0 Flat</button>
+      <button type="button" class="mod-btn" id="mod-force" onclick="setRollMod('force', 'Force', this)">Force</button>
+      <button type="button" class="mod-btn" id="mod-finesse" onclick="setRollMod('finesse', 'Finesse', this)">Finesse</button>
+      <button type="button" class="mod-btn" id="mod-focus" onclick="setRollMod('focus', 'Focus', this)">Focus</button>
     </div>
   </div>
 
   <!-- NAVIGATION TABS -->
   <div class="nav-tabs">
-    <button class="tab-btn active" onclick="switchTab('charTab', this)">Sibling</button>
-    <button class="tab-btn" onclick="switchTab('invTab', this)">Gear (<span id="gearCount">0</span>)</button>
-    <button class="tab-btn" onclick="switchTab('loreTab', this)">Dossier (<span id="loreCount">0</span>)</button>
-    <button class="tab-btn" onclick="switchTab('notesTab', this)">Notes</button>
+    <button type="button" class="tab-btn active" onclick="switchNavTab('play', this)">Play Sheet</button>
+    <button type="button" class="tab-btn" onclick="switchNavTab('dossier', this)">Dossier</button>
+    <button type="button" class="tab-btn" onclick="switchNavTab('lore', this)">World (<span id="lore-badge-count">0</span>)</button>
+    <button type="button" class="tab-btn" onclick="switchNavTab('journey', this)">Notes & Map</button>
+    <button type="button" class="tab-btn" onclick="switchNavTab('rules', this)">Rules</button>
+    <button type="button" class="tab-btn dm-tab" onclick="attemptDMScreenAccess(this)">DM 🗝️</button>
   </div>
 
-  <!-- TAB 1: CHARACTER SHEET -->
-  <div id="charTab" class="tab-content active">
+  <!-- TAB 1: PLAY SHEET -->
+  <div id="tab-play" class="tab-content active">
     <div class="card">
       <div class="char-header">
-        <select id="charSelect" class="char-select" onchange="onCharChange()">
+        <select class="char-select" id="char-picker" onchange="selectCharacter(this.value)">
           <option value="archie">Archie (Akshat)</option>
           <option value="roman">Roman (Rutuj)</option>
           <option value="selena">Selena (Sukhada)</option>
           <option value="penny">Penny (Pari)</option>
         </select>
-        <span class="level-badge" onclick="syncFromCloud(true)">↻ Sync Sheet</span>
+        <button type="button" class="level-badge" onclick="openLevelModal()">⚡ Level Up</button>
+        <button type="button" class="level-badge" style="background:#192a1e; border-color:#27ae60; color:#2ecc71;" onclick="syncFromCloud(true)">↻ Sync</button>
       </div>
-      <div id="charArchetype" style="font-size:0.83rem; color:var(--text-secondary); margin-bottom:6px;"></div>
-
+      <div style="display:flex; justify-content:space-between; font-size:0.8rem; color:var(--text-secondary); margin-bottom:6px;">
+        <span id="char-tagline">Polymath & Slacker</span>
+        <span id="char-lvl-badge" style="color:var(--accent-gold); font-weight:700;">Rank 1</span>
+      </div>
+      
       <div class="stats-grid">
-        <div class="stat-col" onclick="selectStatMod('force'); rollD20('Normal')">
-          <div id="valForce" class="stat-val">+0</div>
+        <div class="stat-col" onclick="setRollMod('force', 'Force', document.getElementById('mod-force')); doRoll('standard')">
+          <div class="stat-val" id="stat-force-val">+0</div>
           <div class="stat-lbl">Force</div>
         </div>
-        <div class="stat-col" onclick="selectStatMod('finesse'); rollD20('Normal')">
-          <div id="valFinesse" class="stat-val">+0</div>
+        <div class="stat-col" onclick="setRollMod('finesse', 'Finesse', document.getElementById('mod-finesse')); doRoll('standard')">
+          <div class="stat-val" id="stat-finesse-val">+1</div>
           <div class="stat-lbl">Finesse</div>
         </div>
-        <div class="stat-col" onclick="selectStatMod('focus'); rollD20('Normal')">
-          <div id="valFocus" class="stat-val">+0</div>
+        <div class="stat-col" onclick="setRollMod('focus', 'Focus', document.getElementById('mod-focus')); doRoll('standard')">
+          <div class="stat-val" id="stat-focus-val">+2</div>
           <div class="stat-lbl">Focus</div>
         </div>
       </div>
 
+      <!-- HEARTS -->
       <div class="tracker-row">
-        <span>❤️ Hearts <small style="color:var(--text-dim)">(0 = Frenzy)</small></span>
-        <div class="token-group" id="heartsTrack"></div>
+        <div>
+          <div style="font-weight:700;">❤️ Hearts (Vitality)</div>
+          <div style="font-size:0.75rem; color:var(--text-secondary);">0 = Blood-Mad Frenzy</div>
+        </div>
+        <div class="token-group" id="hearts-container"></div>
       </div>
+
+      <!-- BEAST MARKS -->
       <div class="tracker-row">
-        <span>🐾 Beast Marks</span>
-        <div class="token-group" id="marksTrack"></div>
+        <div>
+          <div style="font-weight:700;">🐺 Beast Marks</div>
+          <div style="font-size:0.75rem; color:var(--text-secondary);">Spend for Powers</div>
+        </div>
+        <div class="token-group" id="beast-container"></div>
       </div>
+
+      <!-- CURSE DRIFT -->
       <div class="tracker-row">
-        <span>🌑 Curse Drift <small style="color:var(--text-dim)">(0–6)</small></span>
-        <div class="token-group" id="driftTrack"></div>
+        <div>
+          <div style="font-weight:700;">🌑 Curse Drift</div>
+          <div style="font-size:0.75rem; color:var(--text-secondary);">Feral Escalation (0–6)</div>
+        </div>
+        <div class="token-group" id="drift-container"></div>
+      </div>
+
+      <div class="btn-row" style="margin-top:10px;">
+        <button type="button" class="btn" onclick="recoverAll()">Rest & Recover (Reset Hearts & Marks)</button>
       </div>
     </div>
 
+    <!-- POWERS -->
     <div class="card">
-      <div class="section-title" style="margin-top:0">Bloodline Powers</div>
-      <div id="powersList"></div>
+      <div style="font-weight:700; color:var(--accent-gold); margin-bottom:8px;">Active Bloodline Powers</div>
+      <div id="powers-list"></div>
+    </div>
+
+    <!-- CAMPAIGN GRANTED ITEMS + PERSONAL INVENTORY -->
+    <div class="card">
+      <div style="font-weight:700; color:var(--accent-gold-bright); margin-bottom:6px;">✨ Campaign Relics & Granted Gear (Sheet)</div>
+      <div id="sheet-items-list" style="margin-bottom:12px;"></div>
+
+      <div style="font-weight:700; color:var(--accent-gold);">🎒 Carried Satchel & Personal Gear</div>
+      <div class="inventory-input-wrap">
+        <input type="text" id="new-item-input" class="text-input" placeholder="Add item to satchel...">
+        <button type="button" class="btn btn-primary" onclick="addInventoryItem()" style="flex:0 0 75px;">+ Add</button>
+      </div>
+      <div class="item-tags" id="inventory-list"></div>
     </div>
   </div>
 
-  <!-- TAB 2: INVENTORY & GEAR -->
-  <div id="invTab" class="tab-content">
+  <!-- TAB 2: DOSSIER -->
+  <div id="tab-dossier" class="tab-content">
     <div class="card">
-      <div class="char-header">
-        <div class="section-title" style="margin:0">Granted Campaign Items (Sheet)</div>
-        <button style="flex:0; padding:6px 10px; font-size:0.75rem;" onclick="syncFromCloud(true)">↻ Refresh</button>
+      <div style="font-size:1.3rem; font-weight:800; color:var(--accent-gold);" id="dossier-name">Archie</div>
+      <div style="font-size:0.85rem; color:var(--text-secondary); margin-bottom:12px;" id="dossier-role">The Reluctant Polymath</div>
+      
+      <div class="dossier-section">
+        <div class="dossier-heading">Background & Personality</div>
+        <div id="dossier-bio" style="font-size:0.88rem; color:#ddd; line-height:1.5;"></div>
       </div>
-      <div id="sheetItemsList" style="margin-top:8px;"></div>
-      <div class="section-title">Starting Personal Gear</div>
-      <div id="startingGearList"></div>
+
+      <div class="dossier-section">
+        <div class="dossier-heading">Secret Burden & Motivation</div>
+        <div id="dossier-secret" style="font-size:0.88rem; color:#ddd; line-height:1.5;"></div>
+      </div>
+
+      <div class="dossier-section">
+        <div class="dossier-heading">Sibling Dynamics & Pack View</div>
+        <div id="dossier-dynamics" style="font-size:0.88rem; color:#ddd; line-height:1.5;"></div>
+      </div>
+
+      <!-- PERSONAL SECRETS DELIVERED BY DM -->
+      <div style="font-weight:800; font-size:1rem; color:var(--accent-purple-bright); margin:14px 0 8px 0;">Private DM Whispers & Discoveries</div>
+      <div id="dossier-private-whispers"></div>
     </div>
   </div>
 
-  <!-- TAB 3: DOSSIER -->
-  <div id="loreTab" class="tab-content">
+  <!-- TAB 3: WORLD & LORE (PLAYER VIEW) -->
+  <div id="tab-lore" class="tab-content">
     <div class="card">
-      <div class="char-header">
-        <div class="section-title" style="margin:0">Unlocked Dossier & Whispers</div>
-        <button style="flex:0; padding:6px 10px; font-size:0.75rem;" onclick="syncFromCloud(true)">↻ Refresh</button>
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+        <div style="font-weight:800; font-size:1.15rem; color:var(--accent-gold);">Discovered World Records</div>
+        <button type="button" class="btn" style="flex:none; padding:4px 10px; font-size:0.75rem;" onclick="syncFromCloud(true)">↻ Refresh</button>
       </div>
-      <div id="syncStatus" class="status-line" style="margin-bottom:8px;">Synced: Waiting...</div>
-      <div id="loreList"></div>
+      <div id="sync-status-line" class="status-line" style="margin-bottom:12px;">Syncing with Campaign Control Sheet...</div>
+      
+      <!-- LORE: LUPA -->
+      <div class="dossier-section">
+        <div class="dossier-heading">
+          <span>Mother Lupa</span>
+          <span id="badge-lupa" class="locked-badge">Hidden</span>
+        </div>
+        <div id="lore-lupa-body" style="font-size:0.88rem; color:#bbb; line-height:1.5;"></div>
+      </div>
+
+      <!-- LORE: LYCAN -->
+      <div class="dossier-section">
+        <div class="dossier-heading">
+          <span>Professor Lycan</span>
+          <span id="badge-lycan" class="locked-badge">Hidden</span>
+        </div>
+        <div id="lore-lycan-body" style="font-size:0.88rem; color:#bbb; line-height:1.5;"></div>
+      </div>
+
+      <!-- ADDITIONAL SHEET LORE ENTRIES -->
+      <div id="extra-sheet-lore-list"></div>
+
+      <!-- LORE: BESTIARY DISCOVERIES -->
+      <div style="font-weight:800; font-size:1rem; color:var(--accent-gold); margin:14px 0 8px 0;">Observed Adversaries & Automatons</div>
+      <div id="player-bestiary-list"></div>
     </div>
   </div>
 
-  <!-- TAB 4: PLAYER NOTES -->
-  <div id="notesTab" class="tab-content">
+  <!-- TAB 4: NOTES & WAYPOINTS -->
+  <div id="tab-journey" class="tab-content">
     <div class="card">
-      <div class="char-header">
-        <div class="section-title" style="margin:0">Field Journal — <span id="noteCharName">Archie</span></div>
-        <button style="flex:0; padding:6px 10px; font-size:0.75rem;" onclick="syncNotesFromCloud()">📥 Fetch Latest</button>
-      </div>
-      <div style="font-size:0.8rem; color:var(--text-secondary); margin: 6px 0 10px 0;">
-        Your private notes auto-save locally as you type and can be pushed to your cloud journal.
-      </div>
-      <textarea id="playerNotes" class="notes-box" placeholder="Write clues, suspects, vows, or alchemical formulas here..."></textarea>
+      <div style="font-weight:700; color:var(--accent-gold); margin-bottom:6px;">Field Journal — <span id="note-char-name">Archie</span></div>
+      <textarea id="clues-text" class="text-input" style="width:100%; height:140px; resize:vertical; margin-bottom:8px;" placeholder="Write clues, suspects, vows, or alchemical formulas here..." oninput="saveNotesLocal(this.value)"></textarea>
       <div class="btn-row">
-        <button class="btn-green" onclick="savePlayerNotes()">💾 Save to Cloud Sheet</button>
+        <button type="button" class="btn btn-green" onclick="savePlayerNotesCloud()">💾 Save to Cloud Sheet</button>
+        <button type="button" class="btn" onclick="loadPlayerNotesFromCloud()">📥 Recover from Sheet</button>
       </div>
-      <div id="notesStatus" class="status-line">Synced & saved locally.</div>
+      <div id="notes-status" class="status-line">Saved locally on device.</div>
+    </div>
+
+    <div class="card">
+      <div style="font-weight:700; color:var(--accent-gold); margin-bottom:6px;">Journey Waypoints</div>
+      <div class="inventory-input-wrap">
+        <input type="text" id="new-waypoint-input" class="text-input" placeholder="Add custom stop/encounter...">
+        <button type="button" class="btn btn-gold" onclick="addCustomWaypoint()" style="flex:0 0 75px;">+ Add</button>
+      </div>
+      <div id="waypoint-list"></div>
+    </div>
+  </div>
+
+  <!-- TAB 5: RULES -->
+  <div id="tab-rules" class="tab-content">
+    <div class="card">
+      <div style="font-weight:700; color:var(--accent-gold); margin-bottom:6px;">Highway Resolution (d20)</div>
+      <p style="font-size:0.85rem; margin:4px 0;"><strong>1–9: Complication.</strong> Action fails or you suffer 1 Heart of retaliatory damage.</p>
+      <p style="font-size:0.85rem; margin:4px 0;"><strong>10–14: Success at a Cost.</strong> You pull it off, but suffer a wound, noise, or gear loss.</p>
+      <p style="font-size:0.85rem; margin:4px 0;"><strong>15+: Clean Triumph.</strong> Full success, zero consequences.</p>
+      
+      <div style="border-top:1px solid #282a36; margin-top:10px; padding-top:10px;">
+        <div style="font-weight:700; color:var(--accent-red-bright); margin-bottom:4px;">The Frenzy Rule</div>
+        <p style="font-size:0.83rem; color:#bbb; margin:0;">
+          If a werewolf drops to <strong>0 Hearts</strong>, they don't die—they collapse into a feral, blood-crazed beast form attacking friend and foe alike until restrained or calmed.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB 6: DM SCREEN (PASSWORD PROTECTED) -->
+  <div id="tab-dm" class="tab-content">
+    <div class="card" style="border: 1px solid #8e44ad;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+        <div style="font-weight:800; font-size:1.2rem; color:#e74c3c;">DM Command Cockpit 🗝️</div>
+        <button type="button" class="btn" style="flex:none; padding:4px 10px; font-size:0.75rem;" onclick="lockDMScreen()">Lock Screen</button>
+      </div>
+      <div style="font-size:0.8rem; color:#aaa; margin-bottom:12px;">Synced live with your Google Sheet. Edit the Google Sheet to broadcast globally, or test locally below.</div>
+
+      <!-- SELECTIVE REVEAL: NARRATIVE LORE -->
+      <div class="dm-card">
+        <div style="font-weight:700; color:var(--accent-gold); margin-bottom:6px;">Selective Narrative Disclosures</div>
+        
+        <div class="dm-toggle-row">
+          <div style="font-weight:700; font-size:0.88rem; margin-bottom:4px;">Mother Lupa (Ancient Origins & Vials)</div>
+          <div class="dm-controls-line">
+            <select id="dm-select-lupa-target" class="char-select" style="font-size:0.82rem; padding:4px 8px; flex:1;">
+              <option value="all">Audience: Whole Pack (All)</option>
+              <option value="archie">Audience: Archie Only</option>
+              <option value="roman">Audience: Roman Only</option>
+              <option value="selena">Audience: Selena Only</option>
+              <option value="penny">Audience: Penny Only</option>
+            </select>
+            <button type="button" class="btn btn-gold" id="dm-btn-lupa" style="flex:0 0 90px; padding:6px; font-size:0.82rem;" onclick="toggleLoreDisclosure('lupa')">Reveal</button>
+          </div>
+        </div>
+
+        <div class="dm-toggle-row">
+          <div style="font-weight:700; font-size:0.88rem; margin-bottom:4px;">Professor Lycan (Philosopher's Stone & Trap)</div>
+          <div class="dm-controls-line">
+            <select id="dm-select-lycan-target" class="char-select" style="font-size:0.82rem; padding:4px 8px; flex:1;">
+              <option value="all">Audience: Whole Pack (All)</option>
+              <option value="archie">Audience: Archie Only</option>
+              <option value="roman">Audience: Roman Only</option>
+              <option value="selena">Audience: Selena Only</option>
+              <option value="penny">Audience: Penny Only</option>
+            </select>
+            <button type="button" class="btn btn-gold" id="dm-btn-lycan" style="flex:0 0 90px; padding:6px; font-size:0.82rem;" onclick="toggleLoreDisclosure('lycan')">Reveal</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- PRIVATE WHISPER / SECRET INJECTOR -->
+      <div class="dm-card">
+        <div style="font-weight:700; color:var(--accent-gold); margin-bottom:4px;">Inject Targeted Secret / Whisper</div>
+        <div style="display:flex; gap:6px; margin-bottom:6px;">
+          <select id="whisper-target" class="char-select" style="font-size:0.82rem; padding:6px; flex:0 0 130px;">
+            <option value="archie">To: Archie</option>
+            <option value="roman">To: Roman</option>
+            <option value="selena">To: Selena</option>
+            <option value="penny">To: Penny</option>
+            <option value="all">To: All Pack</option>
+          </select>
+          <input type="text" id="whisper-input" class="text-input" placeholder="e.g. You notice wolfsbane residue...">
+        </div>
+        <button type="button" class="btn btn-purple" onclick="sendTargetedWhisper()">Send Secret Whisper</button>
+        <div id="dm-whispers-audit" style="margin-top:8px;"></div>
+      </div>
+
+      <!-- BESTIARY REVEAL CONTROLS -->
+      <div class="dm-card">
+        <div style="font-weight:700; color:var(--accent-gold); margin-bottom:6px;">Automaton & Adversary Stat Blocks</div>
+        <div id="dm-bestiary-controls"></div>
+      </div>
+
+      <!-- COMBAT SCRATCHPAD -->
+      <div class="dm-card">
+        <div style="font-weight:700; color:#e74c3c; margin-bottom:6px;">DM Combat Scratchpad</div>
+        <div class="inventory-input-wrap">
+          <input type="text" id="dm-tracker-input" class="text-input" placeholder="Enemy Name (e.g. Brass Hound A)...">
+          <button type="button" class="btn btn-primary" style="flex:0 0 75px;" onclick="addDMTracker()">+ Track</button>
+        </div>
+        <div id="dm-combat-list"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- LEVEL UP MODAL -->
+  <div class="modal-backdrop" id="levelup-modal">
+    <div class="modal-dialog">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+        <div style="font-weight:800; font-size:1.1rem; color:var(--accent-gold);">⚡ Milestone Advancement</div>
+        <div onclick="closeLevelModal()" style="font-size:1.4rem; cursor:pointer; color:#888; padding:4px 8px;">✕</div>
+      </div>
+      
+      <div style="margin:10px 0;">
+        <label style="font-size:0.82rem; color:var(--text-secondary);">Character Rank:</label>
+        <div style="display:flex; gap:8px; margin-top:4px;">
+          <button type="button" class="btn" onclick="adjLevel(-1)">- Level</button>
+          <div style="flex:1; text-align:center; font-size:1.2rem; font-weight:800; line-height:36px;" id="milestone-lvl-display">Level 1</div>
+          <button type="button" class="btn btn-gold" onclick="adjLevel(1)">+ Level</button>
+        </div>
+      </div>
+
+      <div style="margin:10px 0;">
+        <label style="font-size:0.82rem; color:var(--text-secondary);">Increase Stats (+1):</label>
+        <div class="btn-row" style="margin-top:4px;">
+          <button type="button" class="btn" onclick="adjStat('force', 1)">+1 Force</button>
+          <button type="button" class="btn" onclick="adjStat('finesse', 1)">+1 Finesse</button>
+          <button type="button" class="btn" onclick="adjStat('focus', 1)">+1 Focus</button>
+        </div>
+        <div class="btn-row" style="margin-top:4px;">
+          <button type="button" class="btn" style="font-size:0.75rem; padding:6px;" onclick="adjStat('force', -1)">-1 Force</button>
+          <button type="button" class="btn" style="font-size:0.75rem; padding:6px;" onclick="adjStat('finesse', -1)">-1 Finesse</button>
+          <button type="button" class="btn" style="font-size:0.75rem; padding:6px;" onclick="adjStat('focus', -1)">-1 Focus</button>
+        </div>
+      </div>
+
+      <div style="margin:10px 0;">
+        <label style="font-size:0.82rem; color:var(--text-secondary);">Max Capacities (3 to 6):</label>
+        <div class="btn-row" style="margin-top:4px;">
+          <button type="button" class="btn" onclick="adjCap('hearts', 1)">+1 Max Heart</button>
+          <button type="button" class="btn" onclick="adjCap('beast', 1)">+1 Max Mark</button>
+        </div>
+        <div class="btn-row" style="margin-top:4px;">
+          <button type="button" class="btn" style="font-size:0.75rem; padding:6px;" onclick="adjCap('hearts', -1)">-1 Max Heart</button>
+          <button type="button" class="btn" style="font-size:0.75rem; padding:6px;" onclick="adjCap('beast', -1)">-1 Max Mark</button>
+        </div>
+      </div>
+
+      <div style="margin-top:14px; border-top:1px solid #333; padding-top:10px;">
+        <button type="button" class="btn" style="background:#4a1515; border-color:#c0392b; width:100%;" onclick="resetCharacter()">Reset to Level 1 Defaults</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- DM PIN MODAL -->
+  <div class="modal-backdrop" id="dm-pin-modal">
+    <div class="modal-dialog" style="max-width:320px; text-align:center;">
+      <div style="font-size:1.1rem; font-weight:800; color:#e74c3c; margin-bottom:8px;">DM Authorization 🗝️</div>
+      <div style="font-size:0.8rem; color:#aaa; margin-bottom:12px;">Enter Dungeon Master PIN (Default: 1234):</div>
+      <input type="password" id="dm-pin-input" class="text-input" style="text-align:center; font-size:1.4rem; letter-spacing:4px;" placeholder="••••">
+      <div style="display:flex; gap:8px; margin-top:12px;">
+        <button type="button" class="btn" onclick="closeDMPinModal()">Cancel</button>
+        <button type="button" class="btn btn-primary" onclick="verifyDMPIN()">Enter</button>
+      </div>
     </div>
   </div>
 
 <script>
-const PUBLISHED_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQAwmLuwWGka6UjtZXXo2N_74Ou4rFlTpZRMjkVdGQqTcYpUnhw-z-M_pfbDVHemLyxVIolPcpwzQ6p/pub?output=csv";
-const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw9W-ik1IerVuBcwmqqOZ4DsUX-jENyukWsHspbUCWB7TDAGSBX4oita-4EkEvgDnzh/exec";
+// ==================== LIVE CLOUD CONFIGURATION ====================
+var SHEET_ID = "1xlSN30b4yuho9NSvVDKLvAq5RnDfPbht4pA0Q_6VWw4";
+var APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw9W-ik1IerVuBcwmqqOZ4DsUX-jENyukWsHspbUCWB7TDAGSBX4oita-4EkEvgDnzh/exec";
+// ==================================================================
 
-const FALLBACK_LORE = {
-  lupa: "Mother Lupa: Over 2,500 years old; foster mother of Romulus and Remus. Drank from the Fountain of Youth, keeping her vitality and youthful form. Hid her cubs across Europe and the Caribbean to protect them from Lycan's mortal desperation.",
-  lycan: "Professor Lycan: Diminutive human alchemist who extended his life using a flawed Philosopher's Stone. His synthetic life-extension is failing rapidly. He needs Lupa’s Fountain of Youth water before his body and mind liquefy.",
-  brass_hound: "Brass Wolfhound (Minion | TN 10 | 1 Heart): Mechanical quadruped forged from brass and coiled springs. Tracks scent trails; explodes upon direct destruction, spraying toxic alchemical mercury.",
-  clockwork_myrmidon: "Clockwork Myrmidon (Elite | TN 12 | 2 Hearts): 6-foot iron automaton with dual scythe blades (disarms on complication). Heavy armor plates; ocular glass sensors can be targeted to blind it.",
-  athanor_behemoth: "Athanor Behemoth (Boss | TN 14 | 4 Hearts): Lycan's heavy siege construct with an active alchemical forge in its ribcage. Hydraulic fists and superheated steam vents.",
-  witchfinder_officer: "Witchfinder Inquisitor (Elite | TN 12 | 2 Hearts): Holy Office hunter armed with silver-shot wheellocks (2 Hearts damage) and wolfsbane flash-powder grenades that suppress Beast Marks.",
-  whisper: "DM Whisper Relay: Private trait triggers and sensory disclosures channeled directly to individual sibling dossiers."
-};
-
-const CHARACTERS = {
+var PRESETS = {
   archie: {
-    name: "Archie", archetype: "The Reluctant Polymath & Eldest Sibling",
-    stats: { force: 0, finesse: 1, focus: 2 },
-    gear: ["Clockwork grapple", "Telescope optic lens", "Pouch of copper grease"],
+    name: "Archie (Akshat)", tagline: "The Reluctant Polymath & Eldest",
+    force: 0, finesse: 1, focus: 2, level: 1,
+    maxHearts: 3, hearts: 3, maxBeast: 3, beast: 3, drift: 1,
+    inventory: ["Half-finished clockwork grapple", "Telescope optic lens", "Pouch of copper grease"],
     powers: [
-      { name: "Path of Least Resistance (Passive)", desc: "Spots the easiest, least-effort shortcut through any obstacle or puzzle." },
-      { name: "Kinetic Deflection (1 Beast Mark)", desc: "Negates a melee hit and sends the attacker tumbling prone." },
-      { name: "Alchemical Jammer (1 Beast Mark)", desc: "Instantly jams or picks any lock, clockwork joint, or wheellock firearm." }
-    ]
+      { name: "Path of Least Resistance (Passive)", desc: "Automatically spots the easiest, least effortful path through any obstacle, social maze, or mechanism.", cost: 0 },
+      { name: "Kinetic Deflection", desc: "Spend 1 Mark: Turn attacker's momentum against them; negate a melee hit and send enemy tumbling prone.", cost: 1 },
+      { name: "Alchemical Jammer", desc: "Spend 1 Mark: Instantly jam, pick, or sabotage any mechanical lock, clockwork device, or firearm.", cost: 1 }
+    ],
+    bio: "The eldest sibling. Supremely intelligent and observant, but by far the laziest of the litter. If Archie could live life never having to remember a single detail about another person or having to get off his butt, he would consider it heaven. Apprenticed under a legendary polymath and showed brilliance as an inventor, but abandoned it halfway through due to a lack of motivation.",
+    secret: "This journey across the continents is the very first time Archie has committed to seeing a goal through to the end. Deep down, he wonders if his indolence was just fear of failing his true heritage.",
+    dynamics: "Constantly clashes with Roman's aggressive need to lead and control everything. Selena frequently sides with Archie, appreciating his clever shortcuts, which secretly drives Roman insane."
   },
   roman: {
-    name: "Roman", archetype: "The Burdened Heir & Frontline Alpha",
-    stats: { force: 2, finesse: 1, focus: 0 },
-    gear: ["Estate signet rapier", "Purse of gilded sovereigns", "Sealed death writ"],
+    name: "Roman (Rutuj)", tagline: "The Burdened Heir & Frontline Alpha",
+    force: 2, finesse: 1, focus: 0, level: 1,
+    maxHearts: 3, hearts: 3, maxBeast: 3, beast: 3, drift: 1,
+    inventory: ["Estate signet rapier", "Purse of gilded sovereigns", "Sealed death writ"],
     powers: [
-      { name: "Commanding Stare (Passive)", desc: "Minions and ordinary mortals will not attack Roman first unless ordered by an Elite." },
-      { name: "Alpha Strike (1 Beast Mark)", desc: "Cuts down 2 minions or inflicts 2 Hearts of damage on an Elite/Boss." },
-      { name: "Iron Will (1 Beast Mark)", desc: "Ignores 1 non-silver physical wound through sheer endurance." }
-    ]
+      { name: "Commanding Stare (Passive)", desc: "Minions and ordinary humans will not dare attack Roman first unless commanded by an Elite.", cost: 0 },
+      { name: "Alpha Strike", desc: "Spend 1 Mark: Instantly cut down 2 minions or inflict 2 Hearts of lethal damage on an Elite.", cost: 1 },
+      { name: "Iron Will", desc: "Spend 1 Mark: Completely absorb 1 non-silver physical wound through sheer stubborn endurance.", cost: 1 }
+    ],
+    bio: "The second brother, and Archie's polar opposite. Hyper-active, intensely competitive, and driven by a compulsive need to win and take charge. Having held leadership positions in human society, Roman subconsciously expects everyone to defer to him. His fierce pride often prevents him from admitting weakness or expressing real emotion.",
+    secret: "At age 16, an uncontrolled premature transformation led to the tragic deaths of his foster brother and a household servant. The tragedy made Roman the sole heir to a vast fortune, but he is consumed by guilt and refuses to spend that blood money on himself.",
+    dynamics: "Expects the sensible Selena to back his pragmatic leadership, but gets irritated when she enables Archie's laziness. Feels fiercely protective of the timid Penny, though his commanding presence can intimidate her."
   },
   selena: {
-    name: "Selena", archetype: "The Guarded Empath & Salon Confidante",
-    stats: { force: 0, finesse: 2, focus: 1 },
-    gear: ["Silver-edged stiletto", "Vial of belladonna drops", "Forged salon letters of transit"],
+    name: "Selena (Sukhada)", tagline: "The Guarded Empath & Salon Confidante",
+    force: 0, finesse: 2, focus: 1, level: 1,
+    maxHearts: 3, hearts: 3, maxBeast: 3, beast: 3, drift: 1,
+    inventory: ["Silver-edged stiletto", "Vial of belladonna drops", "Forged salon letters of transit"],
     powers: [
-      { name: "Heartbeat Truth (Passive)", desc: "Detects lies and hidden panic in mortals by listening to micro-spikes in their heartbeat." },
-      { name: "Silver Tongue (1 Beast Mark)", desc: "De-escalates hostile guards or deflects suspicion without rolling." },
-      { name: "Shadow Slip (1 Beast Mark)", desc: "Dissolves into crowd commotion or shadow; next strike hits with surprise." }
-    ]
+      { name: "Heartbeat Truth (Passive)", desc: "Accurately reads lies, deception, and panic in mortals by listening to acoustic heartbeat spikes.", cost: 0 },
+      { name: "Silver Tongue", desc: "Spend 1 Mark: De-escalate hostile guards, bribe an official, or deflect suspicion with flawless charm.", cost: 1 },
+      { name: "Shadow Slip", desc: "Spend 1 Mark: Dissolve into shadows or crowds; your next strike hits from unseen surprise.", cost: 1 }
+    ],
+    bio: "Second eldest after Archie. Self-assured, socially brilliant, and exceptionally emotionally intelligent—though prone to talking too much to fill uneasy silences. While salon society believes they know her intimately, she is intensely private and shields a deeply vulnerable interior.",
+    secret: "Suffers from an agonizing fear of rejection. Her former human lover discovered her werewolf identity and abandoned her in horror; she now lives in quiet terror that this ex-lover will expose her to the witchfinders.",
+    dynamics: "Often sides with Archie over Roman simply to deflate Roman's self-important posturing. She is the emotional glue trying to hold these estranged siblings together."
   },
   penny: {
-    name: "Penny", archetype: "The Wildling Island Rover & Pack Lorekeeper",
-    stats: { force: 1, finesse: 2, focus: 0 },
-    gear: ["Haitian navigation charm", "Tropical healing herbs", "Carved bone hunting knife"],
+    name: "Penny (Pari)", tagline: "The Wildling Island Rover & Pack Lorekeeper",
+    force: 1, finesse: 2, focus: 0, level: 1,
+    maxHearts: 3, hearts: 3, maxBeast: 3, beast: 3, drift: 1,
+    inventory: ["Haitian navigation charm", "Tropical healing herbs", "Carved bone hunting knife"],
     powers: [
-      { name: "Ancient Pack Instinct (Passive)", desc: "Understands wild beast vocalizations and tracks supernatural scents across vast distances." },
-      { name: "Tropical Vigor (1 Beast Mark)", desc: "Restores 1 lost Heart to herself or an adjacent sibling." },
-      { name: "Predator Surge (1 Beast Mark)", desc: "Explosive burst of speed to leap rooftops, outrun horses, or slip restraints." }
-    ]
+      { name: "Ancient Pack Instinct (Passive)", desc: "Understands wild beast vocalizations and tracks other supernatural scents at vast distances.", cost: 0 },
+      { name: "Tropical Vigor", desc: "Spend 1 Mark: Restore 1 lost Heart to herself or any adjacent injured sibling using wild instincts.", cost: 1 },
+      { name: "Predator Surge", desc: "Spend 1 Mark: Gain explosive bursts of speed to leap across roofs, run down horses, or slip restraints.", cost: 1 }
+    ],
+    bio: "The youngest and smallest sibling. The only one raised in the Americas, growing up on the tropical island of Haiti under the care of a werewolf nanny. Unlike her European siblings, Penny grew up exploring the jungle alongside the native dark-skinned (and dark-furred) werewolves, giving her a deeper intuitive grasp of wolf culture.",
+    secret: "Plagued by low self-esteem and shyness. Being the youngest and having grown up far away from Europe, she often freezes and hesitates to speak up in front of her imposing older siblings.",
+    dynamics: "Watches her older brothers bicker with quiet amusement, though Roman's booming intensity makes her withdraw. Selena is the one sibling she feels truly safe confiding in."
   }
 };
 
-let currentChar = localStorage.getItem("lupa_char") || "archie";
-let currentMod = 0;
-let currentModLabel = "Flat (+0)";
-let cloudControlRows = [];
-let cloudNotesMap = {};
-
-function getCharState(charKey) {
-  const raw = localStorage.getItem("lupa_state_" + charKey);
-  if (raw) return JSON.parse(raw);
-  return { hearts: 3, maxHearts: 3, marks: 3, maxMarks: 3, drift: 1 };
-}
-function saveCharState(charKey, st) {
-  localStorage.setItem("lupa_state_" + charKey, JSON.stringify(st));
-}
-
-function switchTab(tabId, btnEl) {
-  document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
-  document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
-  document.getElementById(tabId).classList.add('active');
-  btnEl.classList.add('active');
-}
-
-function setMod(val, label, btnEl) {
-  currentMod = val;
-  currentModLabel = label;
-  document.querySelectorAll('.mod-btn').forEach(b => b.classList.remove('selected'));
-  if (btnEl) btnEl.classList.add('selected');
-}
-
-function selectStatMod(statName) {
-  const c = CHARACTERS[currentChar];
-  const val = c.stats[statName];
-  const label = statName.toUpperCase() + (val >= 0 ? " (+" + val + ")" : " (" + val + ")");
-  const btnMap = { force: 'modForce', finesse: 'modFinesse', focus: 'modFocus' };
-  setMod(val, label, document.getElementById(btnMap[statName]));
-}
-
-function rollD20(mode) {
-  const r1 = Math.floor(Math.random() * 20) + 1;
-  const r2 = Math.floor(Math.random() * 20) + 1;
-  let chosen = r1;
-  let detail = `Natural ${r1}`;
-  if (mode === 'Adv') { chosen = Math.max(r1, r2); detail = `Adv (${r1}, ${r2} → ${chosen})`; }
-  else if (mode === 'Dis') { chosen = Math.min(r1, r2); detail = `Dis (${r1}, ${r2} → ${chosen})`; }
-  const total = chosen + currentMod;
-  let outcome = total >= 15 ? "🔥 CLEAN TRIUMPH!" : (total >= 10 ? "⚡ SUCCESS AT A COST" : "💀 COMPLICATION");
-  document.getElementById("diceResult").textContent = total;
-  document.getElementById("diceSub").textContent = `${detail} + ${currentModLabel} → ${outcome}`;
-}
-
-function renderTrackers() {
-  const st = getCharState(currentChar);
-  const heartsEl = document.getElementById("heartsTrack");
-  const marksEl = document.getElementById("marksTrack");
-  const driftEl = document.getElementById("driftTrack");
-  heartsEl.innerHTML = ""; marksEl.innerHTML = ""; driftEl.innerHTML = "";
-
-  for (let i = 1; i <= st.maxHearts; i++) {
-    const t = document.createElement("div");
-    t.className = "token " + (i <= st.hearts ? "active-heart" : "");
-    t.textContent = "❤️";
-    t.onclick = () => { st.hearts = (st.hearts === i) ? i - 1 : i; saveCharState(currentChar, st); renderTrackers(); };
-    heartsEl.appendChild(t);
+var BESTIARY_DATA = [
+  {
+    id: "brass_hound",
+    name: "Brass Wolfhound (Minion)",
+    role: "Automaton Tracker",
+    hearts: 1, tn: 10, revealedTo: "none",
+    desc: "A mechanical quadruped fashioned from burnished brass and oiled clockwork springs. Created by Lycan to track wolf pheromones across cobblestones and marshes.",
+    combat: "Attack: Iron-jaw snap (deals 1 Heart). Weakness: Vulnerable to kinetic bludgeoning and joints jamming. Reaction: Self-destructs upon death in an alchemical mercury spray."
+  },
+  {
+    id: "clockwork_myrmidon",
+    name: "Clockwork Myrmidon (Elite)",
+    role: "Alchemical Enforcer",
+    hearts: 2, tn: 12, revealedTo: "none",
+    desc: "A six-foot-tall mannequin forged from tempered iron, driven by an internal miniature steam piston and governed by punch-card clockwork cogs.",
+    combat: "Attack: Dual scythe blades (1 Heart + knocks weapon away on 1-9). Trait: Thick metal plating ignores piercing weapons. Can be blinded by sabotaging its glass ocular lenses."
+  },
+  {
+    id: "athanor_behemoth",
+    name: "Athanor Behemoth (Boss)",
+    role: "Steam-Furnace Construct",
+    hearts: 4, tn: 14, revealedTo: "none",
+    desc: "Lycan's pinnacle heavy siege machine: a lumbering iron automaton housing an active alchemical forge inside its ribcage, leaving scorch marks on cobblestones.",
+    combat: "Attack: Hydraulic crushing fists (2 Hearts damage). Reaction: Can vent superheated steam (all nearby must pass TN 12 Finesse or take 1 Heart). Takes 2 turns per round."
+  },
+  {
+    id: "witchfinder_officer",
+    name: "Witchfinder Inquisitor (Elite)",
+    role: "Zealous Human Hunter",
+    hearts: 2, tn: 12, revealedTo: "none",
+    desc: "Fanatical officer of the Holy Office sworn to purge the beast scourge, draped in heavy leather duster coats and armed with silver-laced weaponry.",
+    combat: "Attack: Wheellock pistol with silver-shot (2 Hearts to werewolves). Gear: Wolfsbane flash-powder (suppresses Beast Marks for 1 round if inhaled). High morale."
   }
-  for (let i = 1; i <= st.maxMarks; i++) {
-    const t = document.createElement("div");
-    t.className = "token " + (i <= st.marks ? "active-mark" : "");
-    t.textContent = "🐾";
-    t.onclick = () => { st.marks = (st.marks === i) ? i - 1 : i; saveCharState(currentChar, st); renderTrackers(); };
-    marksEl.appendChild(t);
-  }
-  for (let i = 1; i <= 6; i++) {
-    const t = document.createElement("div");
-    t.className = "token " + (i <= st.drift ? "active-mark" : "");
-    t.style.width = "24px"; t.style.height = "24px"; t.style.fontSize = "0.75rem";
-    t.textContent = i;
-    t.onclick = () => { st.drift = (st.drift === i) ? i - 1 : i; saveCharState(currentChar, st); renderTrackers(); };
-    driftEl.appendChild(t);
-  }
-}
+];
 
-function onCharChange() {
-  currentChar = document.getElementById("charSelect").value;
-  localStorage.setItem("lupa_char", currentChar);
-  const c = CHARACTERS[currentChar];
-  document.getElementById("charArchetype").textContent = c.archetype;
-  document.getElementById("valForce").textContent = "+" + c.stats.force;
-  document.getElementById("valFinesse").textContent = "+" + c.stats.finesse;
-  document.getElementById("valFocus").textContent = "+" + c.stats.focus;
-  document.getElementById("noteCharName").textContent = c.name;
-
-  document.getElementById("powersList").innerHTML = c.powers.map(p =>
-    `<div class="item-pill"><strong>${p.name}</strong><div style="font-size:0.85rem; color:var(--text-secondary)">${p.desc}</div></div>`
-  ).join("");
-
-  document.getElementById("startingGearList").innerHTML = c.gear.map(g =>
-    `<div class="item-pill">🎒 ${g}</div>`
-  ).join("");
-
-  renderTrackers();
-  renderDynamicSheetContent();
-  loadPlayerNotesLocal();
-}
-
-function parseSheetRow(cols) {
-  const key = (cols[0] || "").trim();
-  if (!key || key.toLowerCase() === "key") return null;
-
-  let revealed = false;
-  let target = "all";
-  let text = "";
-
-  const col1 = (cols[1] || "").trim().toLowerCase();
-  const col2 = (cols[2] || "").trim().toLowerCase();
-
-  if (col1 === "true" || col1 === "yes" || col1 === "1") {
-    revealed = true; target = col2 || "all"; text = (cols[3] || "").trim();
-  } else if (col1 === "false" || col1 === "no" || col1 === "0" || col1.startsWith("false")) {
-    revealed = false; target = col2 || "all"; text = (cols[3] || "").trim();
-  } else if (["all", "archie", "roman", "selena", "penny"].some(t => col1.includes(t))) {
-    revealed = true; target = col1; text = (cols[2] || cols[3] || "").trim();
-  }
-
-  if (!text && FALLBACK_LORE[key]) { text = FALLBACK_LORE[key]; }
-  return { key, revealed, target, text };
-}
+var currentKey = localStorage.getItem("lupa_char") || "archie";
+var currentMod = 0;
+var currentModName = "Flat";
+var charData = JSON.parse(JSON.stringify(PRESETS));
+var selectiveLore = {
+  lupa: { revealed: false, target: "all", customText: "" },
+  lycan: { revealed: false, target: "all", customText: "" }
+};
+var customWhispers = [];
+var sheetGrantedItems = [];
+var extraLoreEntries = [];
+var cloudNotesMap = {};
+var dmCombatTrackers = [];
+var dmUnlocked = false;
 
 function isTargetMatch(targetStr, charKey) {
   if (!targetStr || targetStr === "all") return true;
-  const targets = targetStr.split(",").map(s => s.trim().toLowerCase());
-  return targets.includes("all") || targets.includes(charKey.toLowerCase());
+  var targets = targetStr.split(",").map(function(s) { return s.trim().toLowerCase(); });
+  return targets.indexOf("all") >= 0 || targets.indexOf(charKey.toLowerCase()) >= 0;
 }
 
 function isItemRow(key) {
-  const k = key.toLowerCase();
-  return k.startsWith("item_") || k.startsWith("gear_") || k.includes("compass") || k.includes("inhaler") || k.includes("salve") || k.includes("vial");
+  var k = key.toLowerCase();
+  return k.indexOf("item_") === 0 || k.indexOf("gear_") === 0 || k.indexOf("compass") >= 0 || k.indexOf("inhaler") >= 0 || k.indexOf("salve") >= 0 || k.indexOf("vial") >= 0;
 }
 
-function formatCardHTML(entry, isItem) {
-  let title = entry.key.replace(/_/g, " ").toUpperCase();
-  let body = entry.text;
-  const colonIdx = entry.text.indexOf(":");
-  if (colonIdx > 0 && colonIdx < 60) {
-    title = entry.text.slice(0, colonIdx).replace(/\*\*/g, "").trim();
-    body = entry.text.slice(colonIdx + 1).trim();
+function processControlRows(rows) {
+  customWhispers = [];
+  sheetGrantedItems = [];
+  extraLoreEntries = [];
+
+  for (var i = 0; i < rows.length; i++) {
+    var r = rows[i];
+    if (!r || r.length < 2) continue;
+    var rawKey = String(r[0] || "").trim();
+    var key = rawKey.toLowerCase();
+    if (!key || key === "key") continue;
+
+    var col1 = String(r[1] !== undefined && r[1] !== null ? r[1] : "").trim().toLowerCase();
+    var col2 = String(r[2] || "").trim().toLowerCase();
+    var col3 = String(r[3] || "").trim();
+
+    var revealed = false;
+    var target = "all";
+    var customText = col3;
+
+    if (col1 === "true" || col1 === "yes" || col1 === "1") {
+      revealed = true;
+      target = col2 || "all";
+    } else if (col1 === "false" || col1 === "no" || col1 === "0" || col1.indexOf("false") === 0) {
+      revealed = false;
+      target = col2 || "all";
+    } else if (["all", "archie", "roman", "selena", "penny"].some(function(t) { return col1.indexOf(t) >= 0; })) {
+      revealed = true;
+      target = col1;
+      customText = String(r[2] || r[3] || "").trim();
+    }
+
+    // Strip any "(SecretDMNote: ...)"
+    customText = customText.replace(/\(SecretDMNote:.*?\)/gi, "").trim();
+
+    if (key === "lupa" || key === "lycan") {
+      selectiveLore[key].revealed = revealed;
+      selectiveLore[key].target = target;
+      if (customText) selectiveLore[key].customText = customText;
+    } else if (key.indexOf("whisper") === 0) {
+      if (revealed && customText) {
+        customWhispers.push({ target: target, text: customText });
+      }
+    } else {
+      var monster = BESTIARY_DATA.find(function(b) { return b.id === key; });
+      if (monster) {
+        monster.revealedTo = revealed ? target : "none";
+      } else if (revealed) {
+        if (isItemRow(key)) {
+          sheetGrantedItems.push({ key: rawKey, target: target, text: customText });
+        } else {
+          extraLoreEntries.push({ key: rawKey, target: target, text: customText });
+        }
+      }
+    }
   }
-  body = body.replace(/\(Secret DM Note:.*?\)/gi, "").trim();
 
-  const targetBadge = (entry.target && entry.target !== "all")
-    ? `<span class="badge-target">Only: ${entry.target}</span>`
-    : "";
+  renderSheet();
+  renderLoreTab();
+  if (dmUnlocked) renderDMScreen();
+}
 
-  if (isItem) {
-    return `<div class="item-pill sheet-granted">
-      <strong>✨ ${title}</strong> ${targetBadge}
-      <div style="font-size:0.86rem; color:var(--text-secondary); margin-top:3px;">${body}</div>
-    </div>`;
+function syncFromCloud(manual) {
+  var statusEl = document.getElementById("sync-status-line");
+  if (statusEl && manual) statusEl.innerText = "Syncing with Google Sheet...";
+
+  // 1. Try Apps Script first (supports both Sheet1 and PlayerNotes)
+  if (APPS_SCRIPT_URL && APPS_SCRIPT_URL.indexOf("http") === 0) {
+    fetch(APPS_SCRIPT_URL + "?t=" + Date.now())
+      .then(function(res) { return res.json(); })
+      .then(function(data) {
+        if (data.control) processControlRows(data.control);
+        if (data.notes) {
+          data.notes.slice(1).forEach(function(r) {
+            if (r[0]) cloudNotesMap[String(r[0]).toLowerCase()] = r[1] || "";
+          });
+        }
+        if (statusEl) statusEl.innerText = "Synced via Cloud Script (" + new Date().toLocaleTimeString() + ")";
+      })
+      .catch(function() {
+        // Fallback to direct gviz JSON
+        pollGoogleSheetFallback();
+      });
   } else {
-    const isWhisper = entry.key.includes("whisper") || (entry.target && entry.target !== "all");
-    return `<div class="lore-card ${isWhisper ? 'whisper-card' : ''}">
-      <strong>📜 ${title}</strong> ${targetBadge}
-      <div style="font-size:0.88rem; color:var(--text-secondary); margin-top:4px;">${body}</div>
-    </div>`;
+    pollGoogleSheetFallback();
   }
 }
 
-function renderDynamicSheetContent() {
-  const itemsContainer = document.getElementById("sheetItemsList");
-  const loreContainer = document.getElementById("loreList");
-  let itemHTML = [], loreHTML = [];
+function pollGoogleSheetFallback() {
+  var statusEl = document.getElementById("sync-status-line");
+  var url = "https://docs.google.com/spreadsheets/d/" + SHEET_ID + "/gviz/tq?tqx=out:json&t=" + Date.now();
+  fetch(url)
+    .then(function(res) { return res.text(); })
+    .then(function(rawText) {
+      var jsonString = rawText.substring(rawText.indexOf("{"), rawText.lastIndexOf("}") + 1);
+      var data = JSON.parse(jsonString);
+      var parsedRows = data.table.rows.map(function(row) {
+        var c = row.c || [];
+        return [
+          c[0] && c[0].v !== null ? c[0].v : "",
+          c[1] && c[1].v !== null ? c[1].v : "",
+          c[2] && c[2].v !== null ? c[2].v : "",
+          c[3] && c[3].v !== null ? c[3].v : ""
+        ];
+      });
+      processControlRows(parsedRows);
+      if (statusEl) statusEl.innerText = "Synced via Live Sheet (" + new Date().toLocaleTimeString() + ")";
+    })
+    .catch(function(err) {
+      if (statusEl) statusEl.innerText = "Offline / Standby Mode";
+    });
+}
 
-  cloudControlRows.forEach(cols => {
-    const entry = parseSheetRow(cols);
-    if (!entry || !entry.revealed) return;
-    if (!isTargetMatch(entry.target, currentChar)) return;
+function initApp() {
+  try {
+    var saved = localStorage.getItem("lupa_save_v11");
+    if (saved) { charData = JSON.parse(saved); }
+  } catch(e) {}
+  
+  for (var k in PRESETS) {
+    if (!charData[k]) charData[k] = JSON.parse(JSON.stringify(PRESETS[k]));
+    charData[k].name = PRESETS[k].name;
+    charData[k].tagline = PRESETS[k].tagline;
+    charData[k].bio = PRESETS[k].bio;
+    charData[k].secret = PRESETS[k].secret;
+    charData[k].dynamics = PRESETS[k].dynamics;
+    if (charData[k].drift === undefined) charData[k].drift = 1;
+  }
+  
+  renderSheet();
+  loadWaypoints();
+  renderLoreTab();
+  renderDMScreen();
+  loadPlayerNotesLocal();
 
-    if (isItemRow(entry.key)) { itemHTML.push(formatCardHTML(entry, true)); }
-    else { loreHTML.push(formatCardHTML(entry, false)); }
+  syncFromCloud(false);
+  setInterval(function() { syncFromCloud(false); }, 8000);
+}
+
+function saveAppData() {
+  try {
+    localStorage.setItem("lupa_save_v11", JSON.stringify(charData));
+  } catch(e) {}
+}
+
+function switchNavTab(tabId, btn) {
+  var tabs = document.querySelectorAll(".tab-btn");
+  for (var i = 0; i < tabs.length; i++) tabs[i].classList.remove("active");
+  var contents = document.querySelectorAll(".tab-content");
+  for (var j = 0; j < contents.length; j++) contents[j].classList.remove("active");
+  
+  if (btn) btn.classList.add("active");
+  var t = document.getElementById("tab-" + tabId);
+  if (t) t.classList.add("active");
+}
+
+function selectCharacter(key) {
+  currentKey = key;
+  localStorage.setItem("lupa_char", key);
+  renderSheet();
+  renderLoreTab();
+  loadPlayerNotesLocal();
+}
+
+function renderSheet() {
+  var c = charData[currentKey];
+  if (!c) return;
+  document.getElementById("char-picker").value = currentKey;
+  document.getElementById("char-tagline").innerText = c.tagline;
+  document.getElementById("char-lvl-badge").innerText = "Rank " + (c.level || 1);
+  document.getElementById("note-char-name").innerText = c.name.split(" ")[0];
+
+  document.getElementById("stat-force-val").innerText = (c.force >= 0 ? "+" : "") + c.force;
+  document.getElementById("stat-finesse-val").innerText = (c.finesse >= 0 ? "+" : "") + c.finesse;
+  document.getElementById("stat-focus-val").innerText = (c.focus >= 0 ? "+" : "") + c.focus;
+
+  // Hearts
+  var hBox = document.getElementById("hearts-container");
+  hBox.innerHTML = "";
+  for (var i = 0; i < c.maxHearts; i++) {
+    (function(idx) {
+      var b = document.createElement("button");
+      b.type = "button";
+      b.className = "heart-token" + (idx >= c.hearts ? " lost" : "");
+      b.innerText = "❤️";
+      b.onclick = function() {
+        c.hearts = (idx < c.hearts) ? idx : idx + 1;
+        saveAppData();
+        renderSheet();
+      };
+      hBox.appendChild(b);
+    })(i);
+  }
+
+  // Beast Marks
+  var bBox = document.getElementById("beast-container");
+  bBox.innerHTML = "";
+  for (var j = 0; j < c.maxBeast; j++) {
+    (function(idx) {
+      var b = document.createElement("button");
+      b.type = "button";
+      b.className = "beast-token" + (idx >= c.beast ? " spent" : "");
+      b.innerText = "🐺";
+      b.onclick = function() {
+        c.beast = (idx < c.beast) ? idx : idx + 1;
+        saveAppData();
+        renderSheet();
+      };
+      bBox.appendChild(b);
+    })(j);
+  }
+
+  // Curse Drift (1-6)
+  var dBox = document.getElementById("drift-container");
+  dBox.innerHTML = "";
+  for (var dIdx = 1; dIdx <= 6; dIdx++) {
+    (function(val) {
+      var t = document.createElement("div");
+      t.className = "drift-token" + (val <= (c.drift || 0) ? " active" : "");
+      t.innerText = val;
+      t.onclick = function() {
+        c.drift = (c.drift === val) ? val - 1 : val;
+        saveAppData();
+        renderSheet();
+      };
+      dBox.appendChild(t);
+    })(dIdx);
+  }
+
+  // Powers
+  var pBox = document.getElementById("powers-list");
+  pBox.innerHTML = "";
+  for (var k = 0; k < c.powers.length; k++) {
+    (function(p) {
+      var d = document.createElement("div");
+      d.className = "power-item";
+      var costBtn = p.cost > 0 ? '<button type="button" class="btn btn-purple" style="padding:4px 8px; font-size:0.75rem; flex:none;" onclick="useBeastPower()">Use (1 Mark)</button>' : '';
+      d.innerHTML = '<div class="power-title"><span>' + p.name + '</span>' + costBtn + '</div><div style="font-size:0.8rem; color:#bbb;">' + p.desc + '</div>';
+      pBox.appendChild(d);
+    })(c.powers[k]);
+  }
+
+  // Sheet Granted Items
+  var sBox = document.getElementById("sheet-items-list");
+  sBox.innerHTML = "";
+  var sCount = 0;
+  sheetGrantedItems.forEach(function(item) {
+    if (isTargetMatch(item.target, currentKey)) {
+      sCount++;
+      var card = document.createElement("div");
+      card.className = "sheet-item-card";
+      var title = item.key.replace(/_/g, " ").toUpperCase();
+      var body = item.text;
+      var colonIdx = item.text.indexOf(":");
+      if (colonIdx > 0 && colonIdx < 50) {
+        title = item.text.slice(0, colonIdx).replace(/\*\*/g, "").trim();
+        body = item.text.slice(colonIdx + 1).trim();
+      }
+      card.innerHTML = '<div style="font-weight:700; color:var(--accent-gold-bright); font-size:0.88rem;">✨ ' + title + '</div><div style="font-size:0.82rem; color:#ccc; margin-top:2px;">' + body + '</div>';
+      sBox.appendChild(card);
+    }
+  });
+  if (sCount === 0) {
+    sBox.innerHTML = '<div style="font-size:0.8rem; color:var(--text-dim); font-style:italic;">No special campaign relics unlocked from the sheet for this character yet.</div>';
+  }
+
+  // Personal Inventory
+  var iBox = document.getElementById("inventory-list");
+  iBox.innerHTML = "";
+  for (var m = 0; m < c.inventory.length; m++) {
+    (function(idx, item) {
+      var tag = document.createElement("div");
+      tag.className = "item-tag";
+      tag.innerHTML = '<span>' + item + '</span><span style="color:#e74c3c; cursor:pointer; font-weight:bold; margin-left:4px;" onclick="delInventoryItem(' + idx + ')">✕</span>';
+      iBox.appendChild(tag);
+    })(m, c.inventory[m]);
+  }
+
+  // Dossier
+  document.getElementById("dossier-name").innerText = c.name;
+  document.getElementById("dossier-role").innerText = c.tagline;
+  document.getElementById("dossier-bio").innerText = c.bio;
+  document.getElementById("dossier-secret").innerText = c.secret;
+  document.getElementById("dossier-dynamics").innerText = c.dynamics;
+
+  renderCharacterWhispers();
+
+  // Modifiers
+  document.getElementById("mod-force").innerText = "Force (" + (c.force >= 0 ? "+" : "") + c.force + ")";
+  document.getElementById("mod-finesse").innerText = "Finesse (" + (c.finesse >= 0 ? "+" : "") + c.finesse + ")";
+  document.getElementById("mod-focus").innerText = "Focus (" + (c.focus >= 0 ? "+" : "") + c.focus + ")";
+}
+
+function renderCharacterWhispers() {
+  var box = document.getElementById("dossier-private-whispers");
+  if (!box) return;
+  box.innerHTML = "";
+  var found = 0;
+  customWhispers.forEach(function(w) {
+    if (isTargetMatch(w.target, currentKey)) {
+      found++;
+      var d = document.createElement("div");
+      d.className = "dossier-section";
+      d.style.borderColor = "#8e44ad";
+      d.innerHTML = '<div class="dossier-heading" style="color:#bb86fc;"><span>DM Secret Note</span><span class="target-tag">' + (w.target === "all" ? "Whole Pack" : "Direct To You") + '</span></div><div style="font-size:0.88rem; color:#eee; font-style:italic;">"' + w.text + '"</div>';
+      box.appendChild(d);
+    }
   });
 
-  const c = CHARACTERS[currentChar];
-  document.getElementById("gearCount").textContent = c.gear.length + itemHTML.length;
-  document.getElementById("loreCount").textContent = loreHTML.length;
-
-  itemsContainer.innerHTML = itemHTML.length ? itemHTML.join("") : `<div style="color:var(--text-dim); font-size:0.85rem; margin-bottom:10px;">No special campaign items revealed for ${c.name} yet.</div>`;
-  loreContainer.innerHTML = loreHTML.length ? loreHTML.join("") : `<div style="color:var(--text-dim); font-size:0.85rem;">No dossier entries unlocked for ${c.name} yet.</div>`;
-}
-
-async function syncFromCloud(manual = false) {
-  const statusEl = document.getElementById("syncStatus");
-  statusEl.textContent = "Syncing with Campaign Sheet...";
-  try {
-    const res = await fetch(PUBLISHED_CSV_URL + "&t=" + Date.now());
-    const csvText = await res.text();
-    
-    cloudControlRows = csvText.split("\n").map(row => {
-      return row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/).map(val => val.replace(/^"\vert{}"$/g, '').trim());
-    });
-
-    statusEl.textContent = "Synced via CSV (" + new Date().toLocaleTimeString() + ")";
-    renderDynamicSheetContent();
-  } catch (err) {
-    statusEl.textContent = "Sync error — check CSV link / connection.";
+  if (found === 0) {
+    box.innerHTML = '<div style="font-size:0.82rem; color:#777; font-style:italic;">No private observations logged by the DM for this sibling yet.</div>';
   }
 }
 
+function setRollMod(type, name, btn) {
+  currentMod = type;
+  currentModName = name;
+  var btns = document.querySelectorAll(".mod-btn");
+  for (var i = 0; i < btns.length; i++) btns[i].classList.remove("selected");
+  if (btn) btn.classList.add("selected");
+}
+
+function doRoll(type) {
+  var r1 = Math.floor(Math.random() * 20) + 1;
+  var r2 = Math.floor(Math.random() * 20) + 1;
+  var base = r1;
+  var desc = "d20 (" + r1 + ")";
+
+  if (type === 'adv') {
+    base = Math.max(r1, r2);
+    desc = "Adv [" + r1 + ", " + r2 + "] ➔ " + base;
+  } else if (type === 'dis') {
+    base = Math.min(r1, r2);
+    desc = "Dis [" + r1 + ", " + r2 + "] ➔ " + base;
+  }
+
+  var c = charData[currentKey];
+  var val = 0;
+  if (currentMod === 'force') val = c.force;
+  else if (currentMod === 'finesse') val = c.finesse;
+  else if (currentMod === 'focus') val = c.focus;
+
+  var total = base + val;
+  document.getElementById("dice-result").innerText = total;
+
+  var res = "💀 1–9: Complication";
+  if (total >= 15) res = "🔥 15+: Clean Triumph!";
+  else if (total >= 10) res = "⚡ 10–14: Success at Cost";
+
+  document.getElementById("dice-summary").innerText = desc + " + " + val + " [" + currentModName + "] = " + total + " (" + res + ")";
+}
+
+function useBeastPower() {
+  var c = charData[currentKey];
+  if (c.beast > 0) {
+    c.beast--;
+    saveAppData();
+    renderSheet();
+  }
+}
+
+function recoverAll() {
+  var c = charData[currentKey];
+  c.hearts = c.maxHearts;
+  c.beast = c.maxBeast;
+  saveAppData();
+  renderSheet();
+}
+
+function addInventoryItem() {
+  var inp = document.getElementById("new-item-input");
+  var val = inp.value.trim();
+  if (val) {
+    charData[currentKey].inventory.push(val);
+    inp.value = "";
+    saveAppData();
+    renderSheet();
+  }
+}
+
+function delInventoryItem(idx) {
+  charData[currentKey].inventory.splice(idx, 1);
+  saveAppData();
+  renderSheet();
+}
+
+function openLevelModal() {
+  var c = charData[currentKey];
+  document.getElementById("milestone-lvl-display").innerText = "Level " + (c.level || 1);
+  document.getElementById("levelup-modal").classList.add("open");
+}
+
+function closeLevelModal() {
+  document.getElementById("levelup-modal").classList.remove("open");
+}
+
+function adjLevel(d) {
+  var c = charData[currentKey];
+  c.level = Math.max(1, (c.level || 1) + d);
+  document.getElementById("milestone-lvl-display").innerText = "Level " + c.level;
+  saveAppData();
+  renderSheet();
+}
+
+function adjStat(st, d) {
+  charData[currentKey][st] += d;
+  saveAppData();
+  renderSheet();
+}
+
+function adjCap(tp, d) {
+  var c = charData[currentKey];
+  if (tp === 'hearts') {
+    c.maxHearts = Math.min(6, Math.max(3, c.maxHearts + d));
+    c.hearts = Math.min(c.hearts, c.maxHearts);
+  } else {
+    c.maxBeast = Math.min(6, Math.max(3, c.maxBeast + d));
+    c.beast = Math.min(c.beast, c.maxBeast);
+  }
+  saveAppData();
+  renderSheet();
+}
+
+function resetCharacter() {
+  charData[currentKey] = JSON.parse(JSON.stringify(PRESETS[currentKey]));
+  saveAppData();
+  renderSheet();
+  closeLevelModal();
+}
+
+// ==================== CLOUD + LOCAL NOTES ====================
 function loadPlayerNotesLocal() {
-  const localText = localStorage.getItem("lupa_notes_" + currentChar) || cloudNotesMap[currentChar] || "";
-  document.getElementById("playerNotes").value = localText;
+  var el = document.getElementById("clues-text");
+  if (!el) return;
+  var localText = localStorage.getItem("lupa_notes_" + currentKey) || cloudNotesMap[currentKey] || "";
+  el.value = localText;
 }
 
-document.getElementById("playerNotes").addEventListener("input", (e) => {
-  localStorage.setItem("lupa_notes_" + currentChar, e.target.value);
-  document.getElementById("notesStatus").textContent = "Draft saved locally.";
-});
-
-async function savePlayerNotes() {
-  const notesText = document.getElementById("playerNotes").value;
-  localStorage.setItem("lupa_notes_" + currentChar, notesText);
-  const noteStatus = document.getElementById("notesStatus");
-
-  noteStatus.textContent = "Saving to Cloud Sheet...";
+function saveNotesLocal(val) {
   try {
-    await fetch(APPS_SCRIPT_URL, {
-      method: "POST",
-      mode: "no-cors",
-      headers: { "Content-Type": "text/plain;charset=utf-8" },
-      body: JSON.stringify({ character: currentChar, notes: notesText })
-    });
-    cloudNotesMap[currentChar] = notesText;
-    noteStatus.textContent = "✔ Saved to Cloud Sheet (" + new Date().toLocaleTimeString() + ")";
-  } catch (err) {
-    noteStatus.textContent = "Saved locally; cloud sync failed.";
+    localStorage.setItem("lupa_notes_" + currentKey, val);
+    var st = document.getElementById("notes-status");
+    if (st) st.innerText = "Draft saved on device (tap Save to push to Google Sheet).";
+  } catch(e) {}
+}
+
+function savePlayerNotesCloud() {
+  var notesText = document.getElementById("clues-text").value;
+  localStorage.setItem("lupa_notes_" + currentKey, notesText);
+  var noteStatus = document.getElementById("notes-status");
+  if (!APPS_SCRIPT_URL || APPS_SCRIPT_URL.indexOf("http") !== 0) {
+    noteStatus.innerText = "Saved locally on device!";
+    return;
   }
+  noteStatus.innerText = "Saving to Google Sheet (PlayerNotes tab)...";
+  fetch(APPS_SCRIPT_URL, {
+    method: "POST",
+    mode: "no-cors",
+    headers: { "Content-Type": "text/plain;charset=utf-8" },
+    body: JSON.stringify({ character: currentKey, notes: notesText })
+  }).then(function() {
+    cloudNotesMap[currentKey] = notesText;
+    noteStatus.innerText = "✔ Saved to Google Sheet PlayerNotes tab (" + new Date().toLocaleTimeString() + ")";
+  }).catch(function() {
+    noteStatus.innerText = "Saved locally; cloud push failed.";
+  });
 }
 
-async function loadNotesFromCloud() {
-  const noteStatus = document.getElementById("notesStatus");
-  noteStatus.textContent = "Fetching latest notes from Apps Script...";
-  try {
-    const res = await fetch(APPS_SCRIPT_URL + "?notes=true&t=" + Date.now());
-    const data = await res.json();
-    if (data.notes) {
-      data.notes.slice(1).forEach(r => {
-        if (r[0]) cloudNotesMap[String(r[0]).toLowerCase()] = r[1] || "";
-      });
+function loadPlayerNotesFromCloud() {
+  var noteStatus = document.getElementById("notes-status");
+  noteStatus.innerText = "Fetching latest notes from Google Sheet...";
+  syncFromCloud(true);
+  setTimeout(function() {
+    if (cloudNotesMap[currentKey] !== undefined) {
+      document.getElementById("clues-text").value = cloudNotesMap[currentKey];
+      localStorage.setItem("lupa_notes_" + currentKey, cloudNotesMap[currentKey]);
+      noteStatus.innerText = "✔ Recovered latest notes from Google Sheet!";
+    } else {
+      noteStatus.innerText = "No cloud notes found for this character.";
     }
-    loadPlayerNotesLocal();
-    noteStatus.textContent = "✔ Notes refreshed from cloud!";
-  } catch (err) {
-    noteStatus.textContent = "Could not fetch cloud notes (using local draft).";
+  }, 1500);
+}
+
+// ==================== WAYPOINTS ====================
+function loadWaypoints() {
+  var list = document.getElementById("waypoint-list");
+  list.innerHTML = "";
+  var wp = [];
+  try { wp = JSON.parse(localStorage.getItem("lupa_wp_v11") || "[]"); } catch(e) {}
+  for (var i = 0; i < wp.length; i++) {
+    (function(idx, w) {
+      var d = document.createElement("div");
+      d.style.cssText = "display:flex; justify-content:space-between; align-items:center; padding:8px 0; border-bottom:1px solid #282a36;";
+      d.innerHTML = '<label style="display:flex; align-items:center; gap:8px;"><input type="checkbox" ' + (w.done ? "checked" : "") + ' onchange="toggleWp(' + idx + ')"><span style="' + (w.done ? 'text-decoration:line-through; color:#777;' : '') + '">' + w.text + '</span></label><span style="color:#e74c3c; cursor:pointer;" onclick="delWp(' + idx + ')">✕</span>';
+      list.appendChild(d);
+    })(i, wp[i]);
   }
 }
 
-document.getElementById("charSelect").value = currentChar;
-onCharChange();
-syncFromCloud();
-loadNotesFromCloud();
+function addCustomWaypoint() {
+  var inp = document.getElementById("new-waypoint-input");
+  var val = inp.value.trim();
+  if (val) {
+    var wp = [];
+    try { wp = JSON.parse(localStorage.getItem("lupa_wp_v11") || "[]"); } catch(e) {}
+    wp.push({ text: val, done: false });
+    try { localStorage.setItem("lupa_wp_v11", JSON.stringify(wp)); } catch(e) {}
+    inp.value = "";
+    loadWaypoints();
+  }
+}
+
+function toggleWp(idx) {
+  var wp = [];
+  try { wp = JSON.parse(localStorage.getItem("lupa_wp_v11") || "[]"); } catch(e) {}
+  if (wp[idx]) {
+    wp[idx].done = !wp[idx].done;
+    try { localStorage.setItem("lupa_wp_v11", JSON.stringify(wp)); } catch(e) {}
+    loadWaypoints();
+  }
+}
+
+function delWp(idx) {
+  var wp = [];
+  try { wp = JSON.parse(localStorage.getItem("lupa_wp_v11") || "[]"); } catch(e) {}
+  wp.splice(idx, 1);
+  try { localStorage.setItem("lupa_wp_v11", JSON.stringify(wp)); } catch(e) {}
+  loadWaypoints();
+}
+
+// ==================== WORLD & LORE RENDER ====================
+function renderLoreTab() {
+  var unlockedCount = 0;
+
+  // Lupa
+  var lupaBadge = document.getElementById("badge-lupa");
+  var lupaBody = document.getElementById("lore-lupa-body");
+  var lupaVisible = selectiveLore.lupa.revealed && isTargetMatch(selectiveLore.lupa.target, currentKey);
+
+  if (lupaVisible) {
+    unlockedCount++;
+    lupaBadge.className = "revealed-badge";
+    lupaBadge.innerText = (selectiveLore.lupa.target === "all") ? "Revealed to Pack" : "Exclusive to You";
+    lupaBody.innerHTML = selectiveLore.lupa.customText || "<strong>The Ancient Mother:</strong> Lupa is over 2,500 years old, the foster mother of Romulus and Remus. She drank half of a vial from the Fountain of Youth given by Romulus, locking her appearance as a woman in her 40s. She fled Lycan when his vanity turned him toward selfish immortality, hiding her cubs to shield them from being used as bargaining leverage.";
+  } else {
+    lupaBadge.className = "locked-badge";
+    lupaBadge.innerText = "Hidden";
+    lupaBody.innerHTML = "<em>You possess only faint, warm memories of your mother's scent and lullabies before she left you in human care. Her full identity, history, and location remain an active mystery.</em>";
+  }
+
+  // Lycan
+  var lycanBadge = document.getElementById("badge-lycan");
+  var lycanBody = document.getElementById("lore-lycan-body");
+  var lycanVisible = selectiveLore.lycan.revealed && isTargetMatch(selectiveLore.lycan.target, currentKey);
+
+  if (lycanVisible) {
+    unlockedCount++;
+    lycanBadge.className = "revealed-badge";
+    lycanBadge.innerText = (selectiveLore.lycan.target === "all") ? "Revealed to Pack" : "Exclusive to You";
+    lycanBody.innerHTML = selectiveLore.lycan.customText || "<strong>The Dying Alchemist:</strong> Professor Lycan extended his mortal life using an incomplete Philosopher's Stone. His flesh is decaying and his mind is unraveling. He does not wish to reunite you with Lupa out of kindness—he is using your innate bloodline scent as living tracking hounds to locate her and seize her remaining Fountain vials for himself.";
+  } else {
+    lycanBadge.className = "locked-badge";
+    lycanBadge.innerText = "Hidden";
+    lycanBody.innerHTML = "<em>A frail, scholarly old gentleman who claims to have known your mother. He offered you the chance to meet her in exchange for helping him recover ancient transatlantic relics.</em>";
+  }
+
+  // Extra Sheet Lore Entries
+  var extraBox = document.getElementById("extra-sheet-lore-list");
+  if (extraBox) {
+    extraBox.innerHTML = "";
+    extraLoreEntries.forEach(function(entry) {
+      if (isTargetMatch(entry.target, currentKey)) {
+        unlockedCount++;
+        var d = document.createElement("div");
+        d.className = "dossier-section";
+        var title = entry.key.replace(/_/g, " ").toUpperCase();
+        var body = entry.text;
+        var colonIdx = entry.text.indexOf(":");
+        if (colonIdx > 0 && colonIdx < 55) {
+          title = entry.text.slice(0, colonIdx).replace(/\*\*/g, "").trim();
+          body = entry.text.slice(colonIdx + 1).trim();
+        }
+        d.innerHTML = '<div class="dossier-heading"><span>📜 ' + title + '</span><span class="revealed-badge">' + (entry.target === "all" ? "Pack Lore" : "Exclusive") + '</span></div><div style="font-size:0.86rem; color:#ddd; line-height:1.5;">' + body + '</div>';
+        extraBox.appendChild(d);
+      }
+    });
+  }
+
+  // Bestiary
+  var pBestiary = document.getElementById("player-bestiary-list");
+  pBestiary.innerHTML = "";
+  var count = 0;
+  BESTIARY_DATA.forEach(function(b) {
+    var isVisible = (b.revealedTo !== "none") && isTargetMatch(b.revealedTo, currentKey);
+    if (isVisible) {
+      count++;
+      unlockedCount++;
+      var d = document.createElement("div");
+      d.className = "dossier-section";
+      d.innerHTML = '<div class="dossier-heading"><span>' + b.name + '</span><span class="revealed-badge">' + (b.revealedTo === "all" ? "Pack Observed" : "Observed by You") + '</span></div><div style="font-size:0.84rem; color:var(--accent-gold); margin-bottom:4px;">' + b.role + ' | TN: ' + b.tn + ' | HP: ' + b.hearts + ' Hearts</div><div style="font-size:0.85rem; color:#ccc; margin-bottom:6px;">' + b.desc + '</div><div style="font-size:0.8rem; color:#e67e22; background:#1b1512; padding:6px; border-radius:6px;"><strong>Tactics:</strong> ' + b.combat + '</div>';
+      pBestiary.appendChild(d);
+    }
+  });
+
+  if (count === 0) {
+    pBestiary.innerHTML = '<div style="font-size:0.85rem; color:#777; font-style:italic;">No automatons or elite enemies have been encountered or studied yet.</div>';
+  }
+
+  var badgeCountEl = document.getElementById("lore-badge-count");
+  if (badgeCountEl) badgeCountEl.innerText = unlockedCount;
+}
+
+// ==================== DM SCREEN ====================
+function attemptDMScreenAccess(btn) {
+  if (dmUnlocked) {
+    switchNavTab('dm', btn);
+  } else {
+    document.getElementById("dm-pin-modal").classList.add("open");
+    document.getElementById("dm-pin-input").value = "";
+    document.getElementById("dm-pin-input").focus();
+  }
+}
+
+function closeDMPinModal() {
+  document.getElementById("dm-pin-modal").classList.remove("open");
+}
+
+function verifyDMPIN() {
+  var pin = document.getElementById("dm-pin-input").value;
+  var storedPin = localStorage.getItem("lupa_dm_pin") || "1234";
+  if (pin === storedPin) {
+    dmUnlocked = true;
+    closeDMPinModal();
+    var dmTabBtn = document.querySelector(".tab-btn.dm-tab");
+    switchNavTab('dm', dmTabBtn);
+    renderDMScreen();
+  } else {
+    alert("Incorrect DM PIN!");
+    document.getElementById("dm-pin-input").value = "";
+  }
+}
+
+function lockDMScreen() {
+  dmUnlocked = false;
+  var playTabBtn = document.querySelector(".tab-btn");
+  switchNavTab('play', playTabBtn);
+}
+
+function renderDMScreen() {
+  var btnLupa = document.getElementById("dm-btn-lupa");
+  if (btnLupa) {
+    btnLupa.innerText = selectiveLore.lupa.revealed ? "Hide" : "Reveal";
+    btnLupa.className = selectiveLore.lupa.revealed ? "btn btn-green" : "btn btn-gold";
+    document.getElementById("dm-select-lupa-target").value = selectiveLore.lupa.target;
+  }
+
+  var btnLycan = document.getElementById("dm-btn-lycan");
+  if (btnLycan) {
+    btnLycan.innerText = selectiveLore.lycan.revealed ? "Hide" : "Reveal";
+    btnLycan.className = selectiveLore.lycan.revealed ? "btn btn-green" : "btn btn-gold";
+    document.getElementById("dm-select-lycan-target").value = selectiveLore.lycan.target;
+  }
+
+  var bBox = document.getElementById("dm-bestiary-controls");
+  if (!bBox) return;
+  bBox.innerHTML = "";
+  BESTIARY_DATA.forEach(function(b, idx) {
+    var row = document.createElement("div");
+    row.className = "dm-toggle-row";
+    row.innerHTML = '<div style="font-weight:700; font-size:0.88rem; color:var(--accent-gold);">' + b.name + '</div><div style="font-size:0.75rem; color:#aaa; margin-bottom:6px;">TN ' + b.tn + ' | ' + b.hearts + ' Hearts | ' + b.combat + '</div><div class="dm-controls-line"><select id="bestiary-target-' + idx + '" class="char-select" style="font-size:0.82rem; padding:4px 8px; flex:1;" onchange="setBestiaryTarget(' + idx + ', this.value)"><option value="none" ' + (b.revealedTo === 'none' ? 'selected' : '') + '>Hidden from All</option><option value="all" ' + (b.revealedTo === 'all' ? 'selected' : '') + '>Disclose to Whole Pack</option><option value="archie" ' + (b.revealedTo === 'archie' ? 'selected' : '') + '>Archie Only</option><option value="roman" ' + (b.revealedTo === 'roman' ? 'selected' : '') + '>Roman Only</option><option value="selena" ' + (b.revealedTo === 'selena' ? 'selected' : '') + '>Selena Only</option><option value="penny" ' + (b.revealedTo === 'penny' ? 'selected' : '') + '>Penny Only</option></select></div>';
+    bBox.appendChild(row);
+  });
+
+  renderDMWhispersAudit();
+  renderDMCombatList();
+}
+
+function toggleLoreDisclosure(key) {
+  selectiveLore[key].revealed = !selectiveLore[key].revealed;
+  var sel = document.getElementById("dm-select-" + key + "-target");
+  if (sel) selectiveLore[key].target = sel.value;
+  renderLoreTab();
+  renderDMScreen();
+}
+
+function setBestiaryTarget(idx, val) {
+  BESTIARY_DATA[idx].revealedTo = val;
+  renderLoreTab();
+}
+
+function sendTargetedWhisper() {
+  var inp = document.getElementById("whisper-input");
+  var target = document.getElementById("whisper-target").value;
+  var val = inp.value.trim();
+  if (val) {
+    customWhispers.push({ target: target, text: val });
+    inp.value = "";
+    renderSheet();
+    renderDMWhispersAudit();
+  }
+}
+
+function renderDMWhispersAudit() {
+  var box = document.getElementById("dm-whispers-audit");
+  if (!box) return;
+  box.innerHTML = "";
+  customWhispers.forEach(function(w, idx) {
+    var row = document.createElement("div");
+    row.style.cssText = "display:flex; justify-content:space-between; align-items:center; background:#121018; padding:6px 10px; border-radius:6px; margin:4px 0; font-size:0.8rem;";
+    row.innerHTML = '<div><span class="target-tag">' + w.target.toUpperCase() + '</span> ' + w.text + '</div><span style="color:#e74c3c; cursor:pointer; font-weight:bold; margin-left:8px;" onclick="delWhisper(' + idx + ')">✕</span>';
+    box.appendChild(row);
+  });
+}
+
+function delWhisper(idx) {
+  customWhispers.splice(idx, 1);
+  renderSheet();
+  renderDMWhispersAudit();
+}
+
+function addDMTracker() {
+  var inp = document.getElementById("dm-tracker-input");
+  var val = inp.value.trim();
+  if (val) {
+    dmCombatTrackers.push({ name: val, hp: 3, maxHp: 3 });
+    inp.value = "";
+    renderDMCombatList();
+  }
+}
+
+function renderDMCombatList() {
+  var list = document.getElementById("dm-combat-list");
+  if (!list) return;
+  list.innerHTML = "";
+  dmCombatTrackers.forEach(function(item, idx) {
+    var row = document.createElement("div");
+    row.style.cssText = "display:flex; justify-content:space-between; align-items:center; background:#1f1625; padding:8px; border-radius:6px; margin:4px 0;";
+    row.innerHTML = '<div style="font-weight:700; font-size:0.9rem;">' + item.name + '</div><div style="display:flex; align-items:center; gap:6px;"><button type="button" class="btn" style="padding:2px 8px; flex:none;" onclick="adjDMHp(' + idx + ', -1)">-1</button><span style="font-weight:800; color:var(--accent-red-bright); min-width:40px; text-align:center;">' + item.hp + ' HP</span><button type="button" class="btn" style="padding:2px 8px; flex:none;" onclick="adjDMHp(' + idx + ', 1)">+1</button><span style="color:#e74c3c; cursor:pointer; font-weight:bold; margin-left:8px;" onclick="delDMTracker(' + idx + ')">✕</span></div>';
+    list.appendChild(row);
+  });
+}
+
+function adjDMHp(idx, delta) {
+  dmCombatTrackers[idx].hp = Math.max(0, dmCombatTrackers[idx].hp + delta);
+  renderDMCombatList();
+}
+
+function delDMTracker(idx) {
+  dmCombatTrackers.splice(idx, 1);
+  renderDMCombatList();
+}
+
+initApp();
 </script>
 </body>
 </html>
