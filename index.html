@@ -135,13 +135,13 @@
     margin-left: 6px; text-transform: uppercase;
   }
   textarea.notes-box {
-    width: 100%; min-height: 130px; background: #111217; color: var(--text-primary);
-    border: 1px solid #2d313f; border-radius: 8px; padding: 10px;
+    width: 100%; min-height: 150px; background: #111217; color: var(--text-primary);
+    border: 1px solid #2d313f; border-radius: 8px; padding: 12px;
     font-family: inherit; font-size: 0.92rem; resize: vertical; margin-bottom: 8px;
   }
   .status-line {
-    font-size: 0.75rem; color: var(--text-secondary); display: flex;
-    justify-content: space-between; align-items: center; margin-top: 4px;
+    font-size: 0.78rem; color: var(--text-secondary); display: flex;
+    justify-content: space-between; align-items: center; margin-top: 6px;
   }
 </style>
 </head>
@@ -249,13 +249,18 @@
   <!-- TAB 4: PLAYER NOTES -->
   <div id="notesTab" class="tab-content">
     <div class="card">
-      <div class="section-title" style="margin-top:0">Field Journal — <span id="noteCharName">Archie</span></div>
+      <div class="char-header">
+        <div class="section-title" style="margin:0">Field Journal — <span id="noteCharName">Archie</span></div>
+        <button style="flex:0; padding:6px 10px; font-size:0.75rem;" onclick="syncNotesFromCloud()">📥 Fetch Latest</button>
+      </div>
+      <div style="font-size:0.8rem; color:var(--text-secondary); margin: 6px 0 10px 0;">
+        Your private notes auto-save locally as you type and can be pushed to your cloud journal.
+      </div>
       <textarea id="playerNotes" class="notes-box" placeholder="Write clues, suspects, vows, or alchemical formulas here..."></textarea>
       <div class="btn-row">
         <button class="btn-green" onclick="savePlayerNotes()">💾 Save to Cloud Sheet</button>
-        <button onclick="loadPlayerNotesFromCloud()">📥 Recover from Sheet</button>
       </div>
-      <div id="notesStatus" class="status-line">Saved locally on device.</div>
+      <div id="notesStatus" class="status-line">Synced & saved locally.</div>
     </div>
   </div>
 
@@ -508,13 +513,11 @@ async function syncFromCloud(manual = false) {
   const statusEl = document.getElementById("syncStatus");
   statusEl.textContent = "Syncing with Campaign Sheet...";
   try {
-    // Fetch directly from the published CSV (bypasses CORS entirely)
     const res = await fetch(PUBLISHED_CSV_URL + "&t=" + Date.now());
     const csvText = await res.text();
     
-    // Parse the CSV rows into the array format your app expects
     cloudControlRows = csvText.split("\n").map(row => {
-      return row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/).map(val => val.replace(/^"|"$/g, '').trim());
+      return row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/).map(val => val.replace(/^"\vert{}"$/g, '').trim());
     });
 
     statusEl.textContent = "Synced via CSV (" + new Date().toLocaleTimeString() + ")";
@@ -531,7 +534,7 @@ function loadPlayerNotesLocal() {
 
 document.getElementById("playerNotes").addEventListener("input", (e) => {
   localStorage.setItem("lupa_notes_" + currentChar, e.target.value);
-  document.getElementById("notesStatus").textContent = "Draft saved on device (tap Save to push to Google Sheet).";
+  document.getElementById("notesStatus").textContent = "Draft saved locally.";
 });
 
 async function savePlayerNotes() {
@@ -539,7 +542,7 @@ async function savePlayerNotes() {
   localStorage.setItem("lupa_notes_" + currentChar, notesText);
   const noteStatus = document.getElementById("notesStatus");
 
-  noteStatus.textContent = "Saving to Google Sheet (PlayerNotes tab)...";
+  noteStatus.textContent = "Saving to Cloud Sheet...";
   try {
     await fetch(APPS_SCRIPT_URL, {
       method: "POST",
@@ -548,27 +551,34 @@ async function savePlayerNotes() {
       body: JSON.stringify({ character: currentChar, notes: notesText })
     });
     cloudNotesMap[currentChar] = notesText;
-    noteStatus.textContent = "✔ Saved to Google Sheet (" + new Date().toLocaleTimeString() + ")";
+    noteStatus.textContent = "✔ Saved to Cloud Sheet (" + new Date().toLocaleTimeString() + ")";
   } catch (err) {
-    noteStatus.textContent = "Saved locally; cloud push failed.";
+    noteStatus.textContent = "Saved locally; cloud sync failed.";
   }
 }
 
-async function loadPlayerNotesFromCloud() {
+async function loadNotesFromCloud() {
   const noteStatus = document.getElementById("notesStatus");
-  await syncFromCloud(true);
-  if (cloudNotesMap[currentChar] !== undefined) {
-    document.getElementById("playerNotes").value = cloudNotesMap[currentChar];
-    localStorage.setItem("lupa_notes_" + currentChar, cloudNotesMap[currentChar]);
-    noteStatus.textContent = "✔ Recovered latest notes from Google Sheet!";
-  } else {
-    noteStatus.textContent = "No cloud notes found for " + CHARACTERS[currentChar].name + ".";
+  noteStatus.textContent = "Fetching latest notes from Apps Script...";
+  try {
+    const res = await fetch(APPS_SCRIPT_URL + "?notes=true&t=" + Date.now());
+    const data = await res.json();
+    if (data.notes) {
+      data.notes.slice(1).forEach(r => {
+        if (r[0]) cloudNotesMap[String(r[0]).toLowerCase()] = r[1] || "";
+      });
+    }
+    loadPlayerNotesLocal();
+    noteStatus.textContent = "✔ Notes refreshed from cloud!";
+  } catch (err) {
+    noteStatus.textContent = "Could not fetch cloud notes (using local draft).";
   }
 }
 
 document.getElementById("charSelect").value = currentChar;
 onCharChange();
 syncFromCloud();
+loadNotesFromCloud();
 </script>
 </body>
 </html>
